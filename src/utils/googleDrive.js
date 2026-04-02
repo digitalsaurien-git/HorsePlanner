@@ -32,9 +32,11 @@ export async function initGoogleDrive() {
   console.log("🛠️ Script Google détectés, initialisation...");
 
   return new Promise((resolve) => {
+    console.log("📍 Origine actuelle détectée :", window.location.origin);
     window.gapi.load('client', async () => {
       try {
         await window.gapi.client.init({
+          clientId: CLIENT_ID,
           discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
         });
         gapiInited = true;
