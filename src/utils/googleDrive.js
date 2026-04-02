@@ -3,7 +3,7 @@
  * Path: /DigitalSaurien/AUTOMATE/HorsePlanner
  */
 
-export const CLIENT_ID = "665050976672-p2bt775dvacagthl9bga6ohspc3v8n0g.apps.googleusercontent.com";
+export const CLIENT_ID = "867619813314-h3gf1ro6fn1ddotkttso119lbiphi2rv.apps.googleusercontent.com";
 const SCOPES = 'https://www.googleapis.com/auth/drive.file';
 
 let tokenClient;
