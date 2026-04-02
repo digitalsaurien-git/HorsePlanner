@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './index.css';
+import { initGoogleDrive, authenticateGoogle, saveToDrive, loadFromDrive } from './utils/googleDrive';
 
 // --- Mock Data & Constants ---
 const ROLES = {
@@ -35,6 +36,15 @@ function App() {
   const [mode, setMode] = useState(APP_MODES.LOGIN);
   const [horses, setHorses] = useState(INITIAL_HORSES);
   const [plannings, setPlannings] = useState([]); // Array of assignments: { horseId, date, period, location }
+  const [isDriveConnected, setIsDriveConnected] = useState(false);
+  const [lastSync, setLastSync] = useState(null);
+
+  // Initialize Drive
+  useEffect(() => {
+    initGoogleDrive().then(() => {
+      console.log("☁️ Drive Ready");
+    });
+  }, []);
 
   // Load from localStorage
   useEffect(() => {
@@ -58,7 +68,31 @@ function App() {
   useEffect(() => {
     localStorage.setItem('hp_horses', JSON.stringify(horses));
     localStorage.setItem('hp_plannings', JSON.stringify(plannings));
-  }, [horses, plannings]);
+    
+    // Auto-sync to Drive if connected
+    if (isDriveConnected) {
+      saveToDrive({ horses, plannings }).then(success => {
+        if (success) setLastSync(new Date().toLocaleTimeString());
+      });
+    }
+  }, [horses, plannings, isDriveConnected]);
+
+  const handleConnectDrive = async () => {
+    try {
+      await authenticateGoogle();
+      setIsDriveConnected(true);
+      const cloudData = await loadFromDrive();
+      if (cloudData) {
+        if (confirm("Données cloud détectées. Voulez-vous écraser les données locales par la version Cloud ?")) {
+          setHorses(cloudData.horses);
+          setPlannings(cloudData.plannings);
+        }
+      }
+      alert("✅ Connecté à Google Drive !");
+    } catch (err) {
+      console.error("Auth Fail:", err);
+    }
+  };
 
   const login = (role, email = '') => {
     const newUser = { role, email: email || (role === ROLES.GERANT ? 'admin@club.com' : 'user@club.com') };
@@ -292,12 +326,20 @@ function App() {
   );
 
   const Navbar = () => (
-    <nav className="navbar glass" style={{ position: 'sticky', top: 0, width: '100%', marginBottom: '2rem' }}>
+    <nav className="navbar glass" style={{ position: 'sticky', top: 0, width: '100%', marginBottom: '2rem', zIndex: 1000 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
         <span style={{ fontSize: '1.5rem' }}>🐎</span>
         <h2 className="gradient-text">HorsePlanner</h2>
       </div>
       <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+        {!isDriveConnected ? (
+          <button onClick={handleConnectDrive} className="btn" style={{ fontSize: '0.8rem', background: 'rgba(66, 133, 244, 0.1)', color: '#4285F4', border: '1px solid #4285F4' }}>☁️ Connecter Drive</button>
+        ) : (
+          <div style={{ fontSize: '0.7rem', color: 'var(--success)', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+            <span>✅ Cloud Sync On</span>
+            {lastSync && <span>Dernière synchro: {lastSync}</span>}
+          </div>
+        )}
         <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>{user?.role === ROLES.GERANT ? '🛡️ Admin' : '👤 Propriétaire'}</span>
         <button onClick={logout} className="btn" style={{ padding: '0.5rem 1rem', background: 'rgba(244, 67, 54, 0.1)', color: 'var(--danger)', border: '1px solid var(--danger)' }}>Déconnexion</button>
       </div>

@@ -27,6 +27,7 @@ Créer une application simple pour gérer la mise au pré ou au box des chevaux 
 - [x] Vue propriétaire filtrée + édition de l'icône et de la couleur du cheval
 - [x] Système de sélection d'icônes Horse Icons
 - [x] Accès web adapté mobile & PC (Layout responsive avec Sidebar)
+- [x] Synchronisation Google Drive (Save/Load) dans `/DigitalSaurien/AUTOMATE/HorsePlanner`
 
 **OUT (exclu / plus tard):**
 - Réservation avancée des prés par propriétaire
