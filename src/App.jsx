@@ -436,7 +436,7 @@ function App() {
   const Dashboard = () => {
     const today = new Date().toISOString().split('T')[0];
     const myHorses = user?.role === ROLES.PROPRIETAIRE 
-      ? horses.filter(h => h.owner.toLowerCase() === user.email.split('@')[0].toLowerCase() || h.owner === 'Dupont')
+      ? horses.filter(h => h.owner.toLowerCase() === user?.email?.split('@')[0].toLowerCase() || h.owner === 'Dupont')
       : horses;
 
     const todayAssignments = plannings.filter(p => {
@@ -461,13 +461,13 @@ function App() {
                  <span style={{ fontSize: '0.8rem' }}>Modifier l'icône :</span>
                  <div style={{ display: 'flex', gap: '8px' }}>
                    {HORSE_ICONS.slice(0, 7).map(icon => (
-                     <button key={icon} onClick={() => setHorses(horses.map(h => (h.owner.toLowerCase() === user.email.split('@')[0].toLowerCase() || h.owner === 'Dupont') ? { ...h, emoji: icon } : h))} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', transition: 'transform 0.2s' }}>{icon}</button>
+                     <button key={icon} onClick={() => setHorses(horses.map(h => (h.owner.toLowerCase() === user?.email?.split('@')[0].toLowerCase() || h.owner === 'Dupont') ? { ...h, emoji: icon } : h))} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', transition: 'transform 0.2s' }}>{icon}</button>
                    ))}
                  </div>
                </div>
                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                  <span style={{ fontSize: '0.8rem' }}>Couleur du cheval :</span>
-                 <input type="color" value={myHorses[0]?.color || '#B08D57'} onChange={(e) => setHorses(horses.map(h => (h.owner.toLowerCase() === user.email.split('@')[0].toLowerCase() || h.owner === 'Dupont') ? { ...h, color: e.target.value } : h))} style={{ border: 'none', background: 'none', cursor: 'pointer' }} />
+                 <input type="color" value={myHorses[0]?.color || '#B08D57'} onChange={(e) => setHorses(horses.map(h => (h.owner.toLowerCase() === user?.email?.split('@')[0].toLowerCase() || h.owner === 'Dupont') ? { ...h, color: e.target.value } : h))} style={{ border: 'none', background: 'none', cursor: 'pointer' }} />
                </div>
             </div>
           )}
