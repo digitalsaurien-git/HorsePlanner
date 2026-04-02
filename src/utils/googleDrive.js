@@ -127,7 +127,7 @@ export async function saveToDrive(data, pathString = 'DigitalSaurien/AUTOMATE/Ho
     
     // Search for existing file
     const response = await window.gapi.client.drive.files.list({
-      q: `name = '${fileName}' and '${horsePlannerId}' in parents and trashed = false`,
+      q: `name = '${fileName}' and '${targetFolderId}' in parents and trashed = false`,
       fields: 'files(id, name)',
     });
     

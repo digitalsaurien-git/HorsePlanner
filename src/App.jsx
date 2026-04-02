@@ -19,17 +19,50 @@ const APP_MODES = {
   MY_HORSES: 'my_horses'
 };
 
-const HORSE_ICONS = ['🐎', '🐴', '🦄', '🎠', '🤠', '🌾', '🐎', '⚡', '👻', '🖤', '🌸', '⭐', '🍀', '🍎'];
+const HORSE_ICONS = ['🐎', '🐴', '🦄', '🐆', '🦓', '🦒', '🐿️', '🐰', '🍀', '🌸', '🌷', '🎍', '🍎', '🥕', '⚡', '💋', '🤠', '🏀', '👳'];
 
 const INITIAL_HORSES = [
-  { id: 1, name: 'Storm', emoji: '⚡', owner: 'Dupont', color: '#B08D57', status: 'box' },
-  { id: 2, name: 'Spirit', emoji: '👻', owner: 'Martin', color: '#D2B48C', status: 'box' },
-  { id: 3, name: 'Blacky', emoji: '🖤', owner: 'Robert', color: '#333333', status: 'box' },
-  { id: 4, name: 'Bella', emoji: '🌸', owner: 'Dupont', color: '#F0EAD6', status: 'box' },
+  { id: 1, name: 'Florette', emoji: '🌸', owner: 'Dupont', color: '#ff80ab', status: 'pré' },
+  { id: 2, name: 'Cliff', emoji: '🐴', owner: 'Martin', color: '#b08d57', status: 'pré' },
+  { id: 3, name: 'Cloony', emoji: '🍀', owner: 'Robert', color: '#4caf50', status: 'pré' },
+  { id: 4, name: 'Conquérant', emoji: '🦓', owner: 'Dupont', color: '#333333', status: 'pré' },
+  { id: 5, name: 'Lipton', emoji: '🐰', owner: 'Martin', color: '#90caf9', status: 'pré' },
+  { id: 6, name: 'Kiss', emoji: '💋', owner: 'Robert', color: '#f44336', status: 'box' },
+  { id: 7, name: 'Jimmy', emoji: '🐎', owner: 'Dupont', color: '#a1887f', status: 'box' },
+  { id: 8, name: 'Foudre', emoji: '⚡', owner: 'Martin', color: '#ffd54f', status: 'box' },
+  { id: 9, name: 'Juariste', emoji: '🎍', owner: 'Robert', color: '#81c784', status: 'box' },
+  { id: 10, name: 'Gringo', emoji: '🤠', owner: 'Dupont', color: '#795548', status: 'box' },
+  { id: 11, name: 'Joliette', emoji: '🦄', owner: 'Martin', color: '#ce93d8', status: 'box' },
+  { id: 12, name: 'Goria', emoji: '🦄', owner: 'Robert', color: '#ba68c8', status: 'box' },
+  { id: 13, name: 'Little', emoji: '🐎', owner: 'Dupont', color: '#e0e0e0', status: 'box' },
+  { id: 14, name: 'Eiddy', emoji: '🌷', owner: 'Martin', color: '#f06292', status: 'box' },
 ];
 
 const INITIAL_PLANNINGS = [
-  { id: 101, horseId: 1, startDate: '2026-04-01', endDate: '2026-04-03', status: 'pré' }
+  // Day 1
+  { id: 101, horseId: 1, startDate: '2026-04-01', endDate: '2026-04-01', status: 'pré' },
+  { id: 102, horseId: 2, startDate: '2026-04-01', endDate: '2026-04-01', status: 'pré' },
+  { id: 103, horseId: 3, startDate: '2026-04-01', endDate: '2026-04-01', status: 'pré' },
+  { id: 104, horseId: 4, startDate: '2026-04-01', endDate: '2026-04-01', status: 'pré' },
+  { id: 105, horseId: 5, startDate: '2026-04-01', endDate: '2026-04-01', status: 'pré' },
+  // Day 2
+  { id: 201, horseId: 2, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré' },
+  { id: 202, horseId: 7, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré' },
+  { id: 203, horseId: 4, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré' },
+  { id: 204, horseId: 8, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré' },
+  { id: 205, horseId: 9, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré' },
+  { id: 206, horseId: 10, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré' },
+  { id: 207, horseId: 3, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré' },
+  { id: 208, horseId: 11, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré' },
+  { id: 209, horseId: 12, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré' },
+  { id: 210, horseId: 5, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré' },
+  { id: 211, horseId: 13, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré' },
+  // Day 3
+  { id: 301, horseId: 6, startDate: '2026-04-03', endDate: '2026-04-03', status: 'pré' },
+  { id: 302, horseId: 4, startDate: '2026-04-03', endDate: '2026-04-03', status: 'pré' },
+  { id: 303, horseId: 5, startDate: '2026-04-03', endDate: '2026-04-03', status: 'pré' },
+  { id: 304, horseId: 13, startDate: '2026-04-03', endDate: '2026-04-03', status: 'pré' },
+  { id: 305, horseId: 14, startDate: '2026-04-03', endDate: '2026-04-03', status: 'pré' },
 ];
 
 function App() {
@@ -40,6 +73,8 @@ function App() {
   const [isDriveConnected, setIsDriveConnected] = useState(false);
   const [lastSync, setLastSync] = useState(null);
   const [syncPath, setSyncPath] = useState('DigitalSaurien/AUTOMATE/HorsePlanner');
+  const [password, setPassword] = useState('');
+  const [isGerantSelected, setIsGerantSelected] = useState(false);
 
   // Initialize Drive
   useEffect(() => {
@@ -100,6 +135,10 @@ function App() {
   };
 
   const login = (role, email = '') => {
+    if (role === ROLES.GERANT && password !== 'bucephal91$ADM') {
+      alert('Mot de passe incorrect pour Bucéphale ! 🛑');
+      return;
+    }
     const newUser = { role, email: email || (role === ROLES.GERANT ? 'admin@club.com' : 'user@club.com') };
     setUser(newUser);
     localStorage.setItem('hp_user', JSON.stringify(newUser));
@@ -343,8 +382,28 @@ function App() {
         <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Gérez votre club avec élégance.</p>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <button className="btn btn-primary" onClick={() => login(ROLES.GERANT)}>Connexion Gérant</button>
-          <button className="btn btn-accent" onClick={() => login(ROLES.PROPRIETAIRE)}>Espace Propriétaire</button>
+          {!isGerantSelected ? (
+            <>
+              <button className="btn btn-primary" onClick={() => setIsGerantSelected(true)}>Connexion Gérant</button>
+              <button className="btn btn-accent" onClick={() => login(ROLES.PROPRIETAIRE)}>Espace Propriétaire</button>
+            </>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <input 
+                type="password" 
+                className="input" 
+                placeholder="Mot de passe" 
+                autoFocus
+                value={password} 
+                onChange={e => setPassword(e.target.value)} 
+                onKeyDown={e => e.key === 'Enter' && login(ROLES.GERANT)}
+              />
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button className="btn btn-primary" style={{ flex: 1 }} onClick={() => login(ROLES.GERANT)}>Sésame</button>
+                <button className="btn" style={{ flex: 1, color: 'var(--text-muted)', border: '1px solid rgba(255,255,255,0.1)' }} onClick={() => setIsGerantSelected(false)}>Retour</button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
