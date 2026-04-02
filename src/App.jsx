@@ -86,22 +86,40 @@ function App() {
 
   // Load from localStorage
   useEffect(() => {
-    const savedUser = localStorage.getItem('hp_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-      setMode(APP_MODES.DASHBOARD);
+    const APP_VERSION = 'v1.1';
+    try {
+      const savedVersion = localStorage.getItem('hp_version');
+      if (savedVersion !== APP_VERSION) {
+        localStorage.clear();
+        localStorage.setItem('hp_version', APP_VERSION);
+        window.location.reload();
+        return;
+      }
+
+      const savedUser = localStorage.getItem('hp_user');
+      if (savedUser) {
+        setUser(JSON.parse(savedUser));
+        setMode(APP_MODES.DASHBOARD);
+      }
+      const savedHorses = localStorage.getItem('hp_horses');
+      if (savedHorses) setHorses(JSON.parse(savedHorses));
+      
+      const savedPlannings = localStorage.getItem('hp_plannings');
+      if (savedPlannings) {
+        setPlannings(JSON.parse(savedPlannings));
+      } else {
+        setPlannings(INITIAL_PLANNINGS);
+      }
+      const savedPath = localStorage.getItem('hp_sync_path');
+      if (savedPath) setSyncPath(savedPath);
+
+      const savedMaster = localStorage.getItem('hp_master_password');
+      if (savedMaster) setMasterPassword(savedMaster);
+    } catch (err) {
+      console.error("Critical localStorage Load Error:", err);
+      localStorage.clear();
+      window.location.reload();
     }
-    const savedHorses = localStorage.getItem('hp_horses');
-    if (savedHorses) setHorses(JSON.parse(savedHorses));
-    
-    const savedPlannings = localStorage.getItem('hp_plannings');
-    if (savedPlannings) {
-      setPlannings(JSON.parse(savedPlannings));
-    } else {
-      setPlannings(INITIAL_PLANNINGS);
-    }
-    const savedPath = localStorage.getItem('hp_sync_path');
-    if (savedPath) setSyncPath(savedPath);
   }, []);
 
   // Persistence
