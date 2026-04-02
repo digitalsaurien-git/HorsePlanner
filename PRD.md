@@ -27,7 +27,12 @@ Créer une application simple pour gérer la mise au pré ou au box des chevaux 
 - [x] Vue propriétaire filtrée + édition de l'icône et de la couleur du cheval
 - [x] Système de sélection d'icônes Horse Icons
 - [x] Accès web adapté mobile & PC (Layout responsive avec Sidebar)
-- [x] Synchronisation Google Drive (Save/Load) dans `/DigitalSaurien/AUTOMATE/HorsePlanner`
+- [x] Synchronisation Google Drive (Save/Load manuel) dans `/DigitalSaurien/AUTOMATE/HorsePlanner`
+- [x] Sécurité Gérant (Mot de passe Maître : `bucephal91$ADM`)
+- [x] Personnalisation visuelle isolée (Emoji et couleur par cheval, persistés au rechargement)
+- [x] Zone de Secours (Bouton de réinitialisation d'urgence)
+- [x] Alignement CI/CD (GitHub Actions + Déploiement Vercel automatique)
+- [x] Robustesse (Versioning du cache v1.1 pour éviter les écrans blancs)
 
 **OUT (exclu / plus tard):**
 - Réservation avancée des prés par propriétaire
@@ -54,6 +59,9 @@ Créer une application simple pour gérer la mise au pré ou au box des chevaux 
 - [x] Vue propriétaire n’affiche que les chevaux du compte connecté
 - [x] Vue “chevaux du jour” affiche le statut et les notifications de mouvement
 - [x] Navigation mobile et desktop sans perte de lisibilité (Sidebar glass + sticky navbar)
-- [x] Affectations sauvegardées persistent (LocalStorage)
+- [x] Affectations sauvegardées persistent (LocalStorage + Google Drive)
 - [x] Aucun propriétaire ne peut attribuer ou modifier l’affectation d’un cheval
 - [x] Les émoticônes sont bien visibles dans toutes les listes/plannings
+- [x] Le mot de passe gérant protège l'accès aux fonctions sensibles
+- [x] La personnalisation d'un cheval est strictement isolée (ne se propage plus aux autres)
+- [x] Le déploiement sur Vercel et GitHub Pages est 100% synchronisé

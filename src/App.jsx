@@ -69,7 +69,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [mode, setMode] = useState(APP_MODES.LOGIN);
   const [horses, setHorses] = useState(INITIAL_HORSES);
-  const [plannings, setPlannings] = useState([]); // Array of assignments: { horseId, date, period, location }
+  const [assignments, setAssignments] = useState([]); 
   const [isDriveConnected, setIsDriveConnected] = useState(false);
   const [lastSync, setLastSync] = useState(null);
   const [syncPath, setSyncPath] = useState('DigitalSaurien/AUTOMATE/HorsePlanner');
@@ -101,15 +101,13 @@ function App() {
         setUser(JSON.parse(savedUser));
         setMode(APP_MODES.DASHBOARD);
       }
-      const savedHorses = localStorage.getItem('hp_horses');
-      if (savedHorses) setHorses(JSON.parse(savedHorses));
       
-      const savedPlannings = localStorage.getItem('hp_plannings');
-      if (savedPlannings) {
-        setPlannings(JSON.parse(savedPlannings));
-      } else {
-        setPlannings(INITIAL_PLANNINGS);
-      }
+      const savedHorses = localStorage.getItem('horsePlanner_horses_v1.1');
+      if (savedHorses) setHorses(JSON.parse(savedHorses));
+
+      const savedAssignments = localStorage.getItem('horsePlanner_assignments_v1.1');
+      if (savedAssignments) setAssignments(JSON.parse(savedAssignments));
+
       const savedPath = localStorage.getItem('hp_sync_path');
       if (savedPath) setSyncPath(savedPath);
 
@@ -124,34 +122,41 @@ function App() {
 
   // Persistence
   useEffect(() => {
-    localStorage.setItem('hp_horses', JSON.stringify(horses));
-    localStorage.setItem('hp_plannings', JSON.stringify(plannings));
+    localStorage.setItem('horsePlanner_horses_v1.1', JSON.stringify(horses));
+    localStorage.setItem('horsePlanner_assignments_v1.1', JSON.stringify(assignments));
     localStorage.setItem('hp_sync_path', syncPath);
     localStorage.setItem('hp_master_password', masterPassword);
-    
-    // Auto-sync to Drive if connected
-    if (isDriveConnected) {
-      saveToDrive({ horses, plannings, masterPassword }, syncPath).then(success => {
-        if (success) setLastSync(new Date().toLocaleTimeString());
-      });
-    }
-  }, [horses, plannings, isDriveConnected, syncPath, masterPassword]);
+  }, [horses, assignments, syncPath, masterPassword]);
 
   const handleConnectDrive = async () => {
     try {
       await authenticateGoogle();
       setIsDriveConnected(true);
-      const cloudData = await loadFromDrive(syncPath);
-      if (cloudData) {
-        if (confirm("Données cloud détectées. Voulez-vous écraser les données locales par la version Cloud ?")) {
-          setHorses(cloudData.horses);
-          setPlannings(cloudData.plannings);
-          if (cloudData.masterPassword) setMasterPassword(cloudData.masterPassword);
-        }
-      }
       alert("✅ Connecté à Google Drive !");
     } catch (err) {
       console.error("Auth Fail:", err);
+    }
+  };
+
+  const handleManualSave = async () => {
+    const success = await saveToDrive({ horses, assignments }, syncPath);
+    if (success) {
+      setLastSync(new Date().toLocaleString());
+      alert("✅ Sauvegarde réussie sur Google Drive !");
+    } else {
+      alert("❌ Échec de la sauvegarde.");
+    }
+  };
+
+  const handleManualLoad = async () => {
+    if (!confirm("Voulez-vous écraser les données locales par celles du Drive ?")) return;
+    const data = await loadFromDrive(syncPath);
+    if (data) {
+      if (data.horses) setHorses(data.horses);
+      if (data.assignments) setAssignments(data.assignments);
+      alert("✅ Données chargées depuis Google Drive !");
+    } else {
+      alert("❌ Aucun fichier trouvé sur le Drive.");
     }
   };
 
@@ -160,7 +165,7 @@ function App() {
       alert('Mot de passe incorrect pour Bucéphale ! 🛑');
       return;
     }
-    const newUser = { role, email: email || (role === ROLES.GERANT ? 'admin@club.com' : 'user@club.com') };
+    const newUser = { role, email: email || (role === ROLES.GERANT ? 'admin@club.com' : 'user@club.com'), name: email.split('@')[0] };
     setUser(newUser);
     localStorage.setItem('hp_user', JSON.stringify(newUser));
     setMode(APP_MODES.DASHBOARD);
@@ -174,15 +179,19 @@ function App() {
 
   const addHorse = (horse) => setHorses([...horses, { id: Date.now(), ...horse }]);
   const deleteHorse = (id) => setHorses(horses.filter(h => h.id !== id));
-  const updateHorseStatus = (id, status) => {
-    setHorses(horses.map(h => h.id === id ? { ...h, status } : h));
+  const handleUpdateHorse = (id, updates) => {
+    setHorses(prev => {
+      const newHorses = prev.map(h => h.id === id ? { ...h, ...updates } : h);
+      localStorage.setItem('horsePlanner_horses_v1.1', JSON.stringify(newHorses));
+      return newHorses;
+    });
   };
 
   const addAssignment = (assignment) => {
-    setPlannings([...plannings, { ...assignment, id: Date.now() }]);
+    setAssignments([...assignments, { ...assignment, id: Date.now() }]);
   };
 
-  const deleteAssignment = (id) => setPlannings(plannings.filter(p => p.id !== id));
+  const deleteAssignment = (id) => setAssignments(assignments.filter(p => p.id !== id));
 
   // --- Components ---
 
@@ -309,7 +318,7 @@ function App() {
         <div style={{ marginTop: '2rem' }}>
           <h4>Affectations actives</h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '1rem' }}>
-            {plannings.map(p => {
+            {assignments.map(p => {
               const h = horses.find(h => h.id === p.horseId);
               return h ? (
                 <div key={p.id} className="card glass" style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem' }}>
@@ -330,7 +339,7 @@ function App() {
     const daysInMonth = 30;
 
     const myHorses = user?.role === ROLES.PROPRIETAIRE 
-      ? horses.filter(h => h.owner.toLowerCase() === user.email.split('@')[0].toLowerCase() || h.owner === 'Dupont')
+      ? horses.filter(h => h.owner.toLowerCase() === user.name.toLowerCase() || h.owner === 'Dupont')
       : horses;
 
     return (
@@ -354,13 +363,16 @@ function App() {
             {[...Array(daysInMonth)].map((_, i) => {
               const dateStr = `2026-04-${String(i + 1).padStart(2, '0')}`;
               
-              // Find assignments that cover this date
-              const dayAssignments = plannings.filter(p => {
+              const filtered = filterHorseId === 'all' 
+                ? assignments 
+                : assignments.filter(a => String(a.horseId) === String(filterHorseId));
+              
+              const dayAssignments = filtered.filter(p => {
                 const start = new Date(p.startDate);
                 const end = new Date(p.endDate);
                 const current = new Date(dateStr);
                 return current >= start && current <= end;
-              }).filter(p => filterHorseId === 'all' || p.horseId === Number(filterHorseId));
+              });
               
               return (
                 <div key={i} style={{ minHeight: '120px', padding: '10px', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -406,7 +418,7 @@ function App() {
           {!isGerantSelected ? (
             <>
               <button className="btn btn-primary" onClick={() => setIsGerantSelected(true)}>Connexion Gérant</button>
-              <button className="btn btn-accent" onClick={() => login(ROLES.PROPRIETAIRE)}>Espace Propriétaire</button>
+              <button className="btn btn-accent" onClick={() => login(ROLES.PROPRIETAIRE, 'Dupont')}>Espace Propriétaire</button>
             </>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -453,98 +465,120 @@ function App() {
 
   const Dashboard = () => {
     const today = new Date().toISOString().split('T')[0];
+    const isManager = user?.role === ROLES.GERANT;
+
     const myHorses = user?.role === ROLES.PROPRIETAIRE 
-      ? horses.filter(h => h.owner.toLowerCase() === user?.email?.split('@')[0].toLowerCase() || h.owner === 'Dupont')
+      ? horses.filter(h => h.owner.toLowerCase() === user.name.toLowerCase() || h.owner === 'Dupont')
       : horses;
 
-    const todayAssignments = plannings.filter(p => {
+    const todayAssignments = assignments.filter(p => {
       const start = new Date(p.startDate);
       const end = new Date(p.endDate);
       const current = new Date(today);
       return current >= start && current <= end;
     });
 
-    const isOwner = user?.role === ROLES.PROPRIETAIRE;
-    
+    const renderManagerDashboard = () => (
+      <div className="grid">
+        <div className="card glass" style={{ borderLeft: '4px solid var(--success)' }}>
+          <h3>☀️ Matin - Départ au pré</h3>
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Mouvements prévus ce matin.</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '1rem' }}>
+            {todayAssignments.filter(a => a.startDate === today && a.status === 'pré').map(a => {
+              const h = horses.find(h => h.id === a.horseId);
+              return h ? (
+                <div key={a.id} className="glass" style={{ padding: '10px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '1.2rem' }}>{h.emoji}</span> <strong>{h.name}</strong>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--success)', marginLeft: 'auto' }}>🌿 Sortie</span>
+                </div>
+              ) : null;
+            })}
+            {todayAssignments.filter(a => a.startDate === today && a.status === 'pré').length === 0 && <p style={{ fontSize: '0.8rem', opacity: 0.5 }}>Aucun départ.</p>}
+          </div>
+        </div>
+        <div className="card glass" style={{ borderLeft: '4px solid var(--warning)' }}>
+          <h3>🌑 Soir - Retour box</h3>
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Mouvements prévus ce soir.</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '1rem' }}>
+            {todayAssignments.filter(a => a.endDate === today && a.status === 'pré').map(a => {
+              const h = horses.find(h => h.id === a.horseId);
+              return h ? (
+                <div key={a.id} className="glass" style={{ padding: '10px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '1.2rem' }}>{h.emoji}</span> <strong>{h.name}</strong>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--warning)', marginLeft: 'auto' }}>🏠 Rentrer</span>
+                </div>
+              ) : null;
+            })}
+            {todayAssignments.filter(a => a.endDate === today && a.status === 'pré').length === 0 && <p style={{ fontSize: '0.8rem', opacity: 0.5 }}>Aucun retour.</p>}
+          </div>
+        </div>
+      </div>
+    );
+
+    const renderOwnerDashboard = () => {
+      const atPasture = myHorses.filter(h => todayAssignments.some(a => a.horseId === h.id && a.status === 'pré'));
+      const atBox = myHorses.filter(h => !todayAssignments.some(a => a.horseId === h.id && a.status === 'pré'));
+
+      return (
+        <div className="grid">
+          <div className="card glass">
+            <h3 style={{ color: 'var(--success)' }}>🌿 Mes chevaux au Pré</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '1rem' }}>
+              {atPasture.map(h => (
+                <div key={h.id} className="horse-item glass" style={{ borderLeft: `4px solid ${h.color || 'var(--primary)'}` }}>
+                  <span style={{ fontSize: '1.2rem' }}>{h.emoji}</span>
+                  <span style={{ fontWeight: '600' }}>{h.name}</span>
+                  <span style={{ fontSize: '0.7rem', marginLeft: 'auto', opacity: 0.7 }}>📍 Actuellement au pré</span>
+                </div>
+              ))}
+              {atPasture.length === 0 && <p style={{ fontSize: '0.8rem', opacity: 0.5 }}>Aucun cheval au pré.</p>}
+            </div>
+          </div>
+          <div className="card glass">
+            <h3 style={{ color: 'var(--info)' }}>🏠 Mes chevaux au Box</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '1rem' }}>
+              {atBox.map(h => (
+                <div key={h.id} className="horse-item glass" style={{ borderLeft: `4px solid ${h.color || 'var(--primary)'}` }}>
+                  <span style={{ fontSize: '1.2rem' }}>{h.emoji}</span>
+                  <span style={{ fontWeight: '600' }}>{h.name}</span>
+                  <span style={{ fontSize: '0.7rem', marginLeft: 'auto', opacity: 0.7 }}>🏠 Actuellement au box</span>
+                </div>
+              ))}
+              {atBox.length === 0 && <p style={{ fontSize: '0.8rem', opacity: 0.5 }}>Tous vos chevaux sont de sortie !</p>}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
     return (
       <div className="animate-fade">
         <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h1>Bonjour {user?.role === ROLES.GERANT ? 'Daniel' : 'Propriétaire'} 👋</h1>
-            <p style={{ color: 'var(--text-muted)' }}>Bienvenue sur votre espace de gestion.</p>
+            <h1>Bonjour {user?.name} 👋</h1>
+            <p style={{ color: 'var(--text-muted)' }}>{isManager ? 'Tableau de bord du club' : 'Emplacement actuel de vos chevaux'}.</p>
           </div>
-          {isOwner && (
-            <div className="card glass" style={{ padding: '15px 20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-               <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                 <span style={{ fontSize: '0.8rem' }}>Modifier l'icône :</span>
-                 <div style={{ display: 'flex', gap: '8px' }}>
-                   {HORSE_ICONS.slice(0, 7).map(icon => (
-                     <button key={icon} onClick={() => setHorses(horses.map(h => (h.owner.toLowerCase() === user?.email?.split('@')[0].toLowerCase() || h.owner === 'Dupont') ? { ...h, emoji: icon } : h))} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', transition: 'transform 0.2s' }}>{icon}</button>
-                   ))}
-                 </div>
-               </div>
-               <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                 <span style={{ fontSize: '0.8rem' }}>Couleur du cheval :</span>
-                 <input type="color" value={myHorses[0]?.color || '#B08D57'} onChange={(e) => setHorses(horses.map(h => (h.owner.toLowerCase() === user?.email?.split('@')[0].toLowerCase() || h.owner === 'Dupont') ? { ...h, color: e.target.value } : h))} style={{ border: 'none', background: 'none', cursor: 'pointer' }} />
-               </div>
-            </div>
-          )}
-        </header>
-
-        <div className="grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '1.5rem' }}>
-          
-          <div className="card glass">
-            <h3>☀️ Matin - Départ au pré</h3>
-            <p style={{ fontSize: '0.8rem', marginBottom: '1.5rem', color: 'var(--text-muted)' }}>Chevaux commençant leur séjour aujourd'hui.</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-              {todayAssignments.filter(a => a.startDate === today && a.status === 'pré').map(a => {
-                const h = horses.find(h => h.id === a.horseId);
-                return h ? (
-                  <div key={a.id} className="glass" style={{ padding: '10px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px', borderLeft: `4px solid ${h.color || 'var(--success)'}` }}>
-                    <span style={{ fontSize: '1.2rem' }}>{h.emoji}</span>
-                    <strong>{h.name}</strong>
-                    <span style={{ fontSize: '0.7rem', marginLeft: 'auto', color: 'var(--success)' }}>🌿 Sortie</span>
-                  </div>
-                ) : null;
-              })}
-              {todayAssignments.filter(a => a.startDate === today && a.status === 'pré').length === 0 && <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Aucun départ prévu ce matin.</p>}
-            </div>
-          </div>
-
-          <div className="card glass">
-            <h3>🌑 Soir - Retour box</h3>
-            <p style={{ fontSize: '0.8rem', marginBottom: '1.5rem', color: 'var(--text-muted)' }}>Chevaux terminant leur séjour aujourd'hui.</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-              {todayAssignments.filter(a => a.endDate === today && a.status === 'pré').map(a => {
-                const h = horses.find(h => h.id === a.horseId);
-                return h ? (
-                  <div key={a.id} className="glass" style={{ padding: '10px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px', borderLeft: `4px solid ${h.color || 'var(--warning)'}` }}>
-                    <span style={{ fontSize: '1.2rem' }}>{h.emoji}</span>
-                    <strong>{h.name}</strong>
-                    <span style={{ fontSize: '0.7rem', marginLeft: 'auto', color: 'var(--warning)' }}>🏠 Rentrer</span>
-                  </div>
-                ) : null;
-              })}
-              {todayAssignments.filter(a => a.endDate === today && a.status === 'pré').length === 0 && <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Aucun retour prévu ce soir.</p>}
-            </div>
-          </div>
-
-          {isOwner && (
-            <div className="card glass" style={{ gridColumn: '1 / -1' }}>
-              <h3>🐴 Mes Chevaux ({myHorses.length})</h3>
-              <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', overflowX: 'auto', paddingBottom: '10px' }}>
+          {!isManager && (
+            <div className="card glass" style={{ padding: '15px' }}>
+              <div style={{ fontSize: '0.8rem', marginBottom: '10px', fontWeight: 'bold' }}>Ma personnalisation :</div>
+              <div style={{ display: 'flex', gap: '15px', flexDirection: 'column' }}>
                 {myHorses.map(h => (
-                  <div key={h.id} className="glass" style={{ padding: '15px', borderRadius: '12px', minWidth: '150px', textAlign: 'center' }}>
-                     <div style={{ fontSize: '2rem', marginBottom: '5px' }}>{h.emoji}</div>
-                     <strong>{h.name}</strong>
-                     <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{h.status === 'pré' ? '🌿 Au Pré' : '🏠 Au Box'}</div>
+                  <div key={h.id} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '0.9rem', width: '70px' }}>{h.name} :</span>
+                    <div style={{ display: 'flex', gap: '5px' }}>
+                      {HORSE_ICONS.slice(0, 5).map(ico => (
+                        <button key={ico} onClick={() => handleUpdateHorse(h.id, { emoji: ico })} style={{ background: h.emoji === ico ? 'rgba(255,255,255,0.1)' : 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', borderRadius: '4px' }}>{ico}</button>
+                      ))}
+                    </div>
+                    <input type="color" value={h.color || '#B08D57'} onChange={(e) => handleUpdateHorse(h.id, { color: e.target.value })} style={{ border: 'none', background: 'none', width: '30px', height: '30px', cursor: 'pointer' }} title="Couleur du cheval" />
                   </div>
                 ))}
               </div>
             </div>
           )}
+        </header>
 
-        </div>
+        {isManager ? renderManagerDashboard() : renderOwnerDashboard()}
       </div>
     );
   };
@@ -587,22 +621,30 @@ function App() {
         </div>
       </div>
 
-      <div className="card glass" style={{ marginTop: '2rem', border: '1px solid rgba(66, 133, 244, 0.3)' }}>
-        <h3 style={{ color: '#4285F4' }}>🔍 Diagnostic Drive</h3>
-        <p style={{ fontSize: '0.8rem', opacity: 0.8, marginBottom: '10px' }}>
-          Si la connexion échoue, vérifiez que cette URL exacte est autorisée dans Google Cloud :
-        </p>
-        <div style={{ background: 'rgba(0,0,0,0.2)', padding: '10px', borderRadius: '4px', fontSize: '0.75rem', wordBreak: 'break-all', fontFamily: 'monospace', marginBottom: '10px' }}>
-          ORIGIN: {window.location.origin}<br/>
-          URL: {window.location.href}
-        </div>
-        <p style={{ fontSize: '0.7rem', opacity: 0.6 }}>
-          ID Client : <span style={{fontSize: '0.6rem'}}>{CLIENT_ID.substring(0, 20)}...</span>
-        </p>
-      </div>
+        <div className="card glass" style={{ marginTop: '2rem', border: '1px solid rgba(66, 133, 244, 0.3)' }}>
+          <h3 style={{ color: '#4285F4', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            ☁️ Synchronisation Cloud
+          </h3>
+          <p style={{ fontSize: '0.8rem', opacity: 0.8, marginBottom: '1rem' }}>
+            Contrôlez manuellement vos données sur Google Drive.
+          </p>
+          
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '1rem' }}>
+            <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleManualSave}>
+              📤 Sauvegarder
+            </button>
+            <button className="btn" style={{ flex: 1, background: 'rgba(255,255,255,0.05)' }} onClick={handleManualLoad}>
+              📥 Charger
+            </button>
+          </div>
 
-      <div className="card glass" style={{ marginTop: '2rem', border: '1px solid rgba(244, 67, 54, 0.3)' }}>
-        <h3 style={{ color: 'var(--danger)' }}>🆘 Zone de Secours</h3>
+          <div style={{ fontSize: '0.7rem', opacity: 0.6, textAlign: 'center' }}>
+            Dernière action : {lastSync || 'Aucune dans cette session'}
+          </div>
+        </div>
+
+        <div className="card glass" style={{ marginTop: '2rem', border: '1px solid rgba(244, 67, 54, 0.3)' }}>
+          <h3 style={{ color: 'var(--danger)' }}>🆘 Zone de Secours</h3>
         <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
           En cas de bug persistant ou d'écran blanc, vous pouvez réinitialiser l'application. 
           Cela déconnectera Google Drive et videra le cache local.
