@@ -570,7 +570,7 @@ function App() {
             />
           </div>
           
-          <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', border: '1px solid rgba(66, 133, 244, 0.3)' }}>
+          <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span>Connexion Google :</span>
               <span className={`badge ${isDriveConnected ? 'success' : 'info'}`}>
@@ -585,6 +585,21 @@ function App() {
             {lastSync && <div style={{ fontSize: '0.7rem', marginTop: '10px', textAlign: 'right', opacity: 0.7 }}>Dernière synchro : {lastSync}</div>}
           </div>
         </div>
+      </div>
+
+      <div className="card glass" style={{ marginTop: '2rem', border: '1px solid rgba(244, 67, 54, 0.3)' }}>
+        <h3 style={{ color: 'var(--danger)' }}>🆘 Zone de Secours</h3>
+        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+          En cas de bug persistant ou d'écran blanc, vous pouvez réinitialiser l'application. 
+          Cela déconnectera Google Drive et videra le cache local.
+        </p>
+        <button 
+          className="btn" 
+          onClick={() => { if(confirm("Réinitialiser HorsePlanner ?")) { localStorage.clear(); window.location.reload(); } }}
+          style={{ width: '100%', background: 'rgba(244, 67, 54, 0.1)', color: 'var(--danger)', border: '1px solid var(--danger)' }}
+        >
+          🗑️ Réinitialiser tout le cache
+        </button>
       </div>
     </div>
   );
