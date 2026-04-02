@@ -20,12 +20,12 @@ Créer une application simple pour gérer la mise au pré ou au box des chevaux 
 
 ## 3) Périmètre (IN / OUT)
 **IN (livré maintenant):**
-- [x] Gestion de chevaux (création, édition, suppression)
-- [x] Attribution manuelle des chevaux au pré/box par le gérant
-- [x] Affichage d’un calendrier annuel (grille mensuelle)
-- [x] Vue “chevaux du jour” avec liste des tâches et statuts
-- [x] Vue propriétaire filtrée + planning
-- [x] Système simple d’émoticônes
+- [x] Gestion de chevaux (création avec sélection d'icône, édition, suppression)
+- [x] Attribution multi-jours des chevaux au pré/box par le gérant (menu dédié)
+- [x] Affichage d’un calendrier annuel (grille mensuelle) avec icônes et noms
+- [x] Dashboard avec séparation Matin (Départs) et Soir (Retours)
+- [x] Vue propriétaire filtrée + édition de l'icône et de la couleur du cheval
+- [x] Système de sélection d'icônes Horse Icons
 - [x] Accès web adapté mobile & PC (Layout responsive avec Sidebar)
 
 **OUT (exclu / plus tard):**

@@ -13,14 +13,21 @@ const APP_MODES = {
   DASHBOARD: 'dashboard',
   HORSES: 'horses',
   CALENDAR: 'calendar',
+  ASSIGNMENTS: 'assignments', // New mode
   MY_HORSES: 'my_horses'
 };
 
+const HORSE_ICONS = ['🐎', '🐴', '🦄', '🎠', '🤠', '🌾', '🐎', '⚡', '👻', '🖤', '🌸', '⭐', '🍀', '🍎'];
+
 const INITIAL_HORSES = [
-  { id: 1, name: 'Storm', emoji: '⚡', owner: 'Dupont', color: '#B08D57', status: 'pré' },
+  { id: 1, name: 'Storm', emoji: '⚡', owner: 'Dupont', color: '#B08D57', status: 'box' },
   { id: 2, name: 'Spirit', emoji: '👻', owner: 'Martin', color: '#D2B48C', status: 'box' },
-  { id: 3, name: 'Blacky', emoji: '🖤', owner: 'Robert', color: '#333333', status: 'pré' },
+  { id: 3, name: 'Blacky', emoji: '🖤', owner: 'Robert', color: '#333333', status: 'box' },
   { id: 4, name: 'Bella', emoji: '🌸', owner: 'Dupont', color: '#F0EAD6', status: 'box' },
+];
+
+const INITIAL_PLANNINGS = [
+  { id: 101, horseId: 1, startDate: '2026-04-01', endDate: '2026-04-03', status: 'pré' }
 ];
 
 function App() {
@@ -40,7 +47,11 @@ function App() {
     if (savedHorses) setHorses(JSON.parse(savedHorses));
     
     const savedPlannings = localStorage.getItem('hp_plannings');
-    if (savedPlannings) setPlannings(JSON.parse(savedPlannings));
+    if (savedPlannings) {
+      setPlannings(JSON.parse(savedPlannings));
+    } else {
+      setPlannings(INITIAL_PLANNINGS);
+    }
   }, []);
 
   // Persistence
@@ -80,7 +91,10 @@ function App() {
     <aside className="glass" style={{ width: '250px', height: '100vh', position: 'fixed', left: 0, top: 0, paddingTop: '100px', display: 'flex', flexDirection: 'column', gap: '5px', padding: '100px 10px 10px 10px' }}>
       <button className={`btn ${mode === APP_MODES.DASHBOARD ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.DASHBOARD)}>🏠 Dashboard</button>
       {user?.role === ROLES.GERANT && (
-        <button className={`btn ${mode === APP_MODES.HORSES ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.HORSES)}>🐴 Chevaux</button>
+        <>
+          <button className={`btn ${mode === APP_MODES.HORSES ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.HORSES)}>🐴 Chevaux</button>
+          <button className={`btn ${mode === APP_MODES.ASSIGNMENTS ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.ASSIGNMENTS)}>🗓️ Affectations</button>
+        </>
       )}
       <button className={`btn ${mode === APP_MODES.CALENDAR ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.CALENDAR)}>📅 Calendrier</button>
     </aside>
@@ -109,9 +123,11 @@ function App() {
         <div className="card glass" style={{ marginBottom: '2rem' }}>
           <h4>Ajouter un cheval</h4>
           <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexWrap: 'wrap' }}>
-            <input className="input" placeholder="Nom" value={name} onChange={e => setName(e.target.value)} style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', background: 'var(--bg-glass)', color: '#fff' }} />
-            <input className="input" placeholder="Émoticône" value={emoji} onChange={e => setEmoji(e.target.value)} style={{ width: '60px', padding: '10px', borderRadius: '8px', border: 'none', background: 'var(--bg-glass)', color: '#fff', textAlign: 'center' }} />
-            <input className="input" placeholder="Propriétaire" value={owner} onChange={e => setOwner(e.target.value)} style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', background: 'var(--bg-glass)', color: '#fff' }} />
+            <input className="input" placeholder="Nom" value={name} onChange={e => setName(e.target.value)} style={{ flex: 1 }} />
+            <select className="input" value={emoji} onChange={e => setEmoji(e.target.value)} style={{ width: '80px', textAlign: 'center' }}>
+              {HORSE_ICONS.map(icon => <option key={icon} value={icon}>{icon}</option>)}
+            </select>
+            <input className="input" placeholder="Propriétaire" value={owner} onChange={e => setOwner(e.target.value)} style={{ flex: 1 }} />
             <button className="btn btn-accent">Ajouter</button>
           </form>
         </div>
@@ -134,24 +150,93 @@ function App() {
     );
   };
 
-  const CalendarView = () => {
-    const [assignHorseId, setAssignHorseId] = useState(horses[0]?.id || '');
-    const [assignDate, setAssignDate] = useState(new Date().toISOString().split('T')[0]);
-    const [assignStatus, setAssignStatus] = useState('pré');
-    const daysInMonth = 30;
+  const AssignmentView = () => {
+    const [hId, setHId] = useState(horses[0]?.id || '');
+    const [start, setStart] = useState(new Date().toISOString().split('T')[0]);
+    const [end, setEnd] = useState(new Date().toISOString().split('T')[0]);
+    const [loc, setLoc] = useState('pré');
 
-    const handleAssign = () => {
-      addAssignment({ horseId: Number(assignHorseId), date: assignDate, status: assignStatus });
-      // Update horse status for immediate effect in this demo
-      updateHorseStatus(Number(assignHorseId), assignStatus);
-      alert('Placement enregistré !');
+    const handleBulkAssign = (e) => {
+      e.preventDefault();
+      addAssignment({ horseId: Number(hId), startDate: start, endDate: end, status: loc });
+      alert('Affectation enregistrée !');
     };
 
     return (
       <div className="animate-fade">
          <header style={{ marginBottom: '2rem' }}>
-          <h1>Calendrier Planning</h1>
-          <p style={{ color: 'var(--text-muted)' }}>Visualisez et organisez les placements.</p>
+          <h1>Gestion des Affectations</h1>
+          <p style={{ color: 'var(--text-muted)' }}>Plannifiez les mises au pré par plages de dates.</p>
+        </header>
+
+        <div className="card glass">
+          <h4>Nouvelle affectation (Multi-jours)</h4>
+          <form onSubmit={handleBulkAssign} style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, minWidth: '150px' }}>
+               <label style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '5px', display: 'block' }}>Cheval</label>
+               <select className="input" value={hId} onChange={e => setHId(e.target.value)}>
+                 {horses.map(h => <option key={h.id} value={h.id}>{h.emoji} {h.name}</option>)}
+               </select>
+            </div>
+            <div style={{ flex: 1, minWidth: '150px' }}>
+               <label style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '5px', display: 'block' }}>Date de début</label>
+               <input type="date" className="input" value={start} onChange={e => setStart(e.target.value)} />
+            </div>
+            <div style={{ flex: 1, minWidth: '150px' }}>
+               <label style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '5px', display: 'block' }}>Date de fin</label>
+               <input type="date" className="input" value={end} onChange={e => setEnd(e.target.value)} />
+            </div>
+            <div style={{ flex: 1, minWidth: '150px' }}>
+               <label style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '5px', display: 'block' }}>Destination</label>
+               <select className="input" value={loc} onChange={e => setLoc(e.target.value)}>
+                 <option value="pré">🌿 Mise au pré</option>
+                 <option value="box">🏠 Mise au box</option>
+               </select>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+              <button className="btn btn-primary">Enregistrer la période</button>
+            </div>
+          </form>
+        </div>
+
+        <div style={{ marginTop: '2rem' }}>
+          <h4>Affectations actives</h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '1rem' }}>
+            {plannings.map(p => {
+              const h = horses.find(h => h.id === p.horseId);
+              return h ? (
+                <div key={p.id} className="card glass" style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem' }}>
+                  <span>{h.emoji} <strong>{h.name}</strong> du {p.startDate} au {p.endDate}</span>
+                  <span className={`badge ${p.status === 'pré' ? 'success' : 'info'}`}>{p.status}</span>
+                  <button onClick={() => deleteAssignment(p.id)} style={{ padding: '5px', background: 'transparent', border: 'none', color: 'var(--danger)' }}>🗑️</button>
+                </div>
+              ) : null;
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const CalendarView = () => {
+    const [filterHorseId, setFilterHorseId] = useState('all');
+    const daysInMonth = 30;
+
+    const myHorses = user?.role === ROLES.PROPRIETAIRE 
+      ? horses.filter(h => h.owner.toLowerCase() === user.email.split('@')[0].toLowerCase() || h.owner === 'Dupont')
+      : horses;
+
+    return (
+      <div className="animate-fade">
+         <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h1>Calendrier Planning</h1>
+            <p style={{ color: 'var(--text-muted)' }}>Visualisation globale des placements.</p>
+          </div>
+          <select className="input" style={{ width: 'auto' }} value={filterHorseId} onChange={e => setFilterHorseId(e.target.value)}>
+            <option value="all">Tous les chevaux</option>
+            {myHorses.map(h => <option key={h.id} value={h.id}>{h.emoji} {h.name}</option>)}
+          </select>
         </header>
 
         <div className="card glass" style={{ padding: '0', overflow: 'hidden' }}>
@@ -161,7 +246,14 @@ function App() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
             {[...Array(daysInMonth)].map((_, i) => {
               const dateStr = `2026-04-${String(i + 1).padStart(2, '0')}`;
-              const dayAssignments = plannings.filter(p => p.date === dateStr);
+              
+              // Find assignments that cover this date
+              const dayAssignments = plannings.filter(p => {
+                const start = new Date(p.startDate);
+                const end = new Date(p.endDate);
+                const current = new Date(dateStr);
+                return current >= start && current <= end;
+              }).filter(p => filterHorseId === 'all' || p.horseId === Number(filterHorseId));
               
               return (
                 <div key={i} style={{ minHeight: '120px', padding: '10px', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -170,8 +262,8 @@ function App() {
                     {dayAssignments.map(a => {
                       const h = horses.find(h => h.id === a.horseId);
                       return h ? (
-                        <div key={a.id} style={{ fontSize: '0.65rem', padding: '2px 5px', borderRadius: '4px', background: a.status === 'pré' ? 'rgba(76, 175, 80, 0.2)' : 'rgba(139, 107, 97, 0.2)', color: a.status === 'pré' ? '#81c784' : '#d7ccc8', border: '1px solid rgba(255,255,255,0.05)' }}>
-                          {h.emoji} {h.name}
+                        <div key={a.id} style={{ fontSize: '0.65rem', padding: '4px 6px', borderRadius: '4px', background: a.status === 'pré' ? 'rgba(76, 175, 80, 0.2)' : 'rgba(139, 107, 97, 0.2)', color: a.status === 'pré' ? '#81c784' : '#d7ccc8', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <span>{h.emoji}</span> <strong>{h.name}</strong>
                         </div>
                       ) : null;
                     })}
@@ -181,34 +273,6 @@ function App() {
             })}
           </div>
         </div>
-
-        {user?.role === ROLES.GERANT && (
-          <div className="card glass" style={{ marginTop: '2rem' }}>
-            <h4>🛡️ Attribuer un placement</h4>
-            <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
-               <div style={{ flex: 1 }}>
-                 <label style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '5px', display: 'block' }}>Cheval</label>
-                 <select className="input" value={assignHorseId} onChange={e => setAssignHorseId(e.target.value)}>
-                   {horses.map(h => <option key={h.id} value={h.id}>{h.emoji} {h.name}</option>)}
-                 </select>
-               </div>
-               <div style={{ flex: 1 }}>
-                 <label style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '5px', display: 'block' }}>Date</label>
-                 <input type="date" className="input" value={assignDate} onChange={e => setAssignDate(e.target.value)} />
-               </div>
-               <div style={{ flex: 1 }}>
-                 <label style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '5px', display: 'block' }}>Lieu</label>
-                 <select className="input" value={assignStatus} onChange={e => setAssignStatus(e.target.value)}>
-                   <option value="pré">🌿 Mise au pré</option>
-                   <option value="box">🏠 Mise au box</option>
-                 </select>
-               </div>
-               <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-                 <button className="btn btn-primary" onClick={handleAssign}>Enregistrer</button>
-               </div>
-            </div>
-          </div>
-        )}
       </div>
     );
   };
@@ -243,66 +307,92 @@ function App() {
   const Dashboard = () => {
     const today = new Date().toISOString().split('T')[0];
     const myHorses = user?.role === ROLES.PROPRIETAIRE 
-      ? horses.filter(h => h.owner.toLowerCase() === user.email.split('@')[0].toLowerCase() || h.owner === 'Dupont') // Mock filtering
+      ? horses.filter(h => h.owner.toLowerCase() === user.email.split('@')[0].toLowerCase() || h.owner === 'Dupont')
       : horses;
 
-    const todayAssignments = plannings.filter(p => p.date === today);
+    const todayAssignments = plannings.filter(p => {
+      const start = new Date(p.startDate);
+      const end = new Date(p.endDate);
+      const current = new Date(today);
+      return current >= start && current <= end;
+    });
+
+    const isOwner = user?.role === ROLES.PROPRIETAIRE;
     
     return (
       <div className="animate-fade">
-        <header style={{ marginBottom: '2rem' }}>
-          <h1>Bonjour, {user?.role === ROLES.GERANT ? 'Gérant' : 'Propriétaire'} 👋</h1>
-          <p style={{ color: 'var(--text-muted)' }}>Bienvenue sur votre espace de gestion.</p>
+        <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h1>Bonjour, {user?.role === ROLES.GERANT ? 'Gérant' : 'Propriétaire'} 👋</h1>
+            <p style={{ color: 'var(--text-muted)' }}>Bienvenue sur votre espace de gestion.</p>
+          </div>
+          {isOwner && (
+            <div className="card glass" style={{ padding: '15px 20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+               <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                 <span style={{ fontSize: '0.8rem' }}>Modifier l'icône :</span>
+                 <div style={{ display: 'flex', gap: '8px' }}>
+                   {HORSE_ICONS.slice(0, 7).map(icon => (
+                     <button key={icon} onClick={() => setHorses(horses.map(h => (h.owner.toLowerCase() === user.email.split('@')[0].toLowerCase() || h.owner === 'Dupont') ? { ...h, emoji: icon } : h))} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', transition: 'transform 0.2s' }}>{icon}</button>
+                   ))}
+                 </div>
+               </div>
+               <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                 <span style={{ fontSize: '0.8rem' }}>Couleur du cheval :</span>
+                 <input type="color" value={myHorses[0]?.color || '#B08D57'} onChange={(e) => setHorses(horses.map(h => (h.owner.toLowerCase() === user.email.split('@')[0].toLowerCase() || h.owner === 'Dupont') ? { ...h, color: e.target.value } : h))} style={{ border: 'none', background: 'none', cursor: 'pointer' }} />
+               </div>
+            </div>
+          )}
         </header>
 
         <div className="grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '1.5rem' }}>
           
           <div className="card glass">
-            <h3>📈 Chevaux du jour ({myHorses.length})</h3>
-            <p style={{ fontSize: '0.9rem', marginBottom: '1.5rem', color: 'var(--text-muted)' }}>Statut actuel des pensionnaires.</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {myHorses.map(h => (
-                <div key={h.id} className="glass" style={{ padding: '12px', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
-                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                     <span style={{ fontSize: '1.5rem' }}>{h.emoji}</span>
-                     <div>
-                       <div style={{ fontWeight: '600' }}>{h.name}</div>
-                       <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{h.owner}</div>
-                     </div>
-                   </div>
-                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
-                     <span className={`badge ${h.status === 'pré' ? 'success' : 'info'}`}>
-                       {h.status === 'pré' ? '🌿 Au Pré' : '🏠 Au Box'}
-                     </span>
-                     {todayAssignments.find(p => p.horseId === h.id) && (
-                       <span style={{ fontSize: '0.7rem', color: 'var(--accent)' }}>⚠️ Déplacement prévu</span>
-                     )}
-                   </div>
-                </div>
-              ))}
+            <h3>☀️ Matin - Départ au pré</h3>
+            <p style={{ fontSize: '0.8rem', marginBottom: '1.5rem', color: 'var(--text-muted)' }}>Chevaux commençant leur séjour aujourd'hui.</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+              {todayAssignments.filter(a => a.startDate === today && a.status === 'pré').map(a => {
+                const h = horses.find(h => h.id === a.horseId);
+                return h ? (
+                  <div key={a.id} className="glass" style={{ padding: '10px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px', borderLeft: `4px solid ${h.color || 'var(--success)'}` }}>
+                    <span style={{ fontSize: '1.2rem' }}>{h.emoji}</span>
+                    <strong>{h.name}</strong>
+                    <span style={{ fontSize: '0.7rem', marginLeft: 'auto', color: 'var(--success)' }}>🌿 Sortie</span>
+                  </div>
+                ) : null;
+              })}
+              {todayAssignments.filter(a => a.startDate === today && a.status === 'pré').length === 0 && <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Aucun départ prévu ce matin.</p>}
             </div>
           </div>
 
-          <div className="card glass" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-            <div>
-              <h3>📅 Planning Semaine</h3>
-              <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {[0, 1, 2].map(i => {
-                  const d = new Date();
-                  d.setDate(d.getDate() + i);
-                  return (
-                    <div key={i} style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                      <div style={{ width: '40px', textAlign: 'center' }}>
-                        <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--accent)' }}>{d.toLocaleDateString('fr-FR', { weekday: 'short' })}</div>
-                        <div style={{ fontWeight: '700' }}>{d.getDate()}</div>
-                      </div>
-                      <div style={{ flex: 1, padding: '10px', height: '40px', background: 'var(--bg-glass)', borderRadius: '8px', border: '1px dashed rgba(255,255,255,0.1)' }}></div>
-                    </div>
-                  );
-                })}
-              </div>
+          <div className="card glass">
+            <h3>🌑 Soir - Retour box</h3>
+            <p style={{ fontSize: '0.8rem', marginBottom: '1.5rem', color: 'var(--text-muted)' }}>Chevaux terminant leur séjour aujourd'hui.</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+              {todayAssignments.filter(a => a.endDate === today && a.status === 'pré').map(a => {
+                const h = horses.find(h => h.id === a.horseId);
+                return h ? (
+                  <div key={a.id} className="glass" style={{ padding: '10px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px', borderLeft: `4px solid ${h.color || 'var(--warning)'}` }}>
+                    <span style={{ fontSize: '1.2rem' }}>{h.emoji}</span>
+                    <strong>{h.name}</strong>
+                    <span style={{ fontSize: '0.7rem', marginLeft: 'auto', color: 'var(--warning)' }}>🏠 Rentrer</span>
+                  </div>
+                ) : null;
+              })}
+              {todayAssignments.filter(a => a.endDate === today && a.status === 'pré').length === 0 && <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Aucun retour prévu ce soir.</p>}
             </div>
-            <button className="btn btn-accent" style={{ marginTop: '2rem', width: '100%' }} onClick={() => setMode(APP_MODES.CALENDAR)}>Voir planning complet</button>
+          </div>
+
+          <div className="card glass" style={{ gridColumn: '1 / -1' }}>
+            <h3>🐴 Mes Chevaux ({myHorses.length})</h3>
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', overflowX: 'auto', paddingBottom: '10px' }}>
+              {myHorses.map(h => (
+                <div key={h.id} className="glass" style={{ padding: '15px', borderRadius: '12px', minWidth: '150px', textAlign: 'center' }}>
+                   <div style={{ fontSize: '2rem', marginBottom: '5px' }}>{h.emoji}</div>
+                   <strong>{h.name}</strong>
+                   <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{h.status === 'pré' ? '🌿 Au Pré' : '🏠 Au Box'}</div>
+                </div>
+              ))}
+            </div>
           </div>
 
         </div>
@@ -320,6 +410,7 @@ function App() {
             <div style={{ padding: '0 1rem' }}>
               {mode === APP_MODES.DASHBOARD && <Dashboard />}
               {mode === APP_MODES.HORSES && <HorseManagement />}
+              {mode === APP_MODES.ASSIGNMENTS && <AssignmentView />}
               {mode === APP_MODES.CALENDAR && <CalendarView />}
             </div>
           </main>
