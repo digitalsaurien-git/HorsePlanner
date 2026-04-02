@@ -35,6 +35,7 @@ export async function initGoogleDrive() {
     window.gapi.load('client', async () => {
       try {
         await window.gapi.client.init({
+          clientId: CLIENT_ID,
           discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
         });
         gapiInited = true;

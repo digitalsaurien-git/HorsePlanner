@@ -73,7 +73,8 @@ function App() {
   const [isDriveConnected, setIsDriveConnected] = useState(false);
   const [lastSync, setLastSync] = useState(null);
   const [syncPath, setSyncPath] = useState('DigitalSaurien/AUTOMATE/HorsePlanner');
-  const [password, setPassword] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
+  const [masterPassword, setMasterPassword] = useState('bucephal91$ADM');
   const [isGerantSelected, setIsGerantSelected] = useState(false);
 
   // Initialize Drive
@@ -108,14 +109,15 @@ function App() {
     localStorage.setItem('hp_horses', JSON.stringify(horses));
     localStorage.setItem('hp_plannings', JSON.stringify(plannings));
     localStorage.setItem('hp_sync_path', syncPath);
+    localStorage.setItem('hp_master_password', masterPassword);
     
     // Auto-sync to Drive if connected
     if (isDriveConnected) {
-      saveToDrive({ horses, plannings }, syncPath).then(success => {
+      saveToDrive({ horses, plannings, masterPassword }, syncPath).then(success => {
         if (success) setLastSync(new Date().toLocaleTimeString());
       });
     }
-  }, [horses, plannings, isDriveConnected, syncPath]);
+  }, [horses, plannings, isDriveConnected, syncPath, masterPassword]);
 
   const handleConnectDrive = async () => {
     try {
@@ -126,6 +128,7 @@ function App() {
         if (confirm("Données cloud détectées. Voulez-vous écraser les données locales par la version Cloud ?")) {
           setHorses(cloudData.horses);
           setPlannings(cloudData.plannings);
+          if (cloudData.masterPassword) setMasterPassword(cloudData.masterPassword);
         }
       }
       alert("✅ Connecté à Google Drive !");
@@ -135,7 +138,7 @@ function App() {
   };
 
   const login = (role, email = '') => {
-    if (role === ROLES.GERANT && password !== 'bucephal91$ADM') {
+    if (role === ROLES.GERANT && passwordInput !== masterPassword) {
       alert('Mot de passe incorrect pour Bucéphale ! 🛑');
       return;
     }
@@ -394,8 +397,8 @@ function App() {
                 className="input" 
                 placeholder="Mot de passe" 
                 autoFocus
-                value={password} 
-                onChange={e => setPassword(e.target.value)} 
+                value={passwordInput} 
+                onChange={e => setPasswordInput(e.target.value)} 
                 onKeyDown={e => e.key === 'Enter' && login(ROLES.GERANT)}
               />
               <div style={{ display: 'flex', gap: '10px' }}>
