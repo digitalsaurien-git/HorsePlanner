@@ -14,7 +14,8 @@ const APP_MODES = {
   DASHBOARD: 'dashboard',
   HORSES: 'horses',
   CALENDAR: 'calendar',
-  ASSIGNMENTS: 'assignments', // New mode
+  ASSIGNMENTS: 'assignments',
+  SETTINGS: 'settings',
   MY_HORSES: 'my_horses'
 };
 
@@ -38,6 +39,7 @@ function App() {
   const [plannings, setPlannings] = useState([]); // Array of assignments: { horseId, date, period, location }
   const [isDriveConnected, setIsDriveConnected] = useState(false);
   const [lastSync, setLastSync] = useState(null);
+  const [syncPath, setSyncPath] = useState('DigitalSaurien/AUTOMATE/HorsePlanner');
 
   // Initialize Drive
   useEffect(() => {
@@ -62,26 +64,29 @@ function App() {
     } else {
       setPlannings(INITIAL_PLANNINGS);
     }
+    const savedPath = localStorage.getItem('hp_sync_path');
+    if (savedPath) setSyncPath(savedPath);
   }, []);
 
   // Persistence
   useEffect(() => {
     localStorage.setItem('hp_horses', JSON.stringify(horses));
     localStorage.setItem('hp_plannings', JSON.stringify(plannings));
+    localStorage.setItem('hp_sync_path', syncPath);
     
     // Auto-sync to Drive if connected
     if (isDriveConnected) {
-      saveToDrive({ horses, plannings }).then(success => {
+      saveToDrive({ horses, plannings }, syncPath).then(success => {
         if (success) setLastSync(new Date().toLocaleTimeString());
       });
     }
-  }, [horses, plannings, isDriveConnected]);
+  }, [horses, plannings, isDriveConnected, syncPath]);
 
   const handleConnectDrive = async () => {
     try {
       await authenticateGoogle();
       setIsDriveConnected(true);
-      const cloudData = await loadFromDrive();
+      const cloudData = await loadFromDrive(syncPath);
       if (cloudData) {
         if (confirm("Données cloud détectées. Voulez-vous écraser les données locales par la version Cloud ?")) {
           setHorses(cloudData.horses);
@@ -131,6 +136,9 @@ function App() {
         </>
       )}
       <button className={`btn ${mode === APP_MODES.CALENDAR ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.CALENDAR)}>📅 Calendrier</button>
+      {user?.role === ROLES.GERANT && (
+        <button className={`btn ${mode === APP_MODES.SETTINGS ? 'btn-primary' : ''}`} style={{ justifyContent: 'start', marginTop: 'auto' }} onClick={() => setMode(APP_MODES.SETTINGS)}>⚙️ Paramètres</button>
+      )}
     </aside>
   );
 
@@ -442,6 +450,46 @@ function App() {
     );
   };
 
+  const SettingsView = () => (
+    <div className="animate-fade">
+      <header style={{ marginBottom: '2rem' }}>
+        <h1>Paramètres - Automate Sync ☁️</h1>
+        <p style={{ color: 'var(--text-muted)' }}>Configurez la synchronisation Google Drive "Automate Edition".</p>
+      </header>
+
+      <div className="card glass">
+        <h3>📂 Chemin de synchronisation</h3>
+        <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div>
+            <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '5px', display: 'block' }}>Réseau / Dossier Drive</label>
+            <input 
+              className="input" 
+              value={syncPath} 
+              onChange={e => setSyncPath(e.target.value)} 
+              placeholder="ex: DigitalSaurien/AUTOMATE/HorsePlanner"
+              style={{ width: '100%', padding: '12px', background: 'var(--bg-glass)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '8px' }}
+            />
+          </div>
+          
+          <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', border: '1px solid rgba(66, 133, 244, 0.3)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>Connexion Google :</span>
+              <span className={`badge ${isDriveConnected ? 'success' : 'info'}`}>
+                {isDriveConnected ? 'Actif ✅' : 'Inactif ❌'}
+              </span>
+            </div>
+            {!isDriveConnected && (
+              <button className="btn btn-primary" style={{ marginTop: '15px', width: '100%' }} onClick={handleConnectDrive}>
+                Établir la liaison Google Drive
+              </button>
+            )}
+            {lastSync && <div style={{ fontSize: '0.7rem', marginTop: '10px', textAlign: 'right', opacity: 0.7 }}>Dernière synchro : {lastSync}</div>}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div style={{ background: '#121212', minHeight: '100vh', color: '#fff' }}>
       {mode === APP_MODES.LOGIN ? <LoginView /> : (
@@ -454,6 +502,7 @@ function App() {
               {mode === APP_MODES.HORSES && <HorseManagement />}
               {mode === APP_MODES.ASSIGNMENTS && <AssignmentView />}
               {mode === APP_MODES.CALENDAR && <CalendarView />}
+              {mode === APP_MODES.SETTINGS && <SettingsView />}
             </div>
           </main>
         </div>

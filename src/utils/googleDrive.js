@@ -104,16 +104,24 @@ async function getOrCreateFolder(name, parentId = 'root') {
   }
 }
 
-// Save Data to a specific path: /DigitalSaurien/AUTOMATE/HorsePlanner
-export async function saveToDrive(data) {
+// Helper to resolve a full path (e.g. "Folder/Subfolder/App")
+async function resolvePath(pathString) {
+  const folders = pathString.split('/').filter(f => f.length > 0);
+  let currentId = 'root';
+  for (const folderName of folders) {
+    currentId = await getOrCreateFolder(folderName, currentId);
+  }
+  return currentId;
+}
+
+// Save Data to a specific path
+export async function saveToDrive(data, pathString = 'DigitalSaurien/AUTOMATE/HorsePlanner') {
   if (!window.gapi.client.getToken()) return false;
   
-  console.log("💾 [Drive] Début de la sauvegarde...");
+  console.log(`💾 [Drive] Début de la sauvegarde vers ${pathString}...`);
   try {
-    const digitalSaurienId = await getOrCreateFolder('DigitalSaurien');
-    const automateId = await getOrCreateFolder('AUTOMATE', digitalSaurienId);
-    const horsePlannerId = await getOrCreateFolder('HorsePlanner', automateId);
-    console.log("📂 [Drive] Dossier cible trouvé/créé, ID:", horsePlannerId);
+    const targetFolderId = await resolvePath(pathString);
+    console.log("📂 [Drive] Dossier cible trouvé/créé, ID:", targetFolderId);
 
     const fileName = 'horseplanner_sync_backup.json';
     
@@ -131,7 +139,7 @@ export async function saveToDrive(data) {
     const metadata = {
       'name': fileName,
       'mimeType': 'application/json',
-      'parents': [horsePlannerId]
+      'parents': [targetFolderId]
     };
 
     const multipartRequestBody =
@@ -170,16 +178,14 @@ export async function saveToDrive(data) {
 }
 
 // Load Data from the specific path
-export async function loadFromDrive() {
+export async function loadFromDrive(pathString = 'DigitalSaurien/AUTOMATE/HorsePlanner') {
   try {
     if (!window.gapi.client.getToken()) return null;
 
-    const digitalSaurienId = await getOrCreateFolder('DigitalSaurien');
-    const automateId = await getOrCreateFolder('AUTOMATE', digitalSaurienId);
-    const horsePlannerId = await getOrCreateFolder('HorsePlanner', automateId);
+    const targetFolderId = await resolvePath(pathString);
 
     const response = await window.gapi.client.drive.files.list({
-      q: `name = 'horseplanner_sync_backup.json' and '${horsePlannerId}' in parents and trashed = false`,
+      q: `name = 'horseplanner_sync_backup.json' and '${targetFolderId}' in parents and trashed = false`,
       fields: 'files(id, name)',
     });
     
