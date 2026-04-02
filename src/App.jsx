@@ -166,27 +166,32 @@ function App() {
           <h4>Ajouter un cheval</h4>
           <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexWrap: 'wrap' }}>
             <input className="input" placeholder="Nom" value={name} onChange={e => setName(e.target.value)} style={{ flex: 1 }} />
-            <select className="input" value={emoji} onChange={e => setEmoji(e.target.value)} style={{ width: '80px', textAlign: 'center' }}>
-              {HORSE_ICONS.map(icon => <option key={icon} value={icon}>{icon}</option>)}
+            <select className="input" value={emoji} onChange={e => setEmoji(e.target.value)} style={{ width: '80px', textAlign: 'center', background: '#121212', color: '#fff' }}>
+              {HORSE_ICONS.map(icon => <option key={icon} value={icon} style={{ background: '#121212' }}>{icon}</option>)}
             </select>
             <input className="input" placeholder="Propriétaire" value={owner} onChange={e => setOwner(e.target.value)} style={{ flex: 1 }} />
             <button className="btn btn-accent">Ajouter</button>
           </form>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1rem' }}>
-          {horses.map(h => (
-            <div key={h.id} className="card glass" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span style={{ fontSize: '2rem' }}>{h.emoji}</span>
-                <div>
-                  <strong>{h.name}</strong>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Prop: {h.owner}</div>
+        <div className="card glass" style={{ marginBottom: '2rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+             <h3>🐴 Liste des Chevaux ({horses.length})</h3>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+            {horses.map(h => (
+              <div key={h.id} className="glass" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', borderRadius: '12px', borderLeft: `4px solid ${h.color || 'var(--accent)'}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                  <span style={{ fontSize: '2.5rem' }}>{h.emoji}</span>
+                  <div>
+                    <strong style={{ fontSize: '1.1rem' }}>{h.name}</strong>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Propriétaire: {h.owner}</div>
+                  </div>
                 </div>
+                <button onClick={() => deleteHorse(h.id)} style={{ padding: '8px', background: 'rgba(244, 67, 54, 0.1)', border: 'none', color: 'var(--danger)', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🗑️</button>
               </div>
-              <button onClick={() => deleteHorse(h.id)} style={{ padding: '5px', background: 'transparent', border: 'none', color: 'var(--danger)', cursor: 'pointer' }}>🗑️</button>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -304,7 +309,18 @@ function App() {
                     {dayAssignments.map(a => {
                       const h = horses.find(h => h.id === a.horseId);
                       return h ? (
-                        <div key={a.id} style={{ fontSize: '0.65rem', padding: '4px 6px', borderRadius: '4px', background: a.status === 'pré' ? 'rgba(76, 175, 80, 0.2)' : 'rgba(139, 107, 97, 0.2)', color: a.status === 'pré' ? '#81c784' : '#d7ccc8', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <div key={a.id} style={{ 
+                          fontSize: '0.65rem', 
+                          padding: '4px 6px', 
+                          borderRadius: '4px', 
+                          background: h.color || (a.status === 'pré' ? 'rgba(76, 175, 80, 0.4)' : 'rgba(139, 107, 97, 0.4)'), 
+                          color: '#fff', 
+                          border: '1px solid rgba(255,255,255,0.1)', 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: '4px',
+                          textShadow: '0 1px 2px rgba(0,0,0,0.5)'
+                        }}>
                           <span>{h.emoji}</span> <strong>{h.name}</strong>
                         </div>
                       ) : null;
@@ -373,7 +389,7 @@ function App() {
       <div className="animate-fade">
         <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h1>Bonjour, {user?.role === ROLES.GERANT ? 'Gérant' : 'Propriétaire'} 👋</h1>
+            <h1>Bonjour {user?.role === ROLES.GERANT ? 'Daniel' : 'Propriétaire'} 👋</h1>
             <p style={{ color: 'var(--text-muted)' }}>Bienvenue sur votre espace de gestion.</p>
           </div>
           {isOwner && (
@@ -432,18 +448,20 @@ function App() {
             </div>
           </div>
 
-          <div className="card glass" style={{ gridColumn: '1 / -1' }}>
-            <h3>🐴 Mes Chevaux ({myHorses.length})</h3>
-            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', overflowX: 'auto', paddingBottom: '10px' }}>
-              {myHorses.map(h => (
-                <div key={h.id} className="glass" style={{ padding: '15px', borderRadius: '12px', minWidth: '150px', textAlign: 'center' }}>
-                   <div style={{ fontSize: '2rem', marginBottom: '5px' }}>{h.emoji}</div>
-                   <strong>{h.name}</strong>
-                   <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{h.status === 'pré' ? '🌿 Au Pré' : '🏠 Au Box'}</div>
-                </div>
-              ))}
+          {isOwner && (
+            <div className="card glass" style={{ gridColumn: '1 / -1' }}>
+              <h3>🐴 Mes Chevaux ({myHorses.length})</h3>
+              <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', overflowX: 'auto', paddingBottom: '10px' }}>
+                {myHorses.map(h => (
+                  <div key={h.id} className="glass" style={{ padding: '15px', borderRadius: '12px', minWidth: '150px', textAlign: 'center' }}>
+                     <div style={{ fontSize: '2rem', marginBottom: '5px' }}>{h.emoji}</div>
+                     <strong>{h.name}</strong>
+                     <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{h.status === 'pré' ? '🌿 Au Pré' : '🏠 Au Box'}</div>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
         </div>
       </div>
