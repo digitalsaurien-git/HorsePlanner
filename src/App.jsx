@@ -166,8 +166,8 @@ function App() {
           <h4>Ajouter un cheval</h4>
           <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexWrap: 'wrap' }}>
             <input className="input" placeholder="Nom" value={name} onChange={e => setName(e.target.value)} style={{ flex: 1 }} />
-            <select className="input" value={emoji} onChange={e => setEmoji(e.target.value)} style={{ width: '80px', textAlign: 'center', background: '#121212', color: '#fff' }}>
-              {HORSE_ICONS.map(icon => <option key={icon} value={icon} style={{ background: '#121212' }}>{icon}</option>)}
+            <select className="input" value={emoji} onChange={e => setEmoji(e.target.value)} style={{ width: '80px', textAlign: 'center' }}>
+              {HORSE_ICONS.map(icon => <option key={icon} value={icon}>{icon}</option>)}
             </select>
             <input className="input" placeholder="Propriétaire" value={owner} onChange={e => setOwner(e.target.value)} style={{ flex: 1 }} />
             <button className="btn btn-accent">Ajouter</button>
@@ -315,11 +315,12 @@ function App() {
                           borderRadius: '4px', 
                           background: h.color || (a.status === 'pré' ? 'rgba(76, 175, 80, 0.4)' : 'rgba(139, 107, 97, 0.4)'), 
                           color: '#fff', 
-                          border: '1px solid rgba(255,255,255,0.1)', 
+                          border: '1px solid rgba(255,255,255,0.4)', 
                           display: 'flex', 
                           alignItems: 'center', 
                           gap: '4px',
-                          textShadow: '0 1px 2px rgba(0,0,0,0.5)'
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                          textShadow: '0 1px 2px rgba(0,0,0,0.8)'
                         }}>
                           <span>{h.emoji}</span> <strong>{h.name}</strong>
                         </div>

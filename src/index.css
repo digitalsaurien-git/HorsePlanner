@@ -154,6 +154,11 @@ h1, h2, h3 {
   box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
 }
 
+select.input option {
+  background-color: #1a1a1a;
+  color: white;
+}
+
 /* Responsive Navigation */
 .navbar {
   height: 70px;
