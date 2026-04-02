@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './index.css';
-import { initGoogleDrive, authenticateGoogle, saveToDrive, loadFromDrive } from './utils/googleDrive';
+import { initGoogleDrive, authenticateGoogle, saveToDrive, loadFromDrive, CLIENT_ID } from './utils/googleDrive';
 
 // --- Mock Data & Constants ---
 const ROLES = {
@@ -585,6 +585,20 @@ function App() {
             {lastSync && <div style={{ fontSize: '0.7rem', marginTop: '10px', textAlign: 'right', opacity: 0.7 }}>Dernière synchro : {lastSync}</div>}
           </div>
         </div>
+      </div>
+
+      <div className="card glass" style={{ marginTop: '2rem', border: '1px solid rgba(66, 133, 244, 0.3)' }}>
+        <h3 style={{ color: '#4285F4' }}>🔍 Diagnostic Drive</h3>
+        <p style={{ fontSize: '0.8rem', opacity: 0.8, marginBottom: '10px' }}>
+          Si la connexion échoue, vérifiez que cette URL exacte est autorisée dans Google Cloud :
+        </p>
+        <div style={{ background: 'rgba(0,0,0,0.2)', padding: '10px', borderRadius: '4px', fontSize: '0.75rem', wordBreak: 'break-all', fontFamily: 'monospace', marginBottom: '10px' }}>
+          ORIGIN: {window.location.origin}<br/>
+          URL: {window.location.href}
+        </div>
+        <p style={{ fontSize: '0.7rem', opacity: 0.6 }}>
+          ID Client : <span style={{fontSize: '0.6rem'}}>{CLIENT_ID.substring(0, 20)}...</span>
+        </p>
       </div>
 
       <div className="card glass" style={{ marginTop: '2rem', border: '1px solid rgba(244, 67, 54, 0.3)' }}>
