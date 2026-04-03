@@ -3,7 +3,7 @@
  * Path: /DigitalSaurien/AUTOMATE/HorsePlanner
  */
 
-export const CLIENT_ID = "867619813314-h3gf1ro6fn1ddotkttso119lbiphi2rv.apps.googleusercontent.com";
+export const CLIENT_ID = "237594289779-naqdulplfc2d0jrmmc9sd2jjbgj95jlk.apps.googleusercontent.com";
 const SCOPES = 'https://www.googleapis.com/auth/drive.file';
 
 let tokenClient;
@@ -109,7 +109,25 @@ async function getOrCreateFolder(name, parentId = 'root') {
 async function resolvePath(pathString) {
   const folders = pathString.split('/').filter(f => f.length > 0);
   let currentId = 'root';
-  for (const folderName of folders) {
+
+  // DigitalSaurien IDs (Anti-doublons)
+  // For HorsePlanner (pure frontend), we can use the same IDs or search for them.
+  // I'll add a helper to use static IDs if provided via window.SYNC_CONFIG
+  const rootId = window.SYNC_CONFIG?.rootId || "";
+  const automateId = window.SYNC_CONFIG?.automateId || "";
+
+  for (let i = 0; i < folders.length; i++) {
+    const folderName = folders[i];
+
+    if (folderName === 'DigitalSaurien' && i === 0 && rootId) {
+      currentId = rootId;
+      continue;
+    }
+    if (folderName === 'AUTOMATE' && i === 1 && automateId) {
+      currentId = automateId;
+      continue;
+    }
+
     currentId = await getOrCreateFolder(folderName, currentId);
   }
   return currentId;
