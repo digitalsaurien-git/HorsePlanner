@@ -189,13 +189,7 @@ function App() {
 
   const addHorse = (horse) => setHorses([...horses, { id: Date.now(), ...horse }]);
   const deleteHorse = (id) => setHorses(horses.filter(h => h.id !== id));
-  const handleUpdateHorse = (id, updates) => {
-    setHorses(prev => {
-      const newHorses = prev.map(h => h.id === id ? { ...h, ...updates } : h);
-      localStorage.setItem('horsePlanner_horses_v1.1', JSON.stringify(newHorses));
-      return newHorses;
-    });
-  };
+
 
   const addAssignment = (assignment) => {
     setAssignments([...assignments, { ...assignment, id: Date.now() }]);
@@ -361,7 +355,7 @@ function App() {
     const daysInMonth = 30;
 
     const myHorses = user?.role === ROLES.PROPRIETAIRE 
-      ? horses.filter(h => h.owner.toLowerCase() === user.name.toLowerCase())
+      ? horses.filter(h => h.owner.toLowerCase() !== 'club')
       : horses;
 
     const myAssignments = user?.role === ROLES.PROPRIETAIRE 
@@ -496,7 +490,7 @@ function App() {
     const isManager = user?.role === ROLES.GERANT;
 
     const myHorses = user?.role === ROLES.PROPRIETAIRE 
-      ? horses.filter(h => h.owner.toLowerCase() === user.name.toLowerCase())
+      ? horses.filter(h => h.owner.toLowerCase() !== 'club')
       : horses;
 
     const todayAssignments = assignments.filter(p => {
@@ -552,7 +546,7 @@ function App() {
       return (
         <div className="grid">
           <div className="card glass">
-            <h3 style={{ color: 'var(--success)' }}>🌿 Mes chevaux au Pré</h3>
+            <h3 style={{ color: 'var(--success)' }}>🌿 Chevaux Propriétaires (au Pré)</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '1rem' }}>
               {atPasture.map(({horse: h, assignment: a}) => {
                 const days = Math.ceil((new Date(a.endDate) - new Date(a.startDate)) / (1000 * 60 * 60 * 24)) + 1;
@@ -576,7 +570,7 @@ function App() {
         <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <h1>Bonjour {isManager ? 'Daniel' : user?.name} 👋</h1>
-            <p style={{ color: 'var(--text-muted)' }}>{isManager ? 'Tableau de bord du club' : 'Emplacement actuel de vos chevaux'}.</p>
+            <p style={{ color: 'var(--text-muted)' }}>{isManager ? 'Tableau de bord du club' : 'Emplacement actuel des chevaux propriétaires'}.</p>
           </div>
         </header>
 
