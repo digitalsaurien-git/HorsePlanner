@@ -161,11 +161,21 @@ function App() {
   };
 
   const login = (role, email = '') => {
-    if (role === ROLES.GERANT && passwordInput !== masterPassword) {
-      alert('Mot de passe incorrect pour Bucéphale ! 🛑');
-      return;
+    let isDemo = false;
+    if (role === ROLES.GERANT) {
+      if (passwordInput === 'demo') {
+        isDemo = true;
+      } else if (passwordInput !== masterPassword) {
+        alert('Mot de passe incorrect pour Bucéphale ! 🛑');
+        return;
+      }
     }
-    const newUser = { role, email: email || (role === ROLES.GERANT ? 'admin@club.com' : 'user@club.com'), name: email.split('@')[0] };
+    const newUser = { 
+      role, 
+      email: email || (role === ROLES.GERANT ? 'admin@club.com' : 'user@club.com'), 
+      name: email.split('@')[0], 
+      isDemo 
+    };
     setUser(newUser);
     localStorage.setItem('hp_user', JSON.stringify(newUser));
     setMode(APP_MODES.DASHBOARD);
@@ -205,7 +215,7 @@ function App() {
         </>
       )}
       <button className={`btn ${mode === APP_MODES.CALENDAR ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.CALENDAR)}>📅 Calendrier</button>
-      {user?.role === ROLES.GERANT && (
+      {user?.role === ROLES.GERANT && !user?.isDemo && (
         <button className={`btn ${mode === APP_MODES.SETTINGS ? 'btn-primary' : ''}`} style={{ justifyContent: 'start', marginTop: 'auto' }} onClick={() => setMode(APP_MODES.SETTINGS)}>⚙️ Paramètres</button>
       )}
     </aside>
@@ -465,15 +475,17 @@ function App() {
         <h2 className="gradient-text">HorsePlanner</h2>
       </div>
       <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        {!isDriveConnected ? (
-          <button onClick={handleConnectDrive} className="btn" style={{ fontSize: '0.8rem', background: 'rgba(66, 133, 244, 0.1)', color: '#4285F4', border: '1px solid #4285F4' }}>☁️ Connecter Drive</button>
-        ) : (
-          <div style={{ fontSize: '0.7rem', color: 'var(--success)', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-            <span>✅ Cloud Sync On</span>
-            {lastSync && <span>Dernière synchro: {lastSync}</span>}
-          </div>
+        {user?.role === ROLES.GERANT && !user?.isDemo && (
+          !isDriveConnected ? (
+            <button onClick={handleConnectDrive} className="btn" style={{ fontSize: '0.8rem', background: 'rgba(66, 133, 244, 0.1)', color: '#4285F4', border: '1px solid #4285F4' }}>☁️ Connecter Drive</button>
+          ) : (
+            <div style={{ fontSize: '0.7rem', color: 'var(--success)', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+              <span>✅ Cloud Sync On</span>
+              {lastSync && <span>Dernière synchro: {lastSync}</span>}
+            </div>
+          )
         )}
-        <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>{user?.role === ROLES.GERANT ? '🛡️ Admin' : '👤 Propriétaire'}</span>
+        <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>{user?.role === ROLES.GERANT ? (user?.isDemo ? '🛡️ Démo' : '🛡️ Admin') : '👤 Propriétaire'}</span>
         <button onClick={logout} className="btn" style={{ padding: '0.5rem 1rem', background: 'rgba(244, 67, 54, 0.1)', color: 'var(--danger)', border: '1px solid var(--danger)' }}>Déconnexion</button>
       </div>
     </nav>
