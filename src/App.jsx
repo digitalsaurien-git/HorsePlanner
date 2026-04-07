@@ -489,7 +489,7 @@ function App() {
             </div>
           )
         )}
-        <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>{user?.role === ROLES.GERANT ? (user?.isDemo ? '🛡️ Démo' : '🛡️ Admin') : '👤 Propriétaire'}</span>
+        <span className="hide-mobile" style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>{user?.role === ROLES.GERANT ? (user?.isDemo ? '🛡️ Démo' : '🛡️ Admin') : '👤 Propriétaire'}</span>
         <button onClick={logout} className="btn" style={{ padding: '0.5rem 1rem', background: 'rgba(244, 67, 54, 0.1)', color: 'var(--danger)', border: '1px solid var(--danger)' }}>Déconnexion</button>
       </div>
     </nav>

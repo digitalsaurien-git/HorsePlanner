@@ -166,14 +166,14 @@ select.input option {
   align-items: center;
   justify-content: space-between;
   padding: 0 2rem;
-  position: fixed;
+  position: sticky;
   top: 0;
   width: 100%;
   z-index: 1000;
+  margin-bottom: 2rem;
 }
 
 .main-content {
-  margin-top: 70px;
   flex: 1;
   padding: 1rem;
   width: 100%;
