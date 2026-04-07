@@ -76,6 +76,12 @@ function App() {
   const [passwordInput, setPasswordInput] = useState('');
   const [masterPassword, setMasterPassword] = useState('bucephal91$ADM');
   const [isGerantSelected, setIsGerantSelected] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Close sidebar on mode change on mobile
+  useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [mode]);
 
   // Initialize Drive
   useEffect(() => {
@@ -200,19 +206,22 @@ function App() {
   // --- Components ---
 
   const Sidebar = () => (
-    <aside className="glass" style={{ width: '250px', height: '100vh', position: 'fixed', left: 0, top: 0, paddingTop: '100px', display: 'flex', flexDirection: 'column', gap: '5px', padding: '100px 10px 10px 10px' }}>
-      <button className={`btn ${mode === APP_MODES.DASHBOARD ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.DASHBOARD)}>🏠 Dashboard</button>
-      {user?.role === ROLES.GERANT && (
-        <>
-          <button className={`btn ${mode === APP_MODES.HORSES ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.HORSES)}>🐴 Chevaux</button>
-          <button className={`btn ${mode === APP_MODES.ASSIGNMENTS ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.ASSIGNMENTS)}>🗓️ Affectations</button>
-        </>
-      )}
-      <button className={`btn ${mode === APP_MODES.CALENDAR ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.CALENDAR)}>📅 Calendrier</button>
-      {user?.role === ROLES.GERANT && !user?.isDemo && (
-        <button className={`btn ${mode === APP_MODES.SETTINGS ? 'btn-primary' : ''}`} style={{ justifyContent: 'start', marginTop: 'auto' }} onClick={() => setMode(APP_MODES.SETTINGS)}>⚙️ Paramètres</button>
-      )}
-    </aside>
+    <>
+      <div className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
+      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+        <button className={`btn ${mode === APP_MODES.DASHBOARD ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.DASHBOARD)}>🏠 Dashboard</button>
+        {user?.role === ROLES.GERANT && (
+          <>
+            <button className={`btn ${mode === APP_MODES.HORSES ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.HORSES)}>🐴 Chevaux</button>
+            <button className={`btn ${mode === APP_MODES.ASSIGNMENTS ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.ASSIGNMENTS)}>🗓️ Affectations</button>
+          </>
+        )}
+        <button className={`btn ${mode === APP_MODES.CALENDAR ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.CALENDAR)}>📅 Calendrier</button>
+        {user?.role === ROLES.GERANT && !user?.isDemo && (
+          <button className={`btn ${mode === APP_MODES.SETTINGS ? 'btn-primary' : ''}`} style={{ justifyContent: 'start', marginTop: 'auto' }} onClick={() => setMode(APP_MODES.SETTINGS)}>⚙️ Paramètres</button>
+        )}
+      </aside>
+    </>
   );
 
   const HorseManagement = () => {
@@ -364,12 +373,12 @@ function App() {
 
     return (
       <div className="animate-fade">
-         <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+         <header style={{ marginBottom: '2rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h1>Calendrier Planning</h1>
-            <p style={{ color: 'var(--text-muted)' }}>Visualisation globale des placements.</p>
+            <h1>Calendrier</h1>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Visualisation globale des placements.</p>
           </div>
-          <select className="input" style={{ width: 'auto' }} value={filterHorseId} onChange={e => setFilterHorseId(e.target.value)}>
+          <select className="input" style={{ width: '100%', maxWidth: '200px' }} value={filterHorseId} onChange={e => setFilterHorseId(e.target.value)}>
             <option value="all">Tous les chevaux</option>
             {myHorses.map(h => <option key={h.id} value={h.id}>{h.emoji} {h.name}</option>)}
           </select>
@@ -463,9 +472,10 @@ function App() {
   );
 
   const Navbar = () => (
-    <nav className="navbar glass" style={{ position: 'sticky', top: 0, width: '100%', marginBottom: '2rem', zIndex: 1000 }}>
+    <nav className="navbar glass">
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <span style={{ fontSize: '1.5rem' }}>🐎</span>
+        <button className="btn menu-toggle" style={{ background: 'transparent', padding: '5px', fontSize: '1.2rem', color: '#fff' }} onClick={() => setIsSidebarOpen(true)}>☰</button>
+        <span style={{ fontSize: '1.5rem' }} className="hide-mobile">🐎</span>
         <h2 className="gradient-text">HorsePlanner</h2>
       </div>
       <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
@@ -659,11 +669,11 @@ function App() {
   return (
     <div style={{ background: '#121212', minHeight: '100vh', color: '#fff' }}>
       {mode === APP_MODES.LOGIN ? <LoginView /> : (
-        <div style={{ display: 'flex' }}>
+        <div style={{ display: 'flex', width: '100%' }}>
           <Sidebar />
-          <main className="main-content container" style={{ marginLeft: '250px', width: 'calc(100% - 250px)', marginTop: 0 }}>
+          <main className="main-content container">
             <Navbar />
-            <div style={{ padding: '0 1rem' }}>
+            <div>
               {mode === APP_MODES.DASHBOARD && <Dashboard />}
               {mode === APP_MODES.HORSES && <HorseManagement />}
               {mode === APP_MODES.ASSIGNMENTS && <AssignmentView />}
