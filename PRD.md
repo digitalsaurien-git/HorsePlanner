@@ -24,8 +24,10 @@ Créer une application simple pour gérer la mise au pré ou au box des chevaux 
 - [x] Attribution multi-jours des chevaux au pré/box par le gérant (menu dédié)
 - [x] Affichage d’un calendrier annuel (grille mensuelle) avec icônes et noms
 - [x] Dashboard avec séparation Matin (Départs) et Soir (Retours)
-- [x] Vue propriétaire filtrée + édition de l'icône et de la couleur du cheval
+- [x] Vue propriétaire filtrée : n'affiche que les chevaux au pré avec affichage de la durée d'affectation au clic
 - [x] Système de sélection d'icônes Horse Icons
+- [x] Distinction Chevaux Club / Propriétaires et filtres dédiés ajoutés pour le Gérant
+- [x] Tableau de bord personnalisé pour le Gérant (Message "Bonjour Daniel")
 - [x] Accès web adapté mobile & PC (Layout responsive avec Sidebar)
 - [x] Synchronisation Google Drive (Save/Load manuel) dans `/DigitalSaurien/AUTOMATE/HorsePlanner`
 - [x] Sécurité Gérant (Mot de passe Maître : `bucephal91$ADM`)
@@ -56,8 +58,10 @@ Créer une application simple pour gérer la mise au pré ou au box des chevaux 
 - [x] Suppression d’un cheval met bien à jour toutes les vues concernées
 - [x] Navigation mois par mois sur le calendrier (Avril simulé)
 - [x] Affectation “au pré/au box” modifiable pour chaque cheval
-- [x] Vue propriétaire n’affiche que les chevaux du compte connecté
+- [x] Vue propriétaire n’affiche que les chevaux du compte connecté actuellement au pré (personnalisation retirée)
 - [x] Vue “chevaux du jour” affiche le statut et les notifications de mouvement
+- [x] Interaction au clic pour connaitre la durée de mise au pré d'un cheval
+- [x] Gérant peut filtrer la liste des affectations en séparant club et propriétaires
 - [x] Navigation mobile et desktop sans perte de lisibilité (Sidebar glass + sticky navbar)
 - [x] Affectations sauvegardées persistent (LocalStorage + Google Drive)
 - [x] Aucun propriétaire ne peut attribuer ou modifier l’affectation d’un cheval

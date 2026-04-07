@@ -23,19 +23,19 @@ const HORSE_ICONS = ['🐎', '🐴', '🦄', '🐆', '🦓', '🦒', '🐿️', 
 
 const INITIAL_HORSES = [
   { id: 1, name: 'Florette', emoji: '🌸', owner: 'Dupont', color: '#ff80ab', status: 'pré' },
-  { id: 2, name: 'Cliff', emoji: '🐴', owner: 'Martin', color: '#b08d57', status: 'pré' },
-  { id: 3, name: 'Cloony', emoji: '🍀', owner: 'Robert', color: '#4caf50', status: 'pré' },
+  { id: 2, name: 'Cliff', emoji: '🐴', owner: 'Club', color: '#b08d57', status: 'pré' },
+  { id: 3, name: 'Cloony', emoji: '🍀', owner: 'Club', color: '#4caf50', status: 'pré' },
   { id: 4, name: 'Conquérant', emoji: '🦓', owner: 'Dupont', color: '#333333', status: 'pré' },
-  { id: 5, name: 'Lipton', emoji: '🐰', owner: 'Martin', color: '#90caf9', status: 'pré' },
-  { id: 6, name: 'Kiss', emoji: '💋', owner: 'Robert', color: '#f44336', status: 'box' },
+  { id: 5, name: 'Lipton', emoji: '🐰', owner: 'Club', color: '#90caf9', status: 'pré' },
+  { id: 6, name: 'Kiss', emoji: '💋', owner: 'Club', color: '#f44336', status: 'box' },
   { id: 7, name: 'Jimmy', emoji: '🐎', owner: 'Dupont', color: '#a1887f', status: 'box' },
-  { id: 8, name: 'Foudre', emoji: '⚡', owner: 'Martin', color: '#ffd54f', status: 'box' },
-  { id: 9, name: 'Juariste', emoji: '🎍', owner: 'Robert', color: '#81c784', status: 'box' },
+  { id: 8, name: 'Foudre', emoji: '⚡', owner: 'Club', color: '#ffd54f', status: 'box' },
+  { id: 9, name: 'Juariste', emoji: '🎍', owner: 'Club', color: '#81c784', status: 'box' },
   { id: 10, name: 'Gringo', emoji: '🤠', owner: 'Dupont', color: '#795548', status: 'box' },
-  { id: 11, name: 'Joliette', emoji: '🦄', owner: 'Martin', color: '#ce93d8', status: 'box' },
-  { id: 12, name: 'Goria', emoji: '🦄', owner: 'Robert', color: '#ba68c8', status: 'box' },
+  { id: 11, name: 'Joliette', emoji: '🦄', owner: 'Club', color: '#ce93d8', status: 'box' },
+  { id: 12, name: 'Goria', emoji: '🦄', owner: 'Club', color: '#ba68c8', status: 'box' },
   { id: 13, name: 'Little', emoji: '🐎', owner: 'Dupont', color: '#e0e0e0', status: 'box' },
-  { id: 14, name: 'Eiddy', emoji: '🌷', owner: 'Martin', color: '#f06292', status: 'box' },
+  { id: 14, name: 'Eiddy', emoji: '🌷', owner: 'Club', color: '#f06292', status: 'box' },
 ];
 
 const INITIAL_PLANNINGS = [
@@ -271,6 +271,7 @@ function App() {
     const [start, setStart] = useState(new Date().toISOString().split('T')[0]);
     const [end, setEnd] = useState(new Date().toISOString().split('T')[0]);
     const [loc, setLoc] = useState('pré');
+    const [viewType, setViewType] = useState('all');
 
     const handleBulkAssign = (e) => {
       e.preventDefault();
@@ -317,8 +318,19 @@ function App() {
 
         <div style={{ marginTop: '2rem' }}>
           <h4>Affectations actives</h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '1rem' }}>
-            {assignments.map(p => {
+          <div style={{ display: 'flex', gap: '10px', marginTop: '1rem', marginBottom: '1rem' }}>
+            <button className={`btn ${viewType === 'all' ? 'btn-primary' : ''}`} onClick={() => setViewType('all')}>Toutes</button>
+            <button className={`btn ${viewType === 'club' ? 'btn-primary' : ''}`} onClick={() => setViewType('club')}>Equidés du Club</button>
+            <button className={`btn ${viewType === 'owner' ? 'btn-primary' : ''}`} onClick={() => setViewType('owner')}>Equidés Propriétaires</button>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {assignments.filter(p => {
+              const h = horses.find(h => h.id === p.horseId);
+              if (!h) return false;
+              if (viewType === 'club') return h.owner.toLowerCase() === 'club';
+              if (viewType === 'owner') return h.owner.toLowerCase() !== 'club';
+              return true;
+            }).map(p => {
               const h = horses.find(h => h.id === p.horseId);
               return h ? (
                 <div key={p.id} className="card glass" style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem' }}>
@@ -339,8 +351,12 @@ function App() {
     const daysInMonth = 30;
 
     const myHorses = user?.role === ROLES.PROPRIETAIRE 
-      ? horses.filter(h => h.owner.toLowerCase() === user.name.toLowerCase() || h.owner === 'Dupont')
+      ? horses.filter(h => h.owner.toLowerCase() === user.name.toLowerCase())
       : horses;
+
+    const myAssignments = user?.role === ROLES.PROPRIETAIRE 
+      ? assignments.filter(a => myHorses.some(h => h.id === a.horseId)) 
+      : assignments;
 
     return (
       <div className="animate-fade">
@@ -364,8 +380,8 @@ function App() {
               const dateStr = `2026-04-${String(i + 1).padStart(2, '0')}`;
               
               const filtered = filterHorseId === 'all' 
-                ? assignments 
-                : assignments.filter(a => String(a.horseId) === String(filterHorseId));
+                ? myAssignments 
+                : myAssignments.filter(a => String(a.horseId) === String(filterHorseId));
               
               const dayAssignments = filtered.filter(p => {
                 const start = new Date(p.startDate);
@@ -468,7 +484,7 @@ function App() {
     const isManager = user?.role === ROLES.GERANT;
 
     const myHorses = user?.role === ROLES.PROPRIETAIRE 
-      ? horses.filter(h => h.owner.toLowerCase() === user.name.toLowerCase() || h.owner === 'Dupont')
+      ? horses.filter(h => h.owner.toLowerCase() === user.name.toLowerCase())
       : horses;
 
     const todayAssignments = assignments.filter(p => {
@@ -516,35 +532,27 @@ function App() {
     );
 
     const renderOwnerDashboard = () => {
-      const atPasture = myHorses.filter(h => todayAssignments.some(a => a.horseId === h.id && a.status === 'pré'));
-      const atBox = myHorses.filter(h => !todayAssignments.some(a => a.horseId === h.id && a.status === 'pré'));
+      const atPasture = myHorses.map(h => {
+        const assignment = todayAssignments.find(a => a.horseId === h.id && a.status === 'pré');
+        return { horse: h, assignment };
+      }).filter(h => h.assignment);
 
       return (
         <div className="grid">
           <div className="card glass">
             <h3 style={{ color: 'var(--success)' }}>🌿 Mes chevaux au Pré</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '1rem' }}>
-              {atPasture.map(h => (
-                <div key={h.id} className="horse-item glass" style={{ borderLeft: `4px solid ${h.color || 'var(--primary)'}` }}>
-                  <span style={{ fontSize: '1.2rem' }}>{h.emoji}</span>
-                  <span style={{ fontWeight: '600' }}>{h.name}</span>
-                  <span style={{ fontSize: '0.7rem', marginLeft: 'auto', opacity: 0.7 }}>📍 Actuellement au pré</span>
-                </div>
-              ))}
+              {atPasture.map(({horse: h, assignment: a}) => {
+                const days = Math.ceil((new Date(a.endDate) - new Date(a.startDate)) / (1000 * 60 * 60 * 24)) + 1;
+                return (
+                  <div key={h.id} className="horse-item glass" style={{ borderLeft: `4px solid ${h.color || 'var(--primary)'}`, cursor: 'pointer' }} onClick={() => alert(`Au pré du ${a.startDate} au ${a.endDate} (${days} jours)`)}>
+                    <span style={{ fontSize: '1.2rem' }}>{h.emoji}</span>
+                    <span style={{ fontWeight: '600' }}>{h.name}</span>
+                    <span style={{ fontSize: '0.7rem', marginLeft: 'auto', opacity: 0.7 }}>📍 Actuellement au pré ({days}j)</span>
+                  </div>
+                );
+              })}
               {atPasture.length === 0 && <p style={{ fontSize: '0.8rem', opacity: 0.5 }}>Aucun cheval au pré.</p>}
-            </div>
-          </div>
-          <div className="card glass">
-            <h3 style={{ color: 'var(--info)' }}>🏠 Mes chevaux au Box</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '1rem' }}>
-              {atBox.map(h => (
-                <div key={h.id} className="horse-item glass" style={{ borderLeft: `4px solid ${h.color || 'var(--primary)'}` }}>
-                  <span style={{ fontSize: '1.2rem' }}>{h.emoji}</span>
-                  <span style={{ fontWeight: '600' }}>{h.name}</span>
-                  <span style={{ fontSize: '0.7rem', marginLeft: 'auto', opacity: 0.7 }}>🏠 Actuellement au box</span>
-                </div>
-              ))}
-              {atBox.length === 0 && <p style={{ fontSize: '0.8rem', opacity: 0.5 }}>Tous vos chevaux sont de sortie !</p>}
             </div>
           </div>
         </div>
@@ -555,27 +563,9 @@ function App() {
       <div className="animate-fade">
         <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h1>Bonjour {user?.name} 👋</h1>
+            <h1>Bonjour {isManager ? 'Daniel' : user?.name} 👋</h1>
             <p style={{ color: 'var(--text-muted)' }}>{isManager ? 'Tableau de bord du club' : 'Emplacement actuel de vos chevaux'}.</p>
           </div>
-          {!isManager && (
-            <div className="card glass" style={{ padding: '15px' }}>
-              <div style={{ fontSize: '0.8rem', marginBottom: '10px', fontWeight: 'bold' }}>Ma personnalisation :</div>
-              <div style={{ display: 'flex', gap: '15px', flexDirection: 'column' }}>
-                {myHorses.map(h => (
-                  <div key={h.id} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '0.9rem', width: '70px' }}>{h.name} :</span>
-                    <div style={{ display: 'flex', gap: '5px' }}>
-                      {HORSE_ICONS.slice(0, 5).map(ico => (
-                        <button key={ico} onClick={() => handleUpdateHorse(h.id, { emoji: ico })} style={{ background: h.emoji === ico ? 'rgba(255,255,255,0.1)' : 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', borderRadius: '4px' }}>{ico}</button>
-                      ))}
-                    </div>
-                    <input type="color" value={h.color || '#B08D57'} onChange={(e) => handleUpdateHorse(h.id, { color: e.target.value })} style={{ border: 'none', background: 'none', width: '30px', height: '30px', cursor: 'pointer' }} title="Couleur du cheval" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </header>
 
         {isManager ? renderManagerDashboard() : renderOwnerDashboard()}
