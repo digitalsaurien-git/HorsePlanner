@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './index.css';
-import { initGoogleDrive, authenticateGoogle, saveToDrive, loadFromDrive } from './utils/googleDrive';
+import { supabase } from './utils/supabaseClient';
 
 // --- Mock Data & Constants ---
 const ROLES = {
@@ -90,12 +90,50 @@ function App() {
     setIsSidebarOpen(false);
   }, [mode]);
 
-  // Initialize Drive
+  // Supabase Initial Load
+  const fetchSupabaseData = async () => {
+    try {
+      // Fetch Horses
+      const { data: horsesData, error: hError } = await supabase.from('horses').select('*').order('name');
+      if (hError) throw hError;
+      if (horsesData && horsesData.length > 0) setHorses(horsesData);
+      else {
+        // Seed if empty
+        const { error: seedHError } = await supabase.from('horses').insert(INITIAL_HORSES);
+        if (!seedHError) fetchSupabaseData();
+      }
+
+      // Fetch Assignments
+      const { data: assignData, error: aError } = await supabase.from('assignments').select('*');
+      if (aError) throw aError;
+      if (assignData) {
+        // Remap DB fields to match App state
+        const mapped = assignData.map(a => ({
+          id: a.id,
+          horseId: a.horse_id,
+          startDate: a.start_date,
+          endDate: a.end_date,
+          status: a.status,
+          period: a.period
+        }));
+        setAssignments(mapped);
+      }
+    } catch (err) {
+      console.error("Supabase Load Error:", err);
+    }
+  };
+
   useEffect(() => {
-    const savedClientId = localStorage.getItem('hp_client_id') || clientId;
-    initGoogleDrive(savedClientId).then(() => {
-      console.log("☁️ Drive Ready with ID:", savedClientId);
-    });
+    fetchSupabaseData();
+    
+    // Subscribe to changes for Real-time
+    const horseSub = supabase.channel('horses_changes').on('postgres_changes', { event: '*', schema: 'public', table: 'horses' }, fetchSupabaseData).subscribe();
+    const assignSub = supabase.channel('assign_changes').on('postgres_changes', { event: '*', schema: 'public', table: 'assignments' }, fetchSupabaseData).subscribe();
+    
+    return () => {
+      supabase.removeChannel(horseSub);
+      supabase.removeChannel(assignSub);
+    };
   }, []);
 
   // Load from localStorage
@@ -148,53 +186,46 @@ function App() {
     localStorage.setItem('hp_client_id', clientId);
   }, [horses, assignments, syncPath, masterPassword, clientId]);
 
-  const isFirstRender = useRef(true);
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    if (isDriveConnected && isAutoSync && user && !user.isDemo) {
-      const t = setTimeout(() => {
-        saveToDrive({ horses, assignments }, syncPath).then(success => {
-          if (success) setLastSync(new Date().toLocaleString() + ' (Auto)');
-        });
-      }, 2000);
-      return () => clearTimeout(t);
-    }
-  }, [horses, assignments, isDriveConnected, isAutoSync, user, syncPath]);
-
-  const handleConnectDrive = async () => {
-    try {
-      await authenticateGoogle();
-      setIsDriveConnected(true);
-      alert("✅ Connecté à Google Drive !");
-    } catch (err) {
-      console.error("Auth Fail:", err);
-    }
+  // Real-time Save logic (Supabase)
+  const syncAddHorse = async (horse) => {
+    const { error } = await supabase.from('horses').insert([{ ...horse }]);
+    if (error) alert("Erreur Supabase: " + error.message);
   };
 
-  const handleManualSave = async () => {
-    const success = await saveToDrive({ horses, assignments }, syncPath);
-    if (success) {
-      setLastSync(new Date().toLocaleString());
-      alert("✅ Sauvegarde réussie sur Google Drive !");
-    } else {
-      alert("❌ Échec de la sauvegarde.");
-    }
+  const syncDeleteHorse = async (id) => {
+    const { error } = await supabase.from('horses').delete().eq('id', id);
+    if (error) alert("Erreur Supabase: " + error.message);
   };
 
-  const handleManualLoad = async () => {
-    if (!confirm("Voulez-vous écraser les données locales par celles du Drive ?")) return;
-    const data = await loadFromDrive(syncPath);
-    if (data) {
-      if (data.horses) setHorses(data.horses);
-      if (data.assignments) setAssignments(data.assignments);
-      alert("✅ Données chargées depuis Google Drive !");
-    } else {
-      alert("❌ Aucun fichier trouvé sur le Drive.");
-    }
+  const syncAddAssignment = async (a) => {
+    const { error } = await supabase.from('assignments').insert([{
+      horse_id: a.horseId,
+      start_date: a.startDate,
+      end_date: a.endDate,
+      status: a.status,
+      period: a.period
+    }]);
+    if (error) alert("Erreur Supabase: " + error.message);
   };
+
+  const syncDeleteAssignment = async (id) => {
+    const { error } = await supabase.from('assignments').delete().eq('id', id);
+    if (error) alert("Erreur Supabase: " + error.message);
+  };
+
+  const syncUpdateAssignment = async (id, updates) => {
+    const dbUpdates = {};
+    if (updates.startDate) dbUpdates.start_date = updates.startDate;
+    if (updates.endDate) dbUpdates.end_date = updates.endDate;
+    if (updates.period) dbUpdates.period = updates.period;
+    
+    const { error } = await supabase.from('assignments').update(dbUpdates).eq('id', id);
+    if (error) alert("Erreur Supabase: " + error.message);
+  };
+
+  const handleConnectDrive = () => alert("Note: HorsePlanner utilise désormais Supabase pour une synchro temps-réel.");
+  const handleManualSave = () => alert("Synchro temps-réel active (Supabase).");
+  const handleManualLoad = () => alert("Les données sont déjà synchronisées en temps réel.");
 
   const login = (role, email = '') => {
     let isDemo = false;
@@ -223,17 +254,14 @@ function App() {
     localStorage.removeItem('hp_user');
   };
 
-  const addHorse = (horse) => setHorses([...horses, { id: Date.now(), ...horse }]);
-  const deleteHorse = (id) => setHorses(horses.filter(h => h.id !== id));
+  const addHorse = (horse) => syncAddHorse(horse);
+  const deleteHorse = (id) => syncDeleteHorse(id);
 
-
-  const addAssignment = (assignment) => {
-    setAssignments([...assignments, { ...assignment, id: Date.now() }]);
-  };
-
-  const deleteAssignment = (id) => setAssignments(assignments.filter(p => p.id !== id));
-  const updateAssignmentPeriod = (id, period) => setAssignments(assignments.map(p => p.id === id ? { ...p, period } : p));
-  const updateAssignmentDates = (id, startDate, endDate) => setAssignments(assignments.map(p => p.id === id ? { ...p, startDate, endDate } : p));
+  const addAssignment = (assignment) => syncAddAssignment(assignment);
+  const deleteAssignment = (id) => syncDeleteAssignment(id);
+  
+  const updateAssignmentPeriod = (id, period) => syncUpdateAssignment(id, { period });
+  const updateAssignmentDates = (id, startDate, endDate) => syncUpdateAssignment(id, { startDate, endDate });
 
   // --- Components ---
 
@@ -625,14 +653,9 @@ function App() {
       </div>
       <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
         {!user?.isDemo && (
-          !isDriveConnected ? (
-            <button onClick={handleConnectDrive} className="btn" style={{ fontSize: '0.8rem', background: 'rgba(66, 133, 244, 0.1)', color: '#4285F4', border: '1px solid #4285F4' }}>☁️ Connecter Drive</button>
-          ) : (
-            <div style={{ fontSize: '0.7rem', color: 'var(--success)', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-              <span>✅ Cloud Sync On</span>
-              {lastSync && <span>Dernière synchro: {lastSync}</span>}
-            </div>
-          )
+          <div style={{ fontSize: '0.7rem', color: 'var(--success)', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+            <span>⚡ Temps réel On (Supabase)</span>
+          </div>
         )}
         <span className="hide-mobile" style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>{user?.role === ROLES.GERANT ? (user?.isDemo ? '🛡️ Démo' : '🛡️ Admin') : '👤 Propriétaire'}</span>
         <button onClick={logout} className="btn" style={{ padding: '0.5rem 1rem', background: 'rgba(244, 67, 54, 0.1)', color: 'var(--danger)', border: '1px solid var(--danger)' }}>Déconnexion</button>
