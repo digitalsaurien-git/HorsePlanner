@@ -533,7 +533,7 @@ function App() {
         <h2 className="gradient-text">HorsePlanner</h2>
       </div>
       <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        {user?.role === ROLES.GERANT && !user?.isDemo && (
+        {!user?.isDemo && (
           !isDriveConnected ? (
             <button onClick={handleConnectDrive} className="btn" style={{ fontSize: '0.8rem', background: 'rgba(66, 133, 244, 0.1)', color: '#4285F4', border: '1px solid #4285F4' }}>☁️ Connecter Drive</button>
           ) : (
