@@ -370,12 +370,14 @@ function App() {
 
         <div style={{ marginTop: '2rem' }}>
           <h4>Affectations actives</h4>
-          <div style={{ display: 'flex', gap: '10px', marginTop: '1rem', marginBottom: '1rem' }}>
-            <button className={`btn ${viewType === 'all' ? 'btn-primary' : ''}`} onClick={() => setViewType('all')}>Toutes</button>
-            <button className={`btn ${viewType === 'club' ? 'btn-primary' : ''}`} onClick={() => setViewType('club')}>Equidés du Club</button>
-            <button className={`btn ${viewType === 'owner' ? 'btn-primary' : ''}`} onClick={() => setViewType('owner')}>Equidés Propriétaires</button>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {!isOwner && (
+            <div style={{ display: 'flex', gap: '10px', marginTop: '1rem', marginBottom: '1rem' }}>
+              <button className={`btn ${viewType === 'all' ? 'btn-primary' : ''}`} onClick={() => setViewType('all')}>Toutes</button>
+              <button className={`btn ${viewType === 'club' ? 'btn-primary' : ''}`} onClick={() => setViewType('club')}>Equidés du Club</button>
+              <button className={`btn ${viewType === 'owner' ? 'btn-primary' : ''}`} onClick={() => setViewType('owner')}>Equidés Propriétaires</button>
+            </div>
+          )}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: isOwner ? '1rem' : '0' }}>
             {assignments.filter(p => {
               const h = horses.find(h => h.id === p.horseId);
               if (!h) return false;
