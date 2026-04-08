@@ -389,7 +389,7 @@ function App() {
     };
 
     const myHorses = user?.role === ROLES.PROPRIETAIRE 
-      ? horses.filter(h => h.owner.toLowerCase() === user.name.toLowerCase())
+      ? horses.filter(h => h.owner.toLowerCase() !== 'club')
       : horses;
 
     const myAssignments = user?.role === ROLES.PROPRIETAIRE 
@@ -401,6 +401,18 @@ function App() {
     const calendarDays = [];
     for (let i = 0; i < firstDayIdx; i++) calendarDays.push(null);
     for (let i = 1; i <= daysCount; i++) calendarDays.push(i);
+
+    let daysAuPre = 0;
+    if (filterHorseId !== 'all') {
+      const filteredAssignments = myAssignments.filter(a => String(a.horseId) === String(filterHorseId) && a.status === 'pré');
+      for (let i = 1; i <= daysCount; i++) {
+        const dateStr = `${activeYear}-${String(activeMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+        const current = new Date(dateStr);
+        if (filteredAssignments.some(p => current >= new Date(p.startDate) && current <= new Date(p.endDate))) {
+          daysAuPre++;
+        }
+      }
+    }
 
     return (
       <div className="animate-fade">
@@ -424,10 +436,17 @@ function App() {
           <div>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Visualisation globale pour {monthNames[activeMonth]}.</p>
           </div>
-          <select className="input" style={{ width: '100%', maxWidth: '200px' }} value={filterHorseId} onChange={e => setFilterHorseId(e.target.value)}>
-            <option value="all">Tous les chevaux</option>
-            {myHorses.slice().sort((a, b) => a.name.localeCompare(b.name)).map(h => <option key={h.id} value={h.id}>{h.emoji} {h.name}</option>)}
-          </select>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginLeft: 'auto', flexWrap: 'wrap' }}>
+            {filterHorseId !== 'all' && (
+              <span style={{ color: 'var(--warning)', fontWeight: 'bold', fontSize: '1.2rem', whiteSpace: 'nowrap' }}>
+                Ce mois-ci : {daysAuPre} jour{daysAuPre > 1 ? 's' : ''} au pré
+              </span>
+            )}
+            <select className="input" style={{ width: '100%', minWidth: '150px', maxWidth: '200px' }} value={filterHorseId} onChange={e => setFilterHorseId(e.target.value)}>
+              <option value="all">Tous les chevaux</option>
+              {myHorses.slice().sort((a, b) => a.name.localeCompare(b.name)).map(h => <option key={h.id} value={h.id}>{h.emoji} {h.name}</option>)}
+            </select>
+          </div>
         </header>
 
         <div className="card glass" style={{ padding: '0', overflow: 'hidden' }}>
