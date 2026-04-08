@@ -433,20 +433,16 @@ function App() {
          </header>
 
          <header style={{ marginBottom: '2rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Visualisation globale pour {monthNames[activeMonth]}.</p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '1.5rem', flex: 1 }}>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: 0 }}>Visualisation globale pour {monthNames[activeMonth]}.</p>
+            <span style={{ color: 'var(--warning)', fontWeight: 'bold', fontSize: '1.2rem', whiteSpace: 'nowrap', opacity: filterHorseId === 'all' ? 0 : 1, transition: 'opacity 0.2s ease', pointerEvents: 'none' }}>
+              Ce mois-ci : {daysAuPre} jour{daysAuPre > 1 ? 's' : ''} au pré
+            </span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginLeft: 'auto', flexWrap: 'wrap' }}>
-            {filterHorseId !== 'all' && (
-              <span style={{ color: 'var(--warning)', fontWeight: 'bold', fontSize: '1.2rem', whiteSpace: 'nowrap' }}>
-                Ce mois-ci : {daysAuPre} jour{daysAuPre > 1 ? 's' : ''} au pré
-              </span>
-            )}
-            <select className="input" style={{ width: '100%', minWidth: '150px', maxWidth: '200px' }} value={filterHorseId} onChange={e => setFilterHorseId(e.target.value)}>
-              <option value="all">Tous les chevaux</option>
-              {myHorses.slice().sort((a, b) => a.name.localeCompare(b.name)).map(h => <option key={h.id} value={h.id}>{h.emoji} {h.name}</option>)}
-            </select>
-          </div>
+          <select className="input" style={{ width: '100%', minWidth: '150px', maxWidth: '200px' }} value={filterHorseId} onChange={e => setFilterHorseId(e.target.value)}>
+            <option value="all">Tous les chevaux</option>
+            {myHorses.slice().sort((a, b) => a.name.localeCompare(b.name)).map(h => <option key={h.id} value={h.id}>{h.emoji} {h.name}</option>)}
+          </select>
         </header>
 
         <div className="card glass" style={{ padding: '0', overflow: 'hidden' }}>
