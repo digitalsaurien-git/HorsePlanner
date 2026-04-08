@@ -141,8 +141,8 @@ function App() {
 
   // Persistence
   useEffect(() => {
-    localStorage.setItem('horsePlanner_horses_v1.1', JSON.stringify(horses));
-    localStorage.setItem('horsePlanner_assignments_v1.1', JSON.stringify(assignments));
+    localStorage.setItem('horsePlanner_horses_v1.2', JSON.stringify(horses));
+    localStorage.setItem('horsePlanner_assignments_v1.2', JSON.stringify(assignments));
     localStorage.setItem('hp_sync_path', syncPath);
     localStorage.setItem('hp_master_password', masterPassword);
     localStorage.setItem('hp_client_id', clientId);
@@ -424,11 +424,12 @@ function App() {
                             const container = document.getElementById(`edit-${p.id}`);
                             container.style.display = container.style.display === 'none' ? 'flex' : 'none';
                           }} style={{ padding: '0px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>✏️</button>
-                          <div id={`edit-${p.id}`} className="glass" style={{ display: 'none', position: 'absolute', top: '100%', right: 0, zIndex: 10, padding: '10px', borderRadius: '8px', flexDirection: 'column', gap: '5px', minWidth: '200px', background: 'var(--bg-card)' }}>
-                            <label style={{ fontSize: '0.7rem' }}>Début:</label>
-                            <input type="date" value={p.startDate} onChange={(e) => updateAssignmentDates(p.id, e.target.value, p.endDate)} className="input" style={{ padding: '4px' }} />
-                            <label style={{ fontSize: '0.7rem' }}>Fin:</label>
-                            <input type="date" value={p.endDate} onChange={(e) => updateAssignmentDates(p.id, p.startDate, e.target.value)} className="input" style={{ padding: '4px' }} />
+                          <div id={`edit-${p.id}`} className="glass" style={{ display: 'none', position: 'absolute', top: '100%', right: 0, zIndex: 10, padding: '15px', borderRadius: '12px', flexDirection: 'column', gap: '8px', minWidth: '220px', background: '#ffffff', border: '2px solid var(--accent)', boxShadow: '0 10px 25px rgba(0,0,0,0.5)' }}>
+                            <label style={{ fontSize: '0.8rem', color: '#333', fontWeight: 'bold' }}>📅 Date de début :</label>
+                            <input type="date" value={p.startDate} onChange={(e) => updateAssignmentDates(p.id, e.target.value, p.endDate)} className="input" style={{ padding: '8px', color: '#000', border: '1px solid #ccc', background: '#f5f5f5' }} />
+                            <label style={{ fontSize: '0.8rem', color: '#333', fontWeight: 'bold', marginTop: '5px' }}>📅 Date de fin :</label>
+                            <input type="date" value={p.endDate} onChange={(e) => updateAssignmentDates(p.id, p.startDate, e.target.value)} className="input" style={{ padding: '8px', color: '#000', border: '1px solid #ccc', background: '#f5f5f5' }} />
+                            <button onClick={() => document.getElementById(`edit-${p.id}`).style.display = 'none'} className="btn btn-primary" style={{ width: '100%', marginTop: '10px', fontSize: '0.8rem', padding: '5px' }}>Fermer</button>
                           </div>
                         </div>
                         <button onClick={() => deleteAssignment(p.id)} style={{ padding: '0px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>🗑️</button>
@@ -810,6 +811,20 @@ function App() {
               </div>
             )}
             {lastSync && <div style={{ fontSize: '0.7rem', marginTop: '10px', textAlign: 'right', opacity: 0.7 }}>Dernière synchro : {lastSync}</div>}
+          </div>
+
+          <div style={{ marginTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1.5rem' }}>
+            <h4 style={{ color: 'var(--danger)' }}>Zone de danger</h4>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>Rétablir les données de démonstration (Mars à Mai 2026).</p>
+            <button className="btn" style={{ border: '1px solid var(--danger)', color: 'var(--danger)', background: 'rgba(244, 67, 54, 0.05)', width: '100%' }} onClick={() => {
+              if (confirm("Voulez-vous vraiment écraser vos chevaux actuels par les données de démo des captures d'écran ?")) {
+                setHorses(INITIAL_HORSES);
+                setAssignments(INITIAL_PLANNINGS);
+                localStorage.removeItem('horsePlanner_horses_v1.1');
+                localStorage.removeItem('horsePlanner_assignments_v1.1');
+                alert("✅ Données de démonstration chargées !");
+              }
+            }}>Réinitialiser avec les données Démo (Mars-Mai)</button>
           </div>
         </div>
       </div>
