@@ -35,6 +35,7 @@ Créer une application simple pour gérer la mise au pré ou au box des chevaux 
 - [x] Zone de Secours (Bouton de réinitialisation d'urgence)
 - [x] Alignement CI/CD (GitHub Actions + Déploiement Vercel automatique)
 - [x] Robustesse (Versioning du cache v1.1 pour éviter les écrans blancs)
+- [x] Tri alphabétique automatique des chevaux dans tous les menus et listes (Gérant et Propriétaire)
 
 **OUT (exclu / plus tard):**
 - Réservation avancée des prés par propriétaire
@@ -69,3 +70,4 @@ Créer une application simple pour gérer la mise au pré ou au box des chevaux 
 - [x] Le mot de passe gérant protège l'accès aux fonctions sensibles
 - [x] La personnalisation d'un cheval est strictement isolée (ne se propage plus aux autres)
 - [x] Le déploiement sur Vercel et GitHub Pages est 100% synchronisé
+- [x] Les listes de chevaux sont triées par ordre alphabétique partout (Dashboard, Menus, Affectations)

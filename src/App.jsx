@@ -261,7 +261,7 @@ function App() {
              <h3>🐴 Liste des Chevaux ({horses.length})</h3>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
-            {horses.map(h => (
+            {horses.slice().sort((a, b) => a.name.localeCompare(b.name)).map(h => (
               <div key={h.id} className="glass" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', borderRadius: '12px', borderLeft: `4px solid ${h.color || 'var(--accent)'}` }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                   <span style={{ fontSize: '2.5rem' }}>{h.emoji}</span>
@@ -305,7 +305,7 @@ function App() {
             <div style={{ flex: 1, minWidth: '150px' }}>
                <label style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '5px', display: 'block' }}>Cheval</label>
                <select className="input" value={hId} onChange={e => setHId(e.target.value)}>
-                 {horses.map(h => <option key={h.id} value={h.id}>{h.emoji} {h.name}</option>)}
+                 {horses.slice().sort((a, b) => a.name.localeCompare(b.name)).map(h => <option key={h.id} value={h.id}>{h.emoji} {h.name}</option>)}
                </select>
             </div>
             <div style={{ flex: 1, minWidth: '150px' }}>
@@ -343,6 +343,10 @@ function App() {
               if (viewType === 'club') return h.owner.toLowerCase() === 'club';
               if (viewType === 'owner') return h.owner.toLowerCase() !== 'club';
               return true;
+            }).sort((a, b) => {
+              const hA = horses.find(h => h.id === a.horseId);
+              const hB = horses.find(h => h.id === b.horseId);
+              return (hA?.name || "").localeCompare(hB?.name || "");
             }).map(p => {
               const h = horses.find(h => h.id === p.horseId);
               return h ? (
@@ -407,7 +411,11 @@ function App() {
                 <div key={i} style={{ minHeight: '120px', padding: '10px', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   <span style={{ fontSize: '0.75rem', fontWeight: '600', opacity: i + 1 === 2 ? 1 : 0.4, color: i + 1 === 2 ? 'var(--accent)' : 'inherit' }}>{i + 1} Avr</span>
                   <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    {dayAssignments.map(a => {
+                    {dayAssignments.slice().sort((a, b) => {
+                      const hA = horses.find(h => h.id === a.horseId);
+                      const hB = horses.find(h => h.id === b.horseId);
+                      return (hA?.name || "").localeCompare(hB?.name || "");
+                    }).map(a => {
                       const h = horses.find(h => h.id === a.horseId);
                       return h ? (
                         <div key={a.id} style={{ 
@@ -516,7 +524,11 @@ function App() {
           <h3>☀️ Matin - Départ au pré</h3>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Mouvements prévus ce matin.</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '1rem' }}>
-            {todayAssignments.filter(a => a.startDate === today && a.status === 'pré').map(a => {
+             {todayAssignments.filter(a => a.startDate === today && a.status === 'pré').sort((a, b) => {
+              const hA = horses.find(h => h.id === a.horseId);
+              const hB = horses.find(h => h.id === b.horseId);
+              return (hA?.name || "").localeCompare(hB?.name || "");
+            }).map(a => {
               const h = horses.find(h => h.id === a.horseId);
               return h ? (
                 <div key={a.id} className="glass" style={{ padding: '10px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -532,7 +544,11 @@ function App() {
           <h3>🌑 Soir - Retour box</h3>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Mouvements prévus ce soir.</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '1rem' }}>
-            {todayAssignments.filter(a => a.endDate === today && a.status === 'pré').map(a => {
+             {todayAssignments.filter(a => a.endDate === today && a.status === 'pré').sort((a, b) => {
+              const hA = horses.find(h => h.id === a.horseId);
+              const hB = horses.find(h => h.id === b.horseId);
+              return (hA?.name || "").localeCompare(hB?.name || "");
+            }).map(a => {
               const h = horses.find(h => h.id === a.horseId);
               return h ? (
                 <div key={a.id} className="glass" style={{ padding: '10px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -558,7 +574,7 @@ function App() {
           <div className="card glass">
             <h3 style={{ color: 'var(--success)' }}>🌿 Chevaux Propriétaires (au Pré)</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '1rem' }}>
-              {atPasture.map(({horse: h, assignment: a}) => {
+               {atPasture.sort((a, b) => a.horse.name.localeCompare(b.horse.name)).map(({horse: h, assignment: a}) => {
                 const days = Math.ceil((new Date(a.endDate) - new Date(a.startDate)) / (1000 * 60 * 60 * 24)) + 1;
                 return (
                   <div key={h.id} className="horse-item glass" style={{ borderLeft: `4px solid ${h.color || 'var(--primary)'}`, cursor: 'pointer' }} onClick={() => alert(`Au pré du ${a.startDate} au ${a.endDate} (${days} jours)`)}>
