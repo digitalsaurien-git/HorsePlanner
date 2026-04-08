@@ -384,7 +384,7 @@ function App() {
           </div>
           <select className="input" style={{ width: '100%', maxWidth: '200px' }} value={filterHorseId} onChange={e => setFilterHorseId(e.target.value)}>
             <option value="all">Tous les chevaux</option>
-            {myHorses.map(h => <option key={h.id} value={h.id}>{h.emoji} {h.name}</option>)}
+            {myHorses.slice().sort((a, b) => a.name.localeCompare(b.name)).map(h => <option key={h.id} value={h.id}>{h.emoji} {h.name}</option>)}
           </select>
         </header>
 
