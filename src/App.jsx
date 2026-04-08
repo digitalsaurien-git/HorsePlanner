@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './index.css';
-import { initGoogleDrive, authenticateGoogle, saveToDrive, loadFromDrive, CLIENT_ID } from './utils/googleDrive';
+import { initGoogleDrive, authenticateGoogle, saveToDrive, loadFromDrive } from './utils/googleDrive';
 
 // --- Mock Data & Constants ---
 const ROLES = {
@@ -75,6 +75,7 @@ function App() {
   const [syncPath, setSyncPath] = useState('DigitalSaurien/AUTOMATE/HorsePlanner');
   const [passwordInput, setPasswordInput] = useState('');
   const [masterPassword, setMasterPassword] = useState('bucephal91$ADM');
+  const [clientId, setClientId] = useState('867619813314-h3gf1ro6fn1ddotkttso119lbiphi2rv.apps.googleusercontent.com');
   const [isGerantSelected, setIsGerantSelected] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -85,8 +86,9 @@ function App() {
 
   // Initialize Drive
   useEffect(() => {
-    initGoogleDrive().then(() => {
-      console.log("☁️ Drive Ready");
+    const savedClientId = localStorage.getItem('hp_client_id') || clientId;
+    initGoogleDrive(savedClientId).then(() => {
+      console.log("☁️ Drive Ready with ID:", savedClientId);
     });
   }, []);
 
@@ -111,6 +113,9 @@ function App() {
       const savedHorses = localStorage.getItem('horsePlanner_horses_v1.1');
       if (savedHorses) setHorses(JSON.parse(savedHorses));
 
+      const savedClientId = localStorage.getItem('hp_client_id');
+      if (savedClientId) setClientId(savedClientId);
+
       const savedAssignments = localStorage.getItem('horsePlanner_assignments_v1.1');
       if (savedAssignments) setAssignments(JSON.parse(savedAssignments));
 
@@ -132,7 +137,8 @@ function App() {
     localStorage.setItem('horsePlanner_assignments_v1.1', JSON.stringify(assignments));
     localStorage.setItem('hp_sync_path', syncPath);
     localStorage.setItem('hp_master_password', masterPassword);
-  }, [horses, assignments, syncPath, masterPassword]);
+    localStorage.setItem('hp_client_id', clientId);
+  }, [horses, assignments, syncPath, masterPassword, clientId]);
 
   const handleConnectDrive = async () => {
     try {
@@ -624,6 +630,20 @@ function App() {
               placeholder="ex: DigitalSaurien/AUTOMATE/HorsePlanner"
               style={{ width: '100%', padding: '12px', background: 'var(--bg-glass)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '8px' }}
             />
+          </div>
+
+          <div>
+            <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '5px', display: 'block' }}>Google Client ID (OAuth 2.0)</label>
+            <input 
+              className="input" 
+              value={clientId} 
+              onChange={e => setClientId(e.target.value)} 
+              placeholder="ex: 12345-abcde.apps.googleusercontent.com"
+              style={{ width: '100%', padding: '12px', background: 'var(--bg-glass)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '8px' }}
+            />
+            <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '5px' }}>
+              ⚠️ Changer le Client ID nécessite de rafraichir la page pour ré-initialiser la connexion.
+            </p>
           </div>
           
           <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>

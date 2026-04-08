@@ -36,6 +36,7 @@ Créer une application simple pour gérer la mise au pré ou au box des chevaux 
 - [x] Alignement CI/CD (GitHub Actions + Déploiement Vercel automatique)
 - [x] Robustesse (Versioning du cache v1.1 pour éviter les écrans blancs)
 - [x] Tri alphabétique automatique des chevaux dans tous les menus et listes (Gérant et Propriétaire)
+- [x] Configuration générique Google Drive (Client ID personnalisable et Dossier/ID cible)
 
 **OUT (exclu / plus tard):**
 - Réservation avancée des prés par propriétaire

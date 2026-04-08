@@ -3,7 +3,7 @@
  * Path: /DigitalSaurien/AUTOMATE/HorsePlanner
  */
 
-export const CLIENT_ID = "867619813314-h3gf1ro6fn1ddotkttso119lbiphi2rv.apps.googleusercontent.com";
+let currentClientId = "867619813314-h3gf1ro6fn1ddotkttso119lbiphi2rv.apps.googleusercontent.com";
 const SCOPES = 'https://www.googleapis.com/auth/drive.file';
 
 let tokenClient;
@@ -25,8 +25,9 @@ function waitForScripts() {
 }
 
 // Initialize the GAPI and GIS libraries
-export async function initGoogleDrive() {
-  if (!CLIENT_ID) return;
+export async function initGoogleDrive(customClientId) {
+  if (customClientId) currentClientId = customClientId;
+  if (!currentClientId) return;
   
   await waitForScripts();
   console.log("🛠️ Script Google détectés, initialisation...");
@@ -36,11 +37,11 @@ export async function initGoogleDrive() {
     window.gapi.load('client', async () => {
       try {
         await window.gapi.client.init({
-          clientId: CLIENT_ID,
+          clientId: currentClientId,
           discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
         });
         gapiInited = true;
-        console.log("✅ GAPI Initialisé");
+        console.log("✅ GAPI Initialisé avec ClientID:", currentClientId);
         checkInitialization(resolve);
       } catch (err) {
         console.error("❌ GAPI Init Error:", err);
@@ -48,12 +49,12 @@ export async function initGoogleDrive() {
     });
 
     tokenClient = window.google.accounts.oauth2.initTokenClient({
-      client_id: CLIENT_ID,
+      client_id: currentClientId,
       scope: SCOPES,
       callback: '', // defined later for auth
     });
     ghisInited = true;
-    console.log("✅ GIS Initialisé");
+    console.log("✅ GIS Initialisé avec ClientID:", currentClientId);
     checkInitialization(resolve);
   });
 }
@@ -105,14 +106,17 @@ async function getOrCreateFolder(name, parentId = 'root') {
   }
 }
 
-// Helper to resolve a full path (e.g. "Folder/Subfolder/App")
+// Helper to resolve a full path (e.g. "Folder/Subfolder/App") or a direct ID
 async function resolvePath(pathString) {
+  // If it looks like a direct Folder ID (no slashes, long string)
+  if (!pathString.includes('/') && pathString.length > 20) {
+    return pathString;
+  }
+
   const folders = pathString.split('/').filter(f => f.length > 0);
   let currentId = 'root';
 
   // DigitalSaurien IDs (Anti-doublons)
-  // For HorsePlanner (pure frontend), we can use the same IDs or search for them.
-  // I'll add a helper to use static IDs if provided via window.SYNC_CONFIG
   const rootId = window.SYNC_CONFIG?.rootId || "";
   const automateId = window.SYNC_CONFIG?.automateId || "";
 
