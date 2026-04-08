@@ -37,6 +37,8 @@ Créer une application simple pour gérer la mise au pré ou au box des chevaux 
 - [x] Robustesse (Versioning du cache v1.1 pour éviter les écrans blancs)
 - [x] Tri alphabétique automatique des chevaux dans tous les menus et listes (Gérant et Propriétaire)
 - [x] Configuration générique Google Drive (Client ID personnalisable et Dossier/ID cible)
+- [x] Calendrier dynamique sur 12 mois avec alignement correct des jours de la semaine
+- [x] Autorisation d'affectation pour les propriétaires (restreint à leurs chevaux) avec synchronisation gérant/propriétaire
 
 **OUT (exclu / plus tard):**
 - Réservation avancée des prés par propriétaire

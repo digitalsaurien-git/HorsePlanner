@@ -217,11 +217,9 @@ function App() {
       <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <button className={`btn ${mode === APP_MODES.DASHBOARD ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.DASHBOARD)}>🏠 Dashboard</button>
         {user?.role === ROLES.GERANT && (
-          <>
-            <button className={`btn ${mode === APP_MODES.HORSES ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.HORSES)}>🐴 Chevaux</button>
-            <button className={`btn ${mode === APP_MODES.ASSIGNMENTS ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.ASSIGNMENTS)}>🗓️ Affectations</button>
-          </>
+          <button className={`btn ${mode === APP_MODES.HORSES ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.HORSES)}>🐴 Chevaux</button>
         )}
+        <button className={`btn ${mode === APP_MODES.ASSIGNMENTS ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.ASSIGNMENTS)}>🗓️ Affectations</button>
         <button className={`btn ${mode === APP_MODES.CALENDAR ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.CALENDAR)}>📅 Calendrier</button>
         {user?.role === ROLES.GERANT && !user?.isDemo && (
           <button className={`btn ${mode === APP_MODES.SETTINGS ? 'btn-primary' : ''}`} style={{ justifyContent: 'start', marginTop: 'auto' }} onClick={() => setMode(APP_MODES.SETTINGS)}>⚙️ Paramètres</button>
@@ -286,11 +284,18 @@ function App() {
   };
 
   const AssignmentView = () => {
-    const [hId, setHId] = useState(horses[0]?.id || '');
+    const isOwner = user?.role === ROLES.PROPRIETAIRE;
+    const myHorses = isOwner ? horses.filter(h => h.owner.toLowerCase() !== 'club') : horses;
+    
+    const [hId, setHId] = useState(myHorses[0]?.id || '');
     const [start, setStart] = useState(new Date().toISOString().split('T')[0]);
     const [end, setEnd] = useState(new Date().toISOString().split('T')[0]);
     const [loc, setLoc] = useState('pré');
     const [viewType, setViewType] = useState('all');
+
+    useEffect(() => {
+      if (myHorses.length > 0 && !hId) setHId(myHorses[0].id);
+    }, [myHorses]);
 
     const handleBulkAssign = (e) => {
       e.preventDefault();
@@ -311,7 +316,7 @@ function App() {
             <div style={{ flex: 1, minWidth: '150px' }}>
                <label style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '5px', display: 'block' }}>Cheval</label>
                <select className="input" value={hId} onChange={e => setHId(e.target.value)}>
-                 {horses.slice().sort((a, b) => a.name.localeCompare(b.name)).map(h => <option key={h.id} value={h.id}>{h.emoji} {h.name}</option>)}
+                 {myHorses.slice().sort((a, b) => a.name.localeCompare(b.name)).map(h => <option key={h.id} value={h.id}>{h.emoji} {h.name}</option>)}
                </select>
             </div>
             <div style={{ flex: 1, minWidth: '150px' }}>
@@ -346,6 +351,7 @@ function App() {
             {assignments.filter(p => {
               const h = horses.find(h => h.id === p.horseId);
               if (!h) return false;
+              if (isOwner) return h.owner.toLowerCase() !== 'club';
               if (viewType === 'club') return h.owner.toLowerCase() === 'club';
               if (viewType === 'owner') return h.owner.toLowerCase() !== 'club';
               return true;
@@ -371,22 +377,52 @@ function App() {
 
   const CalendarView = () => {
     const [filterHorseId, setFilterHorseId] = useState('all');
-    const daysInMonth = 30;
+    const [activeMonth, setActiveMonth] = useState(new Date().getMonth());
+    const [activeYear, setActiveYear] = useState(new Date().getFullYear());
+
+    const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+    
+    const getDaysInMonth = (y, m) => new Date(y, m + 1, 0).getDate();
+    const getFirstDayOfMonth = (y, m) => {
+      let day = new Date(y, m, 1).getDay();
+      return day === 0 ? 6 : day - 1; // 0=Lun, 6=Dim
+    };
 
     const myHorses = user?.role === ROLES.PROPRIETAIRE 
-      ? horses.filter(h => h.owner.toLowerCase() !== 'club')
+      ? horses.filter(h => h.owner.toLowerCase() === user.name.toLowerCase())
       : horses;
 
     const myAssignments = user?.role === ROLES.PROPRIETAIRE 
       ? assignments.filter(a => myHorses.some(h => h.id === a.horseId)) 
       : assignments;
 
+    const daysCount = getDaysInMonth(activeYear, activeMonth);
+    const firstDayIdx = getFirstDayOfMonth(activeYear, activeMonth);
+    const calendarDays = [];
+    for (let i = 0; i < firstDayIdx; i++) calendarDays.push(null);
+    for (let i = 1; i <= daysCount; i++) calendarDays.push(i);
+
     return (
       <div className="animate-fade">
+         <header style={{ marginBottom: '1rem' }}>
+            <h1>Calendrier {activeYear}</h1>
+            <div style={{ display: 'flex', gap: '5px', overflowX: 'auto', padding: '10px 0', scrollbarWidth: 'none' }} className="hide-scrollbar">
+              {monthNames.map((m, idx) => (
+                <button 
+                  key={m} 
+                  className={`btn ${activeMonth === idx ? 'btn-primary' : ''}`} 
+                  style={{ fontSize: '0.7rem', padding: '6px 12px', whiteSpace: 'nowrap' }} 
+                  onClick={() => setActiveMonth(idx)}
+                >
+                  {m}
+                </button>
+              ))}
+            </div>
+         </header>
+
          <header style={{ marginBottom: '2rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h1>Calendrier</h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Visualisation globale des placements.</p>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Visualisation globale pour {monthNames[activeMonth]}.</p>
           </div>
           <select className="input" style={{ width: '100%', maxWidth: '200px' }} value={filterHorseId} onChange={e => setFilterHorseId(e.target.value)}>
             <option value="all">Tous les chevaux</option>
@@ -399,8 +435,12 @@ function App() {
             {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(d => <div key={d} style={{ padding: '12px', fontWeight: 'bold', fontSize: '0.8rem', color: 'var(--text-muted)' }}>{d}</div>)}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
-            {[...Array(daysInMonth)].map((_, i) => {
-              const dateStr = `2026-04-${String(i + 1).padStart(2, '0')}`;
+            {calendarDays.map((day, i) => {
+              if (day === null) return <div key={`empty-${i}`} style={{ border: '1px solid rgba(255,255,255,0.02)' }}></div>;
+
+              const dateStr = `${activeYear}-${String(activeMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+              const todayStr = new Date().toISOString().split('T')[0];
+              const isToday = dateStr === todayStr;
               
               const filtered = filterHorseId === 'all' 
                 ? myAssignments 
@@ -414,8 +454,8 @@ function App() {
               });
               
               return (
-                <div key={i} style={{ minHeight: '120px', padding: '10px', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <span style={{ fontSize: '0.75rem', fontWeight: '600', opacity: i + 1 === 2 ? 1 : 0.4, color: i + 1 === 2 ? 'var(--accent)' : 'inherit' }}>{i + 1} Avr</span>
+                <div key={i} style={{ minHeight: '120px', padding: '10px', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', gap: '6px', background: isToday ? 'rgba(66, 133, 244, 0.05)' : 'transparent' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: '600', color: isToday ? 'var(--accent)' : 'inherit', opacity: isToday ? 1 : 0.4 }}>{day} {monthNames[activeMonth].substring(0, 3)}</span>
                   <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     {dayAssignments.slice().sort((a, b) => {
                       const hA = horses.find(h => h.id === a.horseId);
