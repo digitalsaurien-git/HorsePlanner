@@ -117,13 +117,15 @@ function App() {
       }
       
       const savedHorses = localStorage.getItem('horsePlanner_horses_v1.1');
-      if (savedHorses) setHorses(JSON.parse(savedHorses));
+      if (savedHorses && JSON.parse(savedHorses).length > 0) setHorses(JSON.parse(savedHorses));
+      else setHorses(INITIAL_HORSES);
 
       const savedClientId = localStorage.getItem('hp_client_id');
       if (savedClientId) setClientId(savedClientId);
 
       const savedAssignments = localStorage.getItem('horsePlanner_assignments_v1.1');
-      if (savedAssignments) setAssignments(JSON.parse(savedAssignments));
+      if (savedAssignments && JSON.parse(savedAssignments).length > 0) setAssignments(JSON.parse(savedAssignments));
+      else setAssignments(INITIAL_PLANNINGS);
 
       const savedPath = localStorage.getItem('hp_sync_path');
       if (savedPath) setSyncPath(savedPath);
@@ -417,12 +419,18 @@ function App() {
                     </span>
                     {user?.role === ROLES.GERANT && (
                       <div style={{ display: 'flex', gap: '5px' }}>
-                        <button onClick={() => {
-                          const newStart = prompt("Nouvelle date de début (YYYY-MM-DD):", p.startDate);
-                          if (!newStart) return;
-                          const newEnd = prompt("Nouvelle date de fin (YYYY-MM-DD):", p.endDate);
-                          if (newEnd) updateAssignmentDates(p.id, newStart, newEnd);
-                        }} style={{ padding: '0px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>✏️</button>
+                        <div style={{ position: 'relative' }}>
+                          <button onClick={() => {
+                            const container = document.getElementById(`edit-${p.id}`);
+                            container.style.display = container.style.display === 'none' ? 'flex' : 'none';
+                          }} style={{ padding: '0px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>✏️</button>
+                          <div id={`edit-${p.id}`} className="glass" style={{ display: 'none', position: 'absolute', top: '100%', right: 0, zIndex: 10, padding: '10px', borderRadius: '8px', flexDirection: 'column', gap: '5px', minWidth: '200px', background: 'var(--bg-card)' }}>
+                            <label style={{ fontSize: '0.7rem' }}>Début:</label>
+                            <input type="date" value={p.startDate} onChange={(e) => updateAssignmentDates(p.id, e.target.value, p.endDate)} className="input" style={{ padding: '4px' }} />
+                            <label style={{ fontSize: '0.7rem' }}>Fin:</label>
+                            <input type="date" value={p.endDate} onChange={(e) => updateAssignmentDates(p.id, p.startDate, e.target.value)} className="input" style={{ padding: '4px' }} />
+                          </div>
+                        </div>
                         <button onClick={() => deleteAssignment(p.id)} style={{ padding: '0px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>🗑️</button>
                       </div>
                     )}
@@ -723,7 +731,7 @@ function App() {
       <div className="animate-fade">
         <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h1>Bonjour {isManager ? 'Daniel' : user?.name} 👋</h1>
+            <h1>Bonjour {isManager ? 'Daniel' : ''} 👋</h1>
             <p style={{ color: 'var(--text-muted)' }}>{isManager ? 'Tableau de bord du club' : 'Emplacement actuel des chevaux propriétaires'}.</p>
           </div>
         </header>
