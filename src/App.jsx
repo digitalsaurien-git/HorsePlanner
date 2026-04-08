@@ -530,7 +530,7 @@ function App() {
               return (
                 <div key={i} style={{ minHeight: '120px', padding: '10px', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', gap: '6px', background: isToday ? 'rgba(66, 133, 244, 0.05)' : 'transparent' }}>
                   <span style={{ fontSize: '0.75rem', fontWeight: '600', color: isToday ? 'var(--accent)' : 'inherit', opacity: isToday ? 1 : 0.4 }}>{day} {monthNames[activeMonth].substring(0, 3)}</span>
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px', maxHeight: '150px', overflowY: 'auto' }}>
+                  <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '4px', alignContent: 'start' }}>
                     {dayAssignments.slice().sort((a, b) => {
                       const hA = horses.find(h => h.id === a.horseId);
                       const hB = horses.find(h => h.id === b.horseId);
@@ -644,7 +644,7 @@ function App() {
         <div className="card glass" style={{ borderLeft: '4px solid var(--success)' }}>
           <h3>☀️ Matin - Départ au pré</h3>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Mouvements prévus ce matin.</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '1rem', maxHeight: '300px', overflowY: 'auto', paddingRight: '5px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '10px', marginTop: '1rem' }}>
              {todayAssignments.filter(a => a.startDate === today && a.status === 'pré').sort((a, b) => {
               const hA = horses.find(h => h.id === a.horseId);
               const hB = horses.find(h => h.id === b.horseId);
@@ -664,7 +664,7 @@ function App() {
         <div className="card glass" style={{ borderLeft: '4px solid var(--warning)' }}>
           <h3>🌑 Soir - Retour box</h3>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Mouvements prévus ce soir.</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '1rem', maxHeight: '300px', overflowY: 'auto', paddingRight: '5px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '10px', marginTop: '1rem' }}>
              {todayAssignments.filter(a => a.endDate === today && a.status === 'pré').sort((a, b) => {
               const hA = horses.find(h => h.id === a.horseId);
               const hB = horses.find(h => h.id === b.horseId);
@@ -694,7 +694,7 @@ function App() {
         <div className="grid">
           <div className="card glass">
             <h3 style={{ color: 'var(--success)' }}>🌿 Chevaux Propriétaires (au Pré)</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '1rem', maxHeight: '400px', overflowY: 'auto', paddingRight: '5px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '10px', marginTop: '1rem' }}>
                {atPasture.sort((a, b) => a.horse.name.localeCompare(b.horse.name)).map(({horse: h, assignment: a}) => {
                 const days = Math.ceil((new Date(a.endDate) - new Date(a.startDate)) / (1000 * 60 * 60 * 24)) + 1;
                 return (
