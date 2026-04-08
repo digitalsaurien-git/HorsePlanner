@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './index.css';
 import { initGoogleDrive, authenticateGoogle, saveToDrive, loadFromDrive } from './utils/googleDrive';
 
@@ -78,6 +78,7 @@ function App() {
   const [clientId, setClientId] = useState('867619813314-h3gf1ro6fn1ddotkttso119lbiphi2rv.apps.googleusercontent.com');
   const [isGerantSelected, setIsGerantSelected] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isAutoSync, setIsAutoSync] = useState(() => localStorage.getItem('hp_auto_sync') !== 'false');
 
   // Close sidebar on mode change on mobile
   useEffect(() => {
@@ -139,6 +140,22 @@ function App() {
     localStorage.setItem('hp_master_password', masterPassword);
     localStorage.setItem('hp_client_id', clientId);
   }, [horses, assignments, syncPath, masterPassword, clientId]);
+
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    if (isDriveConnected && isAutoSync && user && !user.isDemo) {
+      const t = setTimeout(() => {
+        saveToDrive({ horses, assignments }, syncPath).then(success => {
+          if (success) setLastSync(new Date().toLocaleString() + ' (Auto)');
+        });
+      }, 2000);
+      return () => clearTimeout(t);
+    }
+  }, [horses, assignments, isDriveConnected, isAutoSync, user, syncPath]);
 
   const handleConnectDrive = async () => {
     try {
@@ -377,9 +394,9 @@ function App() {
                   <span className={`badge ${p.status === 'pré' ? 'success' : 'info'}`} style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
                     {p.status} 
                     <select value={p.period || 'journée'} onChange={(e) => updateAssignmentPeriod(p.id, e.target.value)} style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: 'inherit', fontSize: 'inherit', borderRadius: '4px', cursor: 'pointer' }}>
-                      <option value="journée">Journée</option>
-                      <option value="matin">Matin</option>
-                      <option value="après-midi">Après-midi</option>
+                      <option value="journée" style={{ color: '#000', background: '#fff' }}>Journée</option>
+                      <option value="matin" style={{ color: '#000', background: '#fff' }}>Matin</option>
+                      <option value="après-midi" style={{ color: '#000', background: '#fff' }}>Après-midi</option>
                     </select>
                   </span>
                   <button onClick={() => deleteAssignment(p.id)} style={{ padding: '5px', background: 'transparent', border: 'none', color: 'var(--danger)' }}>🗑️</button>
@@ -744,6 +761,18 @@ function App() {
               <button className="btn btn-primary" style={{ marginTop: '15px', width: '100%' }} onClick={handleConnectDrive}>
                 Établir la liaison Google Drive
               </button>
+            )}
+            {isDriveConnected && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '8px', marginTop: '10px' }}>
+                <div>
+                  <span style={{ fontSize: '0.9rem', display: 'block' }}>Synchronisation automatique</span>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Sauvegarde automatiquement en tâche de fond.</span>
+                </div>
+                <input type="checkbox" checked={isAutoSync} onChange={(e) => {
+                  setIsAutoSync(e.target.checked);
+                  localStorage.setItem('hp_auto_sync', e.target.checked);
+                }} style={{ width: '20px', height: '20px', cursor: 'pointer' }} />
+              </div>
             )}
             {lastSync && <div style={{ fontSize: '0.7rem', marginTop: '10px', textAlign: 'right', opacity: 0.7 }}>Dernière synchro : {lastSync}</div>}
           </div>
