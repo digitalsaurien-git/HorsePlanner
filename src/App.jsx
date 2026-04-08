@@ -72,10 +72,10 @@ function App() {
   const [assignments, setAssignments] = useState([]); 
   const [isDriveConnected, setIsDriveConnected] = useState(false);
   const [lastSync, setLastSync] = useState(null);
-  const [syncPath, setSyncPath] = useState('DigitalSaurien/AUTOMATE/HorsePlanner');
+  const [syncPath, setSyncPath] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [masterPassword, setMasterPassword] = useState('bucephal91$ADM');
-  const [clientId, setClientId] = useState('867619813314-h3gf1ro6fn1ddotkttso119lbiphi2rv.apps.googleusercontent.com');
+  const [clientId, setClientId] = useState('');
   const [isGerantSelected, setIsGerantSelected] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAutoSync, setIsAutoSync] = useState(() => localStorage.getItem('hp_auto_sync') !== 'false');
@@ -226,6 +226,7 @@ function App() {
 
   const deleteAssignment = (id) => setAssignments(assignments.filter(p => p.id !== id));
   const updateAssignmentPeriod = (id, period) => setAssignments(assignments.map(p => p.id === id ? { ...p, period } : p));
+  const updateAssignmentDates = (id, startDate, endDate) => setAssignments(assignments.map(p => p.id === id ? { ...p, startDate, endDate } : p));
 
   // --- Components ---
 
@@ -389,17 +390,36 @@ function App() {
             }).map(p => {
               const h = horses.find(h => h.id === p.horseId);
               return h ? (
-                <div key={p.id} className="card glass" style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem' }}>
+                <div key={p.id} className="card glass" style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', alignItems: 'center' }}>
                   <span>{h.emoji} <strong>{h.name}</strong> du {p.startDate} au {p.endDate}</span>
-                  <span className={`badge ${p.status === 'pré' ? 'success' : 'info'}`} style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
-                    {p.status} 
-                    <select value={p.period || 'journée'} onChange={(e) => updateAssignmentPeriod(p.id, e.target.value)} style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: 'inherit', fontSize: 'inherit', borderRadius: '4px', cursor: 'pointer' }}>
-                      <option value="journée" style={{ color: '#000', background: '#fff' }}>Journée</option>
-                      <option value="matin" style={{ color: '#000', background: '#fff' }}>Matin</option>
-                      <option value="après-midi" style={{ color: '#000', background: '#fff' }}>Après-midi</option>
-                    </select>
-                  </span>
-                  <button onClick={() => deleteAssignment(p.id)} style={{ padding: '5px', background: 'transparent', border: 'none', color: 'var(--danger)' }}>🗑️</button>
+                  
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <span className={`badge ${p.status === 'pré' ? 'success' : 'info'}`} style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+                      {p.status} 
+                      {user?.role === ROLES.GERANT ? (
+                        <select value={p.period || 'journée'} onChange={(e) => updateAssignmentPeriod(p.id, e.target.value)} style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: 'inherit', fontSize: 'inherit', borderRadius: '4px', cursor: 'pointer' }}>
+                          <option value="journée" style={{ color: '#000', background: '#fff' }}>Journée</option>
+                          <option value="matin" style={{ color: '#000', background: '#fff' }}>Matin</option>
+                          <option value="après-midi" style={{ color: '#000', background: '#fff' }}>Après-midi</option>
+                        </select>
+                      ) : (
+                        <span style={{ fontSize: '0.8rem', opacity: 0.9 }}>
+                          ({p.period === 'matin' ? 'Matin' : p.period === 'après-midi' ? 'Après-midi' : 'Journée'})
+                        </span>
+                      )}
+                    </span>
+                    {user?.role === ROLES.GERANT && (
+                      <div style={{ display: 'flex', gap: '5px' }}>
+                        <button onClick={() => {
+                          const newStart = prompt("Nouvelle date de début (YYYY-MM-DD):", p.startDate);
+                          if (!newStart) return;
+                          const newEnd = prompt("Nouvelle date de fin (YYYY-MM-DD):", p.endDate);
+                          if (newEnd) updateAssignmentDates(p.id, newStart, newEnd);
+                        }} style={{ padding: '0px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>✏️</button>
+                        <button onClick={() => deleteAssignment(p.id)} style={{ padding: '0px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>🗑️</button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               ) : null;
             })}
@@ -510,7 +530,7 @@ function App() {
               return (
                 <div key={i} style={{ minHeight: '120px', padding: '10px', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', gap: '6px', background: isToday ? 'rgba(66, 133, 244, 0.05)' : 'transparent' }}>
                   <span style={{ fontSize: '0.75rem', fontWeight: '600', color: isToday ? 'var(--accent)' : 'inherit', opacity: isToday ? 1 : 0.4 }}>{day} {monthNames[activeMonth].substring(0, 3)}</span>
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px', maxHeight: '150px', overflowY: 'auto' }}>
                     {dayAssignments.slice().sort((a, b) => {
                       const hA = horses.find(h => h.id === a.horseId);
                       const hB = horses.find(h => h.id === b.horseId);
@@ -531,8 +551,8 @@ function App() {
                           boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
                           textShadow: '0 1px 2px rgba(0,0,0,0.8)'
                         }}>
-                          <span>{h.emoji}</span> <strong>{h.name}</strong>
-                          {a.period && a.period !== 'journée' && <span style={{ fontSize: '0.55rem', opacity: 0.8, marginLeft: 'auto' }}>{a.period === 'matin' ? 'mat' : 'apr'}</span>}
+                          <span style={{ fontSize: '0.85rem' }}>{h.emoji}</span> <strong style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{h.name}</strong>
+                          {a.period && a.period !== 'journée' && <span style={{ fontSize: '0.55rem', opacity: 0.8, marginLeft: 'auto', flexShrink: 0 }}>{a.period === 'matin' ? 'mat' : 'apr'}</span>}
                         </div>
                       ) : null;
                     })}
@@ -624,7 +644,7 @@ function App() {
         <div className="card glass" style={{ borderLeft: '4px solid var(--success)' }}>
           <h3>☀️ Matin - Départ au pré</h3>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Mouvements prévus ce matin.</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '1rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '1rem', maxHeight: '300px', overflowY: 'auto', paddingRight: '5px' }}>
              {todayAssignments.filter(a => a.startDate === today && a.status === 'pré').sort((a, b) => {
               const hA = horses.find(h => h.id === a.horseId);
               const hB = horses.find(h => h.id === b.horseId);
@@ -644,7 +664,7 @@ function App() {
         <div className="card glass" style={{ borderLeft: '4px solid var(--warning)' }}>
           <h3>🌑 Soir - Retour box</h3>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Mouvements prévus ce soir.</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '1rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '1rem', maxHeight: '300px', overflowY: 'auto', paddingRight: '5px' }}>
              {todayAssignments.filter(a => a.endDate === today && a.status === 'pré').sort((a, b) => {
               const hA = horses.find(h => h.id === a.horseId);
               const hB = horses.find(h => h.id === b.horseId);
@@ -674,7 +694,7 @@ function App() {
         <div className="grid">
           <div className="card glass">
             <h3 style={{ color: 'var(--success)' }}>🌿 Chevaux Propriétaires (au Pré)</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '1rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '1rem', maxHeight: '400px', overflowY: 'auto', paddingRight: '5px' }}>
                {atPasture.sort((a, b) => a.horse.name.localeCompare(b.horse.name)).map(({horse: h, assignment: a}) => {
                 const days = Math.ceil((new Date(a.endDate) - new Date(a.startDate)) / (1000 * 60 * 60 * 24)) + 1;
                 return (
