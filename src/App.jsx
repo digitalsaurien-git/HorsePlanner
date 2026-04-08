@@ -22,54 +22,59 @@ const APP_MODES = {
 const HORSE_ICONS = ['🐎', '🐴', '🦄', '🐆', '🦓', '🦒', '🐿️', '🐰', '🍀', '🌸', '🌷', '🎍', '🍎', '🥕', '⚡', '💋', '🤠', '🏀', '👳'];
 
 const INITIAL_HORSES = [
-  { id: 1, name: 'Florette', emoji: '🌸', owner: 'Dupont', color: '#ff80ab', status: 'pré' },
-  { id: 2, name: 'Cliff', emoji: '🐴', owner: 'Club', color: '#b08d57', status: 'pré' },
-  { id: 3, name: 'Cloony', emoji: '🍀', owner: 'Club', color: '#4caf50', status: 'pré' },
-  { id: 4, name: 'Conquérant', emoji: '🦓', owner: 'Dupont', color: '#333333', status: 'pré' },
-  { id: 5, name: 'Lipton', emoji: '🐰', owner: 'Club', color: '#90caf9', status: 'pré' },
+  { id: 1, name: 'Florette', emoji: '🌸', owner: 'Club', color: '#ff80ab', status: 'box' },
+  { id: 2, name: 'Cliff', emoji: '🐴', owner: 'Club', color: '#b08d57', status: 'box' },
+  { id: 3, name: 'Cloony', emoji: '🍀', owner: 'Club', color: '#4caf50', status: 'box' },
+  { id: 4, name: 'Conquérant', emoji: '🦓', owner: 'Club', color: '#333333', status: 'box' },
+  { id: 5, name: 'Lipton', emoji: '🐰', owner: 'Club', color: '#90caf9', status: 'box' },
   { id: 6, name: 'Kiss', emoji: '💋', owner: 'Club', color: '#f44336', status: 'box' },
-  { id: 7, name: 'Jimmy', emoji: '🐎', owner: 'Dupont', color: '#a1887f', status: 'box' },
+  { id: 7, name: 'Jimmy', emoji: '🐎', owner: 'Club', color: '#a1887f', status: 'box' },
   { id: 8, name: 'Foudre', emoji: '⚡', owner: 'Club', color: '#ffd54f', status: 'box' },
   { id: 9, name: 'Juariste', emoji: '🎍', owner: 'Club', color: '#81c784', status: 'box' },
-  { id: 10, name: 'Gringo', emoji: '🤠', owner: 'Dupont', color: '#795548', status: 'box' },
+  { id: 10, name: 'Gringo', emoji: '🤠', owner: 'Club', color: '#795548', status: 'box' },
   { id: 11, name: 'Joliette', emoji: '🦄', owner: 'Club', color: '#ce93d8', status: 'box' },
   { id: 12, name: 'Goria', emoji: '🦄', owner: 'Club', color: '#ba68c8', status: 'box' },
-  { id: 13, name: 'Little', emoji: '🐎', owner: 'Dupont', color: '#e0e0e0', status: 'box' },
+  { id: 13, name: 'Little', emoji: '🐎', owner: 'Club', color: '#e0e0e0', status: 'box' },
   { id: 14, name: 'Eiddy', emoji: '🌷', owner: 'Club', color: '#f06292', status: 'box' },
+  { id: 15, name: 'Fakir', emoji: '🐹', owner: 'Club', color: '#ff8a65', status: 'box' },
+  { id: 16, name: 'Towingo', emoji: '🐅', owner: 'Club', color: '#9575cd', status: 'box' },
+  { id: 17, name: 'Gemini', emoji: '👯', owner: 'Club', color: '#4fc3f7', status: 'box' },
+  { id: 18, name: 'Bally', emoji: '🏐', owner: 'Club', color: '#aed581', status: 'box' },
+  { id: 19, name: 'Elégante', emoji: '🦒', owner: 'Club', color: '#ffd54f', status: 'box' },
+  { id: 20, name: 'Haker', emoji: '🕶️', owner: 'Club', color: '#90a4ae', status: 'box' },
 ];
 
 const INITIAL_PLANNINGS = [
-  // Day 1
-  { id: 101, horseId: 1, startDate: '2026-04-01', endDate: '2026-04-01', status: 'pré' },
-  { id: 102, horseId: 2, startDate: '2026-04-01', endDate: '2026-04-01', status: 'pré' },
-  { id: 103, horseId: 3, startDate: '2026-04-01', endDate: '2026-04-01', status: 'pré' },
-  { id: 104, horseId: 4, startDate: '2026-04-01', endDate: '2026-04-01', status: 'pré' },
-  { id: 105, horseId: 5, startDate: '2026-04-01', endDate: '2026-04-01', status: 'pré' },
-  // Day 2
-  { id: 201, horseId: 2, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré' },
-  { id: 202, horseId: 7, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré' },
-  { id: 203, horseId: 4, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré' },
-  { id: 204, horseId: 8, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré' },
-  { id: 205, horseId: 9, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré' },
-  { id: 206, horseId: 10, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré' },
-  { id: 207, horseId: 3, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré' },
-  { id: 208, horseId: 11, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré' },
-  { id: 209, horseId: 12, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré' },
-  { id: 210, horseId: 5, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré' },
-  { id: 211, horseId: 13, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré' },
-  // Day 3
-  { id: 301, horseId: 6, startDate: '2026-04-03', endDate: '2026-04-03', status: 'pré' },
-  { id: 302, horseId: 4, startDate: '2026-04-03', endDate: '2026-04-03', status: 'pré' },
-  { id: 303, horseId: 5, startDate: '2026-04-03', endDate: '2026-04-03', status: 'pré' },
-  { id: 304, horseId: 13, startDate: '2026-04-03', endDate: '2026-04-03', status: 'pré' },
-  { id: 305, horseId: 14, startDate: '2026-04-03', endDate: '2026-04-03', status: 'pré' },
+  // Fevrier 2026
+  { id: 1001, horseId: 3, startDate: '2026-02-01', endDate: '2026-02-01', status: 'pré' },
+  { id: 1002, horseId: 12, startDate: '2026-02-01', endDate: '2026-02-01', status: 'pré' },
+  { id: 1003, horseId: 5, startDate: '2026-02-01', endDate: '2026-02-01', status: 'pré' },
+  { id: 1004, horseId: 13, startDate: '2026-02-01', endDate: '2026-02-01', status: 'pré' },
+  
+  // Mars 2026
+  { id: 2001, horseId: 6, startDate: '2026-03-02', endDate: '2026-03-05', status: 'pré' },
+  { id: 2002, horseId: 2, startDate: '2026-03-02', endDate: '2026-03-02', status: 'pré' },
+  { id: 2003, horseId: 17, startDate: '2026-03-02', endDate: '2026-03-02', status: 'pré' },
+  { id: 2004, horseId: 3, startDate: '2026-03-02', endDate: '2026-03-02', status: 'pré' },
+  { id: 2005, horseId: 4, startDate: '2026-03-02', endDate: '2026-03-10', status: 'pré' },
+  { id: 2006, horseId: 10, startDate: '2026-03-02', endDate: '2026-03-02', status: 'pré' },
+  { id: 2007, horseId: 8, startDate: '2026-03-02', endDate: '2026-03-02', status: 'pré' },
+  { id: 2008, horseId: 11, startDate: '2026-03-02', endDate: '2026-03-02', status: 'pré' },
+  
+  // Avril 2026
+  { id: 3001, horseId: 2, startDate: '2026-04-01', endDate: '2026-04-04', status: 'pré' },
+  { id: 3002, horseId: 4, startDate: '2026-04-01', endDate: '2026-04-05', status: 'pré' },
+  { id: 3003, horseId: 6, startDate: '2026-04-01', endDate: '2026-04-01', status: 'pré' },
+  
+  // Mai 2026 (simplified for brevity)
+  { id: 4001, horseId: 10, startDate: '2026-05-01', endDate: '2026-05-05', status: 'pré' },
 ];
 
 function App() {
   const [user, setUser] = useState(null);
   const [mode, setMode] = useState(APP_MODES.LOGIN);
   const [horses, setHorses] = useState(INITIAL_HORSES);
-  const [assignments, setAssignments] = useState([]); 
+  const [assignments, setAssignments] = useState(INITIAL_PLANNINGS); 
   const [isDriveConnected, setIsDriveConnected] = useState(false);
   const [lastSync, setLastSync] = useState(null);
   const [syncPath, setSyncPath] = useState('');
@@ -433,8 +438,8 @@ function App() {
 
   const CalendarView = () => {
     const [filterHorseId, setFilterHorseId] = useState('all');
-    const [activeMonth, setActiveMonth] = useState(new Date().getMonth());
-    const [activeYear, setActiveYear] = useState(new Date().getFullYear());
+    const [activeMonth, setActiveMonth] = useState(2); // Mars par défaut
+    const [activeYear, setActiveYear] = useState(2026);
 
     const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
     
