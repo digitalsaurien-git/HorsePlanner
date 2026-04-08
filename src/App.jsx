@@ -736,9 +736,11 @@ function App() {
             }).map(a => {
               const h = horses.find(h => h.id === a.horseId);
               return h ? (
-                <div key={a.id} className="glass" style={{ padding: '10px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontSize: '1.2rem' }}>{h.emoji}</span> <strong>{h.name}</strong>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--success)', marginLeft: 'auto' }}>🌿 Sortie {a.period && a.period !== 'journée' ? `(${a.period})` : ''}</span>
+                <div key={a.id} className="glass" style={{ padding: '10px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '5px', minWidth: '0' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '1.2rem' }}>{h.emoji}</span> <strong>{h.name}</strong>
+                  </div>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--success)', fontWeight: 'bold', wordBreak: 'break-word' }}>🌿 Sortie {a.period && a.period !== 'journée' ? `(${a.period})` : ''}</span>
                 </div>
               ) : null;
             })}
@@ -756,9 +758,11 @@ function App() {
             }).map(a => {
               const h = horses.find(h => h.id === a.horseId);
               return h ? (
-                <div key={a.id} className="glass" style={{ padding: '10px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontSize: '1.2rem' }}>{h.emoji}</span> <strong>{h.name}</strong>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--warning)', marginLeft: 'auto' }}>🏠 Rentrer {a.period && a.period !== 'journée' ? `(${a.period})` : ''}</span>
+                <div key={a.id} className="glass" style={{ padding: '10px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '5px', minWidth: '0' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '1.2rem' }}>{h.emoji}</span> <strong>{h.name}</strong>
+                  </div>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--warning)', fontWeight: 'bold', wordBreak: 'break-word' }}>🏠 Rentré {a.period && a.period !== 'journée' ? `(${a.period})` : ''}</span>
                 </div>
               ) : null;
             })}
