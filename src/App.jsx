@@ -208,6 +208,7 @@ function App() {
   };
 
   const deleteAssignment = (id) => setAssignments(assignments.filter(p => p.id !== id));
+  const updateAssignmentPeriod = (id, period) => setAssignments(assignments.map(p => p.id === id ? { ...p, period } : p));
 
   // --- Components ---
 
@@ -373,8 +374,13 @@ function App() {
               return h ? (
                 <div key={p.id} className="card glass" style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem' }}>
                   <span>{h.emoji} <strong>{h.name}</strong> du {p.startDate} au {p.endDate}</span>
-                  <span className={`badge ${p.status === 'pré' ? 'success' : 'info'}`}>
-                    {p.status} {p.period && p.period !== 'journée' ? `(${p.period})` : ''}
+                  <span className={`badge ${p.status === 'pré' ? 'success' : 'info'}`} style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+                    {p.status} 
+                    <select value={p.period || 'journée'} onChange={(e) => updateAssignmentPeriod(p.id, e.target.value)} style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: 'inherit', fontSize: 'inherit', borderRadius: '4px', cursor: 'pointer' }}>
+                      <option value="journée">Journée</option>
+                      <option value="matin">Matin</option>
+                      <option value="après-midi">Après-midi</option>
+                    </select>
                   </span>
                   <button onClick={() => deleteAssignment(p.id)} style={{ padding: '5px', background: 'transparent', border: 'none', color: 'var(--danger)' }}>🗑️</button>
                 </div>
@@ -419,9 +425,14 @@ function App() {
       for (let i = 1; i <= daysCount; i++) {
         const dateStr = `${activeYear}-${String(activeMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
         const current = new Date(dateStr);
-        if (filteredAssignments.some(p => current >= new Date(p.startDate) && current <= new Date(p.endDate))) {
-          daysAuPre++;
-        }
+        const dayAssigns = filteredAssignments.filter(p => current >= new Date(p.startDate) && current <= new Date(p.endDate));
+        
+        let dayValue = 0;
+        dayAssigns.forEach(a => {
+           if (!a.period || a.period === 'journée') dayValue = 1;
+           else if ((a.period === 'matin' || a.period === 'après-midi') && dayValue < 1) dayValue += 0.5;
+        });
+        daysAuPre += dayValue > 1 ? 1 : dayValue;
       }
     }
 
