@@ -762,7 +762,7 @@ function App() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontSize: '1.2rem' }}>{h.emoji}</span> <strong>{h.name}</strong>
                   </div>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--warning)', fontWeight: 'bold', wordBreak: 'break-word' }}>🏠 Rentré {a.period && a.period !== 'journée' ? `(${a.period})` : ''}</span>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--warning)', fontWeight: 'bold', wordBreak: 'break-word' }}>🏠 Rentrée {a.period && a.period !== 'journée' ? `(${a.period})` : ''}</span>
                 </div>
               ) : null;
             })}
