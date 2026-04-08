@@ -96,21 +96,21 @@ function App() {
       // Fetch Horses
       const { data: horsesData, error: hError } = await supabase.from('horses').select('*').order('name');
       if (hError) throw hError;
-      if (horsesData && horsesData.length > 0) setHorses(horsesData);
+      if (horsesData && horsesData.length > 0) setHorses(horsesData.map(h => ({...h, id: Number(h.id)})));
       else {
         // Seed if empty
-        const { error: seedHError } = await supabase.from('horses').insert(INITIAL_HORSES);
+        const seedData = INITIAL_HORSES.map(({id, ...rest}) => rest);
+        const { error: seedHError } = await supabase.from('horses').insert(seedData);
         if (!seedHError) fetchSupabaseData();
       }
 
-      // Fetch Assignments
+      // Remap Assignments
       const { data: assignData, error: aError } = await supabase.from('assignments').select('*');
       if (aError) throw aError;
       if (assignData) {
-        // Remap DB fields to match App state
         const mapped = assignData.map(a => ({
           id: a.id,
-          horseId: a.horse_id,
+          horseId: Number(a.horse_id),
           startDate: a.start_date,
           endDate: a.end_date,
           status: a.status,
@@ -193,6 +193,7 @@ function App() {
   };
 
   const syncDeleteHorse = async (id) => {
+    if (!confirm("Voulez-vous vraiment supprimer ce cheval ?")) return;
     const { error } = await supabase.from('horses').delete().eq('id', id);
     if (error) alert("Erreur Supabase: " + error.message);
   };
@@ -754,10 +755,8 @@ function App() {
     return (
       <div className="animate-fade">
         <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
             <h1>Bonjour {isManager ? 'Daniel' : ''} 👋</h1>
-            <p style={{ color: 'var(--text-muted)' }}>{isManager ? 'Tableau de bord du club' : 'Emplacement actuel des chevaux propriétaires'}.</p>
-          </div>
+            <p style={{ color: 'var(--text-muted)' }}>{isManager ? 'Tableau de bord' : 'Emplacement actuel des chevaux propriétaires'}.</p>
         </header>
 
         {isManager ? renderManagerDashboard() : renderOwnerDashboard()}
