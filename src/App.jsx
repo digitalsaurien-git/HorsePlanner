@@ -255,8 +255,14 @@ function App() {
     localStorage.removeItem('hp_user');
   };
 
+  const syncUpdateHorse = async (id, updates) => {
+    const { error } = await supabase.from('horses').update(updates).eq('id', id);
+    if (error) alert("Erreur Supabase: " + error.message);
+  };
+
   const addHorse = (horse) => syncAddHorse(horse);
   const deleteHorse = (id) => syncDeleteHorse(id);
+  const updateHorse = (id, updates) => syncUpdateHorse(id, updates);
 
   const addAssignment = (assignment) => syncAddAssignment(assignment);
   const deleteAssignment = (id) => syncDeleteAssignment(id);
@@ -287,6 +293,23 @@ function App() {
     const [name, setName] = useState('');
     const [emoji, setEmoji] = useState('🐎');
     const [owner, setOwner] = useState('');
+
+    const [editingHorseId, setEditingHorseId] = useState(null);
+    const [editName, setEditName] = useState('');
+    const [editEmoji, setEditEmoji] = useState('');
+    const [editOwner, setEditOwner] = useState('');
+
+    const startEditing = (h) => {
+      setEditingHorseId(h.id);
+      setEditName(h.name);
+      setEditEmoji(h.emoji);
+      setEditOwner(h.owner);
+    };
+
+    const saveEdit = (id) => {
+      updateHorse(id, { name: editName, emoji: editEmoji, owner: editOwner });
+      setEditingHorseId(null);
+    };
 
     const handleSubmit = (e) => {
       e.preventDefault();
@@ -322,14 +345,35 @@ function App() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
             {horses.slice().sort((a, b) => a.name.localeCompare(b.name)).map(h => (
               <div key={h.id} className="glass" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', borderRadius: '12px', borderLeft: `4px solid ${h.color || 'var(--accent)'}` }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                  <span style={{ fontSize: '2.5rem' }}>{h.emoji}</span>
-                  <div>
-                    <strong style={{ fontSize: '1.1rem' }}>{h.name}</strong>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Propriétaire: {h.owner}</div>
+                {editingHorseId === h.id ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', flex: 1 }}>
+                    <div style={{ display: 'flex', gap: '5px' }}>
+                      <select className="input" value={editEmoji} onChange={e => setEditEmoji(e.target.value)} style={{ width: '60px' }}>
+                        {HORSE_ICONS.map(icon => <option key={icon} value={icon}>{icon}</option>)}
+                      </select>
+                      <input className="input" value={editName} onChange={e => setEditName(e.target.value)} style={{ flex: 1 }} />
+                    </div>
+                    <input className="input" value={editOwner} onChange={e => setEditOwner(e.target.value)} placeholder="Propriétaire" />
+                    <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
+                      <button className="btn btn-success" style={{ flex: 1, padding: '5px', fontSize: '0.8rem' }} onClick={() => saveEdit(h.id)}>Valider</button>
+                      <button className="btn" style={{ flex: 1, padding: '5px', fontSize: '0.8rem' }} onClick={() => setEditingHorseId(null)}>Annuler</button>
+                    </div>
                   </div>
-                </div>
-                <button onClick={() => deleteHorse(h.id)} style={{ padding: '8px', background: 'rgba(244, 67, 54, 0.1)', border: 'none', color: 'var(--danger)', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🗑️</button>
+                ) : (
+                  <>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                      <span style={{ fontSize: '2.5rem' }}>{h.emoji}</span>
+                      <div>
+                        <strong style={{ fontSize: '1.1rem' }}>{h.name}</strong>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Propriétaire: {h.owner}</div>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '5px' }}>
+                      <button onClick={() => startEditing(h)} style={{ padding: '8px', background: 'rgba(66, 133, 244, 0.1)', border: 'none', color: 'var(--accent)', borderRadius: '50%', cursor: 'pointer' }}>✏️</button>
+                      <button onClick={() => deleteHorse(h.id)} style={{ padding: '8px', background: 'rgba(244, 67, 54, 0.1)', border: 'none', color: 'var(--danger)', borderRadius: '50%', cursor: 'pointer' }}>🗑️</button>
+                    </div>
+                  </>
+                )}
               </div>
             ))}
           </div>
@@ -838,15 +882,30 @@ function App() {
           <div style={{ marginTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1.5rem' }}>
             <h4 style={{ color: 'var(--danger)' }}>Zone de danger</h4>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>Rétablir les données de démonstration (Mars à Mai 2026).</p>
-            <button className="btn" style={{ border: '1px solid var(--danger)', color: 'var(--danger)', background: 'rgba(244, 67, 54, 0.05)', width: '100%' }} onClick={() => {
-              if (confirm("Voulez-vous vraiment écraser vos chevaux actuels par les données de démo des captures d'écran ?")) {
-                setHorses(INITIAL_HORSES);
-                setAssignments(INITIAL_PLANNINGS);
-                localStorage.removeItem('horsePlanner_horses_v1.1');
-                localStorage.removeItem('horsePlanner_assignments_v1.1');
-                alert("✅ Données de démonstration chargées !");
+            <button className="btn" style={{ border: '1px solid var(--danger)', color: 'var(--danger)', background: 'rgba(244, 67, 54, 0.05)', width: '100%' }} onClick={async () => {
+              if (confirm("Voulez-vous réinitialiser Supabase avec les chevaux des captures d'écran ?")) {
+                const seedData = INITIAL_HORSES.map(({id, ...rest}) => rest);
+                await supabase.from('horses').delete().neq('id', 0); // Vider
+                await supabase.from('horses').insert(seedData);
+                fetchSupabaseData();
+                alert("✅ Chevaux réinitialisés !");
               }
-            }}>Réinitialiser avec les données Démo (Mars-Mai)</button>
+            }}>Injection Chevaux (Captures d'écran)</button>
+            
+            <button className="btn" style={{ border: '1px solid var(--warning)', color: 'var(--warning)', background: 'rgba(255, 193, 7, 0.05)', width: '100%', marginTop: '10px' }} onClick={async () => {
+              if (confirm("Voulez-vous réinitialiser Supabase avec le planning des captures d'écran ?")) {
+                await supabase.from('assignments').delete().neq('id', 0); // Vider
+                const seedAssigns = INITIAL_PLANNINGS.map(({id, horseId, startDate, endDate, status, period}) => ({
+                  horse_id: horseId, // Note mapping logic might need manual alignment if IDs differ
+                  start_date: startDate,
+                  end_date: endDate,
+                  status,
+                  period: period || 'journée'
+                }));
+                // Warning: Mapping fixed IDs to DB IDs is tricky. Better to manually reassign or use name matching.
+                alert("⚠️ Le planning de démo nécessite des IDs fixes. Je vous conseille de recréer manuellement quelques affectations pour tester la synchro.");
+              }
+            }}>Réinstaller le Planning de Démo</button>
           </div>
         </div>
       </div>
