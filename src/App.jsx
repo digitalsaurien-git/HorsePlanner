@@ -291,6 +291,7 @@ function App() {
     const [start, setStart] = useState(new Date().toISOString().split('T')[0]);
     const [end, setEnd] = useState(new Date().toISOString().split('T')[0]);
     const [loc, setLoc] = useState('pré');
+    const [period, setPeriod] = useState('journée');
     const [viewType, setViewType] = useState('all');
 
     useEffect(() => {
@@ -299,7 +300,7 @@ function App() {
 
     const handleBulkAssign = (e) => {
       e.preventDefault();
-      addAssignment({ horseId: Number(hId), startDate: start, endDate: end, status: loc });
+      addAssignment({ horseId: Number(hId), startDate: start, endDate: end, status: loc, period });
       alert('Affectation enregistrée !');
     };
 
@@ -334,6 +335,14 @@ function App() {
                  <option value="box">🏠 Mise au box</option>
                </select>
             </div>
+            <div style={{ flex: 1, minWidth: '150px' }}>
+               <label style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '5px', display: 'block' }}>Période</label>
+               <select className="input" value={period} onChange={e => setPeriod(e.target.value)}>
+                 <option value="journée">Journée entière</option>
+                 <option value="matin">Matin</option>
+                 <option value="après-midi">Après-midi</option>
+               </select>
+            </div>
             <div style={{ display: 'flex', alignItems: 'flex-end' }}>
               <button className="btn btn-primary">Enregistrer la période</button>
             </div>
@@ -364,7 +373,9 @@ function App() {
               return h ? (
                 <div key={p.id} className="card glass" style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem' }}>
                   <span>{h.emoji} <strong>{h.name}</strong> du {p.startDate} au {p.endDate}</span>
-                  <span className={`badge ${p.status === 'pré' ? 'success' : 'info'}`}>{p.status}</span>
+                  <span className={`badge ${p.status === 'pré' ? 'success' : 'info'}`}>
+                    {p.status} {p.period && p.period !== 'journée' ? `(${p.period})` : ''}
+                  </span>
                   <button onClick={() => deleteAssignment(p.id)} style={{ padding: '5px', background: 'transparent', border: 'none', color: 'var(--danger)' }}>🗑️</button>
                 </div>
               ) : null;
@@ -493,6 +504,7 @@ function App() {
                           textShadow: '0 1px 2px rgba(0,0,0,0.8)'
                         }}>
                           <span>{h.emoji}</span> <strong>{h.name}</strong>
+                          {a.period && a.period !== 'journée' && <span style={{ fontSize: '0.55rem', opacity: 0.8, marginLeft: 'auto' }}>{a.period === 'matin' ? 'mat' : 'apr'}</span>}
                         </div>
                       ) : null;
                     })}
@@ -594,7 +606,7 @@ function App() {
               return h ? (
                 <div key={a.id} className="glass" style={{ padding: '10px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span style={{ fontSize: '1.2rem' }}>{h.emoji}</span> <strong>{h.name}</strong>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--success)', marginLeft: 'auto' }}>🌿 Sortie</span>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--success)', marginLeft: 'auto' }}>🌿 Sortie {a.period && a.period !== 'journée' ? `(${a.period})` : ''}</span>
                 </div>
               ) : null;
             })}
@@ -614,7 +626,7 @@ function App() {
               return h ? (
                 <div key={a.id} className="glass" style={{ padding: '10px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span style={{ fontSize: '1.2rem' }}>{h.emoji}</span> <strong>{h.name}</strong>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--warning)', marginLeft: 'auto' }}>🏠 Rentrer</span>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--warning)', marginLeft: 'auto' }}>🏠 Rentrer {a.period && a.period !== 'journée' ? `(${a.period})` : ''}</span>
                 </div>
               ) : null;
             })}
@@ -641,7 +653,7 @@ function App() {
                   <div key={h.id} className="horse-item glass" style={{ borderLeft: `4px solid ${h.color || 'var(--primary)'}`, cursor: 'pointer' }} onClick={() => alert(`Au pré du ${a.startDate} au ${a.endDate} (${days} jours)`)}>
                     <span style={{ fontSize: '1.2rem' }}>{h.emoji}</span>
                     <span style={{ fontWeight: '600' }}>{h.name}</span>
-                    <span style={{ fontSize: '0.7rem', marginLeft: 'auto', opacity: 0.7 }}>📍 Actuellement au pré ({days}j)</span>
+                    <span style={{ fontSize: '0.7rem', marginLeft: 'auto', opacity: 0.7 }}>📍 Actuellement au pré {a.period && a.period !== 'journée' ? `(${a.period}) ` : ''}({days}j)</span>
                   </div>
                 );
               })}
