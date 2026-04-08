@@ -137,14 +137,17 @@ async function resolvePath(pathString) {
   return currentId;
 }
 
-// Save Data to a specific path
+// Save Data to a specific path or direct Folder ID
 export async function saveToDrive(data, pathString = 'DigitalSaurien/AUTOMATE/HorsePlanner') {
-  if (!window.gapi.client.getToken()) return false;
+  if (!window.gapi.client.getToken()) {
+    console.error("❌ [Drive] Aucun jeton d'authentification trouvé. Connectez-vous d'abord.");
+    return false;
+  }
   
-  console.log(`💾 [Drive] Début de la sauvegarde vers ${pathString}...`);
+  console.log(`💾 [Drive] Début de la sauvegarde vers "${pathString}"...`);
   try {
     const targetFolderId = await resolvePath(pathString);
-    console.log("📂 [Drive] Dossier cible trouvé/créé, ID:", targetFolderId);
+    console.log("📂 [Drive] ID du dossier cible :", targetFolderId);
 
     const fileName = 'horseplanner_sync_backup.json';
     
@@ -196,6 +199,9 @@ export async function saveToDrive(data, pathString = 'DigitalSaurien/AUTOMATE/Ho
     return true;
   } catch (err) {
     console.error('❌ [Drive] Erreur lors de la sauvegarde:', err);
+    if (err.result?.error?.message) {
+      console.error('Détails:', err.result.error.message);
+    }
     return false;
   }
 }

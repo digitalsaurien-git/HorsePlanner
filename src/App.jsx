@@ -622,7 +622,7 @@ function App() {
         <h3>📂 Chemin de synchronisation</h3>
         <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
-            <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '5px', display: 'block' }}>Réseau / Dossier Drive</label>
+            <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '5px', display: 'block' }}>Chemin ou ID du dossier Google Drive</label>
             <input 
               className="input" 
               value={syncPath} 
@@ -630,19 +630,28 @@ function App() {
               placeholder="ex: DigitalSaurien/AUTOMATE/HorsePlanner"
               style={{ width: '100%', padding: '12px', background: 'var(--bg-glass)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '8px' }}
             />
+            <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '5px' }}>
+              ℹ️ Vous pouvez mettre soit un chemin (Dossier/SousDossier) soit directement l'ID unique (ID du dossier cible uniquement).
+            </p>
           </div>
 
           <div>
             <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '5px', display: 'block' }}>Google Client ID (OAuth 2.0)</label>
-            <input 
-              className="input" 
-              value={clientId} 
-              onChange={e => setClientId(e.target.value)} 
-              placeholder="ex: 12345-abcde.apps.googleusercontent.com"
-              style={{ width: '100%', padding: '12px', background: 'var(--bg-glass)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '8px' }}
-            />
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <input 
+                className="input" 
+                value={clientId} 
+                onChange={e => setClientId(e.target.value)} 
+                placeholder="ex: 12345-abcde.apps.googleusercontent.com"
+                style={{ flex: 1, padding: '12px', background: 'var(--bg-glass)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '8px' }}
+              />
+              <button className="btn btn-accent" style={{ fontSize: '0.7rem' }} onClick={() => {
+                initGoogleDrive(clientId).then(() => alert("✅ Client ID appliqué ! Reconnectez-vous au Drive."));
+                setIsDriveConnected(false);
+              }}>Appliquer</button>
+            </div>
             <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '5px' }}>
-              ⚠️ Changer le Client ID nécessite de rafraichir la page pour ré-initialiser la connexion.
+              ⚠️ Si vous changez le Client ID, cliquez sur "Appliquer" puis reconnectez-vous au Drive ci-dessous.
             </p>
           </div>
           
