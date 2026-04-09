@@ -45,6 +45,7 @@ Créer une application simple pour gérer la mise au pré ou au box des chevaux 
 - [x] Simplification du calendrier : affichage exclusif des noms des chevaux (sans indicateurs de période).
 - [x] Localisation française des dates (JJ/MM/AAAA) dans la gestion des affectations.
 - [x] Synchronisation complète des données d'avril 2026 selon modèle utilisateur pour test de charge et rendu.
+- [x] Simplification du Dashboard : affichage épuré des chevaux (nom + icône + barre de couleur) sans texte descriptif redondant pour les vues Gérant et Propriétaire.
 
 
 **OUT (exclu / plus tard):**

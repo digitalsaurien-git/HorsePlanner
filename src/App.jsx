@@ -889,13 +889,9 @@ function App() {
             }).map(a => {
               const h = horses.find(h => h.id === a.horseId);
               return h ? (
-                <div key={a.id} className="glass" style={{ padding: '10px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '5px', minWidth: '0' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{h.emoji}</span> 
-                    <strong style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>{h.name}</strong>
-
-                  </div>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--success)', fontWeight: 'bold', wordBreak: 'break-word' }}>🌿 Sortie {a.period && a.period !== 'journée' ? `(${a.period})` : ''}</span>
+                <div key={a.id} className="glass" style={{ padding: '10px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px', minWidth: '0', borderLeft: `4px solid ${h.color || 'var(--success)'}` }}>
+                  <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{h.emoji}</span> 
+                  <strong style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>{h.name}</strong>
                 </div>
               ) : null;
             })}
@@ -913,13 +909,9 @@ function App() {
             }).map(a => {
               const h = horses.find(h => h.id === a.horseId);
               return h ? (
-                <div key={a.id} className="glass" style={{ padding: '10px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '5px', minWidth: '0' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{h.emoji}</span> 
-                    <strong style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>{h.name}</strong>
-
-                  </div>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--warning)', fontWeight: 'bold', wordBreak: 'break-word' }}>🏠 Rentrée {a.period && a.period !== 'journée' ? `(${a.period})` : ''}</span>
+                <div key={a.id} className="glass" style={{ padding: '10px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px', minWidth: '0', borderLeft: `4px solid ${h.color || 'var(--warning)'}` }}>
+                  <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{h.emoji}</span> 
+                  <strong style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>{h.name}</strong>
                 </div>
               ) : null;
             })}
@@ -943,10 +935,9 @@ function App() {
                {atPasture.sort((a, b) => a.horse.name.localeCompare(b.horse.name)).map(({horse: h, assignment: a}) => {
                 const days = Math.ceil((new Date(a.endDate) - new Date(a.startDate)) / (1000 * 60 * 60 * 24)) + 1;
                 return (
-                  <div key={h.id} className="horse-item glass" style={{ borderLeft: `4px solid ${h.color || 'var(--primary)'}`, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }} onClick={() => alert(`Au pré du ${a.startDate} au ${a.endDate} (${days} jours)`)}>
+                  <div key={h.id} className="horse-item glass" style={{ borderLeft: `4px solid ${h.color || 'var(--primary)'}`, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden', padding: '10px' }} onClick={() => alert(`Au pré du ${formatDate(a.startDate)} au ${formatDate(a.endDate)} (${days} jours)`)}>
                     <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{h.emoji}</span>
                     <strong style={{ fontWeight: '600', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>{h.name}</strong>
-                    <span style={{ fontSize: '0.7rem', opacity: 0.7, flexShrink: 0 }}>📍 au pré {a.period && a.period !== 'journée' ? `(${a.period}) ` : ''}({days}j)</span>
                   </div>
                 );
               })}
