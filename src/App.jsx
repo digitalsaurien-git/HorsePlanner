@@ -552,8 +552,10 @@ function App() {
                       {groupedPast[key].map(p => {
                         const h = horses.find(h => h.id === p.horseId);
                         return h ? (
-                          <div key={p.id} className="card glass" style={{ display: 'flex', justifyContent: 'space-between', padding: '0.8rem 1rem', alignItems: 'center', opacity: 0.7, background: 'rgba(255,255,255,0.02)' }}>
-                            <span style={{ fontSize: '0.9rem' }}>{h.emoji} <strong>{h.name}</strong> du {p.startDate} au {p.endDate}</span>
+                          <div key={p.id} className="glass" style={{ padding: '8px 12px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden' }}>
+                            <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{h.emoji}</span> 
+                            <strong style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1 }}>{h.name}</strong>
+                            <span style={{ fontSize: '0.8rem', opacity: 0.7, flexShrink: 0 }}>du {p.startDate} au {p.endDate}</span>
                             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                               <span className="badge" style={{ fontSize: '0.7rem', background: 'rgba(255,255,255,0.1)' }}>{p.status}</span>
                               {user?.role === ROLES.GERANT && (
@@ -650,7 +652,7 @@ function App() {
         </header>
 
         <div className="card glass" style={{ padding: '0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-          <div style={{ minWidth: '700px' }}>
+          <div className="calendar-wrapper">
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', background: 'var(--bg-glass)' }}>
             {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(d => <div key={d} style={{ padding: '12px', fontWeight: 'bold', fontSize: '0.8rem', color: 'var(--text-muted)' }}>{d}</div>)}
@@ -677,7 +679,7 @@ function App() {
               return (
                 <div key={i} style={{ minHeight: '120px', padding: '10px', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', gap: '6px', background: isToday ? 'rgba(66, 133, 244, 0.05)' : 'transparent' }}>
                   <span style={{ fontSize: '0.75rem', fontWeight: '600', color: isToday ? 'var(--accent)' : 'inherit', opacity: isToday ? 1 : 0.4 }}>{day} {monthNames[activeMonth].substring(0, 3)}</span>
-                  <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '4px', alignContent: 'start' }}>
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     {dayAssignments.slice().sort((a, b) => {
                       const hA = horses.find(h => h.id === a.horseId);
                       const hB = horses.find(h => h.id === b.horseId);
@@ -685,21 +687,24 @@ function App() {
                     }).map(a => {
                       const h = horses.find(h => h.id === a.horseId);
                       return h ? (
-                        <div key={a.id} style={{ 
-                          fontSize: '0.65rem', 
-                          padding: '4px 6px', 
+                        <div key={a.id} className="calendar-item" style={{ 
+                          fontSize: '0.7rem', 
+                          padding: '4px 8px', 
                           borderRadius: '4px', 
                           background: h.color || (a.status === 'pré' ? 'rgba(76, 175, 80, 0.4)' : 'rgba(139, 107, 97, 0.4)'), 
                           color: '#fff', 
                           border: '1px solid rgba(255,255,255,0.4)', 
                           display: 'flex', 
                           alignItems: 'center', 
-                          gap: '4px',
+                          gap: '6px',
                           boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
-                          textShadow: '0 1px 2px rgba(0,0,0,0.8)'
+                          textShadow: '0 1px 2px rgba(0,0,0,0.8)',
+                          width: '100%',
+                          minWidth: 0
                         }}>
-                          <span style={{ fontSize: '0.85rem' }}>{h.emoji}</span> <strong style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{h.name}</strong>
-                          {a.period && a.period !== 'journée' && <span style={{ fontSize: '0.55rem', opacity: 0.8, marginLeft: 'auto', flexShrink: 0 }}>{a.period === 'matin' ? 'mat' : 'apr'}</span>}
+                          <span className="hide-very-small" style={{ fontSize: '0.9rem', flexShrink: 0 }}>{h.emoji}</span> 
+                          <strong style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>{h.name}</strong>
+                          {a.period && a.period !== 'journée' && <span style={{ fontSize: '0.6rem', opacity: 0.8, flexShrink: 0 }}>{a.period === 'mat' ? 'mat' : a.period === 'apr' ? 'apr' : a.period}</span>}
                         </div>
                       ) : null;
                     })}
@@ -798,7 +803,9 @@ function App() {
               return h ? (
                 <div key={a.id} className="glass" style={{ padding: '10px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '5px', minWidth: '0' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '1.2rem' }}>{h.emoji}</span> <strong>{h.name}</strong>
+                    <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{h.emoji}</span> 
+                    <strong style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>{h.name}</strong>
+
                   </div>
                   <span style={{ fontSize: '0.7rem', color: 'var(--success)', fontWeight: 'bold', wordBreak: 'break-word' }}>🌿 Sortie {a.period && a.period !== 'journée' ? `(${a.period})` : ''}</span>
                 </div>
@@ -820,7 +827,9 @@ function App() {
               return h ? (
                 <div key={a.id} className="glass" style={{ padding: '10px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '5px', minWidth: '0' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '1.2rem' }}>{h.emoji}</span> <strong>{h.name}</strong>
+                    <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{h.emoji}</span> 
+                    <strong style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>{h.name}</strong>
+
                   </div>
                   <span style={{ fontSize: '0.7rem', color: 'var(--warning)', fontWeight: 'bold', wordBreak: 'break-word' }}>🏠 Rentrée {a.period && a.period !== 'journée' ? `(${a.period})` : ''}</span>
                 </div>
@@ -846,10 +855,10 @@ function App() {
                {atPasture.sort((a, b) => a.horse.name.localeCompare(b.horse.name)).map(({horse: h, assignment: a}) => {
                 const days = Math.ceil((new Date(a.endDate) - new Date(a.startDate)) / (1000 * 60 * 60 * 24)) + 1;
                 return (
-                  <div key={h.id} className="horse-item glass" style={{ borderLeft: `4px solid ${h.color || 'var(--primary)'}`, cursor: 'pointer' }} onClick={() => alert(`Au pré du ${a.startDate} au ${a.endDate} (${days} jours)`)}>
-                    <span style={{ fontSize: '1.2rem' }}>{h.emoji}</span>
-                    <span style={{ fontWeight: '600' }}>{h.name}</span>
-                    <span style={{ fontSize: '0.7rem', marginLeft: 'auto', opacity: 0.7 }}>📍 Actuellement au pré {a.period && a.period !== 'journée' ? `(${a.period}) ` : ''}({days}j)</span>
+                  <div key={h.id} className="horse-item glass" style={{ borderLeft: `4px solid ${h.color || 'var(--primary)'}`, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }} onClick={() => alert(`Au pré du ${a.startDate} au ${a.endDate} (${days} jours)`)}>
+                    <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{h.emoji}</span>
+                    <strong style={{ fontWeight: '600', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>{h.name}</strong>
+                    <span style={{ fontSize: '0.7rem', opacity: 0.7, flexShrink: 0 }}>📍 au pré {a.period && a.period !== 'journée' ? `(${a.period}) ` : ''}({days}j)</span>
                   </div>
                 );
               })}

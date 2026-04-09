@@ -252,6 +252,15 @@ select.input option {
     background: var(--bg-glass);
     width: 250px;
   }
+
+  .calendar-wrapper {
+    min-width: 100%;
+  }
+  
+  .sidebar .btn {
+    font-size: 1rem;
+    padding: 0.8rem 1.5rem;
+  }
   
   .main-content {
     margin-left: 250px;
@@ -265,6 +274,10 @@ select.input option {
   
   .sidebar-overlay {
     display: none !important;
+  }
+
+  .calendar-item {
+    font-size: 0.85rem !important;
   }
 }
 
@@ -301,6 +314,12 @@ select.input option {
   }
 }
 
+@media (max-width: 400px) {
+  .hide-very-small {
+    display: none !important;
+  }
+}
+
 /* Fix for horizontal scroll issues on small devices */
 .main-content.container {
   max-width: 100vw;
@@ -312,4 +331,8 @@ select.input option {
   .dashboard-list {
     grid-template-columns: 1fr !important;
   }
+}
+
+.calendar-wrapper {
+  min-width: 850px;
 }
