@@ -156,6 +156,673 @@ const INITIAL_PLANNINGS = [
   { id: 3075, horseId: 1, startDate: '2026-04-30', endDate: '2026-04-30', status: 'pré', period: 'journée' },
 ];
 
+// --- Sub-components (outside for stability) ---
+
+const LoginView = ({ isGerantSelected, setIsGerantSelected, passwordInput, setPasswordInput, login }) => (
+  <div className="flex-center animate-fade" style={{ minHeight: '80vh' }}>
+    <div className="card glass" style={{ width: '100%', maxWidth: '400px', textAlign: 'center' }}>
+      <h1 className="gradient-text" style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>HorsePlanner</h1>
+      <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Gérez votre club avec élégance.</p>
+      
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        {!isGerantSelected ? (
+          <>
+            <button className="btn btn-primary" onClick={() => setIsGerantSelected(true)}>Connexion Gérant</button>
+            <button className="btn btn-accent" onClick={() => login(ROLES.PROPRIETAIRE, 'Dupont')}>Espace Propriétaire</button>
+          </>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <input 
+              type="password" 
+              className="input" 
+              placeholder="Mot de passe" 
+              autoFocus
+              value={passwordInput} 
+              onChange={e => setPasswordInput(e.target.value)} 
+              onKeyDown={e => e.key === 'Enter' && login(ROLES.GERANT)}
+            />
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button className="btn btn-primary" style={{ flex: 1 }} onClick={() => login(ROLES.GERANT)}>Sésame</button>
+              <button className="btn" style={{ flex: 1, color: 'var(--text-muted)', border: '1px solid rgba(255,255,255,0.1)' }} onClick={() => setIsGerantSelected(false)}>Retour</button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+);
+
+const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, mode, setMode, user }) => (
+  <>
+    <div className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
+    <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+      <button className={`btn ${mode === APP_MODES.DASHBOARD ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.DASHBOARD)}>🏠 Dashboard</button>
+      {user?.role === ROLES.GERANT && (
+        <button className={`btn ${mode === APP_MODES.HORSES ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.HORSES)}>🐴 Chevaux</button>
+      )}
+      <button className={`btn ${mode === APP_MODES.ASSIGNMENTS ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.ASSIGNMENTS)}>🗓️ Affectations</button>
+      <button className={`btn ${mode === APP_MODES.CALENDAR ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.CALENDAR)}>📅 Calendrier</button>
+      {user?.role === ROLES.GERANT && !user?.isDemo && (
+        <button className={`btn ${mode === APP_MODES.SETTINGS ? 'btn-primary' : ''}`} style={{ justifyContent: 'start', marginTop: 'auto' }} onClick={() => setMode(APP_MODES.SETTINGS)}>⚙️ Paramètres</button>
+      )}
+    </aside>
+  </>
+);
+
+const Navbar = ({ setIsSidebarOpen }) => (
+  <nav className="navbar glass">
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <button className="btn menu-toggle" style={{ background: 'transparent', padding: '5px', fontSize: '1.2rem', color: '#fff' }} onClick={() => setIsSidebarOpen(true)}>☰</button>
+      <span style={{ fontSize: '1.5rem' }} className="hide-mobile">🐎</span>
+      <h2 className="gradient-text">HorsePlanner</h2>
+    </div>
+  </nav>
+);
+
+
+
+
+const HorseManagement = ({ horses, HORSE_ICONS, addHorse, updateHorse, syncDeleteHorse }) => {
+  const [name, setName] = useState('');
+  const [emoji, setEmoji] = useState('🐎');
+  const [owner, setOwner] = useState('');
+
+  const [editingHorseId, setEditingHorseId] = useState(null);
+  const [editName, setEditName] = useState('');
+  const [editEmoji, setEditEmoji] = useState('');
+  const [editOwner, setEditOwner] = useState('');
+
+  const startEditing = (h) => {
+    setEditingHorseId(h.id);
+    setEditName(h.name);
+    setEditEmoji(h.emoji);
+    setEditOwner(h.owner);
+  };
+
+  const saveEdit = (id) => {
+    updateHorse(id, { name: editName, emoji: editEmoji, owner: editOwner });
+    setEditingHorseId(null);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!name || !owner) return;
+    addHorse({ name, emoji, owner, status: 'box' });
+    setName('');
+    setOwner('');
+  };
+
+  return (
+    <div className="animate-fade">
+      <header style={{ marginBottom: '2rem' }}>
+        <h1>Gestion des Chevaux</h1>
+        <p style={{ color: 'var(--text-muted)' }}>Ajoutez ou modifiez les pensionnaires du club.</p>
+      </header>
+
+      <div className="card glass" style={{ marginBottom: '2rem' }}>
+        <h4>Ajouter un cheval</h4>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+          <input className="input" placeholder="Nom" value={name} onChange={e => setName(e.target.value)} style={{ flex: 1 }} />
+          <select className="input" value={emoji} onChange={e => setEmoji(e.target.value)} style={{ width: '80px', textAlign: 'center' }}>
+            {HORSE_ICONS.map(icon => <option key={icon} value={icon}>{icon}</option>)}
+          </select>
+          <input className="input" placeholder="Propriétaire" value={owner} onChange={e => setOwner(e.target.value)} style={{ flex: 1 }} />
+          <button className="btn btn-accent">Ajouter</button>
+        </form>
+      </div>
+
+      <div className="card glass" style={{ marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+           <h3>🐴 Liste des Chevaux ({horses.length})</h3>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+          {horses.slice().sort((a, b) => a.name.localeCompare(b.name)).map(h => (
+            <div key={h.id} className="glass" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', borderRadius: '12px', borderLeft: `4px solid ${h.color || 'var(--accent)'}` }}>
+              {editingHorseId === h.id ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', flex: 1 }}>
+                  <div style={{ display: 'flex', gap: '5px' }}>
+                    <select className="input" value={editEmoji} onChange={e => setEditEmoji(e.target.value)} style={{ width: '60px' }}>
+                      {HORSE_ICONS.map(icon => <option key={icon} value={icon}>{icon}</option>)}
+                    </select>
+                    <input className="input" autoFocus value={editName} onChange={e => setEditName(e.target.value)} />
+                  </div>
+                  <input className="input" value={editOwner} onChange={e => setEditOwner(e.target.value)} />
+                  <div style={{ display: 'flex', gap: '5px' }}>
+                    <button className="btn btn-primary" onClick={() => saveEdit(h.id)}>Enregistrer</button>
+                    <button className="btn" onClick={() => setEditingHorseId(null)}>Annuler</button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '1.8rem' }}>{h.emoji}</span>
+                    <div>
+                      <strong style={{ display: 'block' }}>{h.name}</strong>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Propriétaire: {h.owner}</span>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <button onClick={() => startEditing(h)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>✏️</button>
+                    <button onClick={() => syncDeleteHorse(h.id)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>🗑️</button>
+                  </div>
+                </>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const AssignmentView = ({ user, ROLES, horses, assignments, formatDate, addAssignment, deleteAssignment, updateAssignmentPeriod, updateAssignmentDates }) => {
+  const [selectedHorseId, setSelectedHorseId] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [status, setStatus] = useState('pré');
+  const [period, setPeriod] = useState('journée');
+  const [viewType, setViewType] = useState('club');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!selectedHorseId || !startDate || !endDate) return;
+    addAssignment({ horseId: Number(selectedHorseId), startDate, endDate, status, period });
+    setStartDate('');
+    setEndDate('');
+  };
+
+  const isOwner = user?.role === ROLES.PROPRIETAIRE;
+  const myHorses = isOwner ? horses.filter(h => h.owner === user.name) : horses;
+  const myHorseIds = myHorses.map(h => h.id);
+
+  const displayAssignments = isOwner 
+    ? assignments.filter(p => myHorseIds.includes(p.horseId))
+    : viewType === 'club' 
+      ? assignments.filter(p => horses.find(h => h.id === p.horseId && h.owner === 'Club'))
+      : assignments.filter(p => horses.find(h => h.id === p.horseId && h.owner !== 'Club'));
+
+  const today = new Date().toISOString().split('T')[0];
+  const activeAssignments = displayAssignments.filter(p => p.endDate >= today).sort((a, b) => a.startDate.localeCompare(b.startDate));
+  const pastAssignments = displayAssignments.filter(p => p.endDate < today).sort((a, b) => b.endDate.localeCompare(a.endDate));
+
+  // Archives grouping
+  const groupedPast = pastAssignments.reduce((acc, p) => {
+    const d = new Date(p.endDate);
+    const key = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}`;
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(p);
+    return acc;
+  }, {});
+  const sortedMonthKeys = Object.keys(groupedPast).sort((a, b) => b.localeCompare(a));
+  const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+
+  return (
+    <div className="animate-fade">
+      <header style={{ marginBottom: '2rem' }}>
+        <h1>Affectations & Planning</h1>
+        <p style={{ color: 'var(--text-muted)' }}>Gérez les périodes de pâturage et de repos.</p>
+      </header>
+
+      {user?.role === ROLES.GERANT && (
+        <div className="card glass" style={{ marginBottom: '2rem' }}>
+          <h4>Nouvelle affectation</h4>
+          <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
+            <div>
+              <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Cheval</label>
+              <select className="input" value={selectedHorseId} onChange={e => setSelectedHorseId(e.target.value)}>
+                <option value="">Sélectionner...</option>
+                {horses.slice().sort((a, b) => a.name.localeCompare(b.name)).map(h => (
+                  <option key={h.id} value={h.id}>{h.emoji} {h.name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Début</label>
+              <input type="date" className="input" value={startDate} onChange={e => setStartDate(e.target.value)} />
+            </div>
+            <div>
+              <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Fin</label>
+              <input type="date" className="input" value={endDate} onChange={e => setEndDate(e.target.value)} />
+            </div>
+            <div>
+               <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Période</label>
+               <select className="input" value={period} onChange={e => setPeriod(e.target.value)}>
+                <option value="journée">Journée</option>
+                <option value="matin">Matin</option>
+                <option value="après-midi">Après-midi</option>
+              </select>
+            </div>
+            <div style={{ alignSelf: 'end' }}>
+              <button className="btn btn-primary" style={{ width: '100%' }}>Planifier</button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      <div className="card glass">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+          <h3>📋 Planning des Sorties</h3>
+          {user?.role === ROLES.GERANT && (
+            <div className="btn-group">
+              <button className={`btn ${viewType === 'club' ? 'btn-primary' : ''}`} onClick={() => setViewType('club')}>Pensions Club</button>
+              <button className={`btn ${viewType === 'owner' ? 'btn-primary' : ''}`} onClick={() => setViewType('owner')}>Equidés Propriétaires</button>
+            </div>
+          )}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: isOwner ? '1rem' : '0' }}>
+            {activeAssignments.map(p => {
+              const h = horses.find(h => h.id === p.horseId);
+              return h ? (
+                <div key={p.id} className="card glass" style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', alignItems: 'center' }}>
+                  <span>{h.emoji} <strong>{h.name}</strong> du {formatDate(p.startDate)} au {formatDate(p.endDate)}</span>
+                  
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <span className={`badge ${p.status === 'pré' ? 'success' : 'info'}`} style={{ display: 'flex', gap: '5px', alignItems: 'center', fontWeight: '700' }}>
+                      {p.status === 'pré' ? 'Pré' : 'Box'} : {p.period === 'matin' ? 'Matin' : p.period === 'après-midi' ? 'Après-midi' : 'Journée'}
+                    </span>
+                    {user?.role === ROLES.GERANT && (
+                      <div style={{ display: 'flex', gap: '5px' }}>
+                        <div style={{ position: 'relative' }}>
+                          <button onClick={() => {
+                            const container = document.getElementById(`edit-${p.id}`);
+                            container.style.display = container.style.display === 'none' ? 'flex' : 'none';
+                          }} style={{ padding: '0px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>✏️</button>
+                          <div id={`edit-${p.id}`} className="glass" style={{ display: 'none', position: 'absolute', top: '100%', right: 0, zIndex: 10, padding: '15px', borderRadius: '12px', flexDirection: 'column', gap: '8px', minWidth: '220px', background: '#ffffff', border: '2px solid var(--accent)', boxShadow: '0 10px 25px rgba(0,0,0,0.5)' }}>
+                            <label style={{ fontSize: '0.8rem', color: '#333', fontWeight: 'bold' }}>📅 Date de début :</label>
+                            <input type="date" value={p.startDate} onChange={(e) => updateAssignmentDates(p.id, e.target.value, p.endDate)} className="input" style={{ padding: '8px', color: '#000', border: '1px solid #ccc', background: '#f5f5f5' }} />
+                            <label style={{ fontSize: '0.8rem', color: '#333', fontWeight: 'bold', marginTop: '5px' }}>📅 Date de fin :</label>
+                            <input type="date" value={p.endDate} onChange={(e) => updateAssignmentDates(p.id, p.startDate, e.target.value)} className="input" style={{ padding: '8px', color: '#000', border: '1px solid #ccc', background: '#f5f5f5' }} />
+                            <button onClick={() => document.getElementById(`edit-${p.id}`).style.display = 'none'} className="btn btn-primary" style={{ width: '100%', marginTop: '10px', fontSize: '0.8rem', padding: '5px' }}>Fermer</button>
+                          </div>
+                        </div>
+                        <button onClick={() => deleteAssignment(p.id)} style={{ padding: '0px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>🗑️</button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : null;
+            })}
+            {activeAssignments.length === 0 && <p style={{ fontSize: '0.8rem', opacity: 0.5 }}>Aucune affectation active.</p>}
+          </div>
+        </div>
+
+        {pastAssignments.length > 0 && (
+          <div style={{ marginTop: '3rem' }}>
+            <h4 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>📂 Archives (Affectations passées)</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '1rem' }}>
+              {sortedMonthKeys.map(key => {
+                const [year, month] = key.split('-');
+                const monthName = monthNames[parseInt(month) - 1];
+                return (
+                  <div key={key}>
+                    <h5 style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '5px', marginBottom: '10px', color: 'var(--text-muted)' }}>
+                      {monthName} {year}
+                    </h5>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {groupedPast[key].map(p => {
+                        const h = horses.find(h => h.id === p.horseId);
+                        return h ? (
+                          <div key={p.id} className="glass" style={{ padding: '8px 12px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden' }}>
+                            <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{h.emoji}</span> 
+                            <strong style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>{h.name}</strong>
+                            <span style={{ fontSize: '0.8rem', opacity: 0.7, flexShrink: 0 }}>du {formatDate(p.startDate)} au {formatDate(p.endDate)}</span>
+                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                              <span className={`badge ${p.status === 'pré' ? 'success' : 'info'}`} style={{ fontSize: '0.7rem', fontWeight: '700' }}>
+                                {p.status === 'pré' ? 'Pré' : 'Box'} : {p.period === 'matin' ? 'Matin' : p.period === 'après-midi' ? 'Après-midi' : 'Journée'}
+                              </span>
+                              {user?.role === ROLES.GERANT && (
+                                <button onClick={() => deleteAssignment(p.id)} style={{ padding: '0px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1rem' }}>🗑️</button>
+                              )}
+                            </div>
+                          </div>
+                        ) : null;
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+
+
+
+const CalendarView = ({ horses, assignments }) => {
+  const [currentDate, setCurrentDate] = useState(new Date(2026, 3, 1)); // Avril 2026
+  const [selectedHorseId, setSelectedHorseId] = useState('all');
+
+  const prevMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+  const nextMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+
+  const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+  const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
+  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+
+  const getHorseAssignments = (day) => {
+    const dateStr = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+    return assignments.filter(a => {
+      const start = a.startDate;
+      const end = a.endDate;
+      const matchesHorse = selectedHorseId === 'all' || a.horseId === Number(selectedHorseId);
+      return dateStr >= start && dateStr <= end && matchesHorse;
+    });
+  };
+
+  const monthLabel = currentDate.toLocaleString('fr-FR', { month: 'long', year: 'numeric' });
+
+  return (
+    <div className="animate-fade">
+      <header style={{ marginBottom: '2rem' }}>
+        <h1>Calendrier des Pâturages</h1>
+        <p style={{ color: 'var(--text-muted)' }}>Visualisez l'occupation du pré d'un coup d'œil.</p>
+      </header>
+
+      <div className="card glass">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <button className="btn" style={{ padding: '8px' }} onClick={prevMonth}>◀</button>
+            <h3 style={{ margin: 0, minWidth: '150px', textAlign: 'center', textTransform: 'capitalize' }}>{monthLabel}</h3>
+            <button className="btn" style={{ padding: '8px' }} onClick={nextMonth}>▶</button>
+          </div>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Filtrer par cheval :</span>
+            <select className="input" style={{ width: 'auto', minWidth: '150px' }} value={selectedHorseId} onChange={e => setSelectedHorseId(e.target.value)}>
+              <option value="all">Tous les chevaux</option>
+              {horses.slice().sort((a, b) => a.name.localeCompare(b.name)).map(h => (
+                <option key={h.id} value={h.id}>{h.emoji} {h.name}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="calendar-wrapper" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: '10px' }}>
+          <div className="calendar-grid" style={{ minWidth: '600px' }}>
+            {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(d => (
+              <div key={d} style={{ textAlign: 'center', fontWeight: 'bold', padding: '10px', color: 'var(--accent)', fontSize: '0.8rem' }}>{d}</div>
+            ))}
+            {Array.from({ length: (firstDayOfMonth + 6) % 7 }).map((_, i) => (
+              <div key={`empty-${i}`} />
+            ))}
+            {days.map(day => {
+              const dayAssigns = getHorseAssignments(day);
+              return (
+                <div key={day} className="calendar-day" style={{ minHeight: '100px', border: '1px solid rgba(255,255,255,0.05)', padding: '5px', borderRadius: '8px' }}>
+                  <div style={{ fontSize: '0.7rem', opacity: 0.5, marginBottom: '5px' }}>{day}</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                    {dayAssigns.slice(0, 4).map(a => {
+                      const h = horses.find(h => h.id === a.horseId);
+                      return h ? (
+                        <div key={a.id} className="calendar-item" style={{ background: h.color || 'var(--primary)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.65rem', color: 'white', display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                          <span className="hide-very-small">{h.emoji}</span>
+                          <span style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{h.name}</span>
+                        </div>
+                      ) : null;
+                    })}
+                    {dayAssigns.length > 4 && <div style={{ fontSize: '0.6rem', opacity: 0.5, textAlign: 'center' }}>+{dayAssigns.length - 4} autres</div>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Dashboard = ({ user, ROLES, horses, assignments, formatDate }) => {
+  const isManager = user?.role === ROLES.GERANT;
+  const today = new Date().toISOString().split('T')[0];
+  const myHorses = user?.role === ROLES.PROPRIETAIRE 
+    ? horses.filter(h => h.owner === user.name) 
+    : horses;
+
+  const todayAssignments = assignments.filter(p => {
+    const start = new Date(p.startDate);
+    const end = new Date(p.endDate);
+    const current = new Date(today);
+    return current >= start && current <= end;
+  });
+
+  const renderManagerDashboard = () => (
+    <div className="grid">
+      <div className="card glass" style={{ borderLeft: '4px solid var(--success)', overflow: 'hidden' }}>
+        <h3>☀️ Matin - Départ au pré</h3>
+        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Mouvements prévus ce matin.</p>
+        <div className="dashboard-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '10px', marginTop: '1rem' }}>
+           {todayAssignments.filter(a => a.startDate === today && a.status === 'pré').sort((a, b) => {
+            const hA = horses.find(h => h.id === a.horseId);
+            const hB = horses.find(h => h.id === b.horseId);
+            return (hA?.name || "").localeCompare(hB?.name || "");
+          }).map(a => {
+            const h = horses.find(h => h.id === a.horseId);
+            return h ? (
+              <div key={a.id} className="glass" style={{ padding: '10px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px', minWidth: '0', borderLeft: `4px solid ${h.color || 'var(--success)'}` }}>
+                <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{h.emoji}</span> 
+                <strong style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>{h.name}</strong>
+              </div>
+            ) : null;
+          })}
+          {todayAssignments.filter(a => a.startDate === today && a.status === 'pré').length === 0 && <p style={{ fontSize: '0.8rem', opacity: 0.5 }}>Aucun départ.</p>}
+        </div>
+      </div>
+      <div className="card glass" style={{ borderLeft: '4px solid var(--warning)', overflow: 'hidden' }}>
+        <h3>🌑 Soir - Retour box</h3>
+        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Mouvements prévus ce soir.</p>
+        <div className="dashboard-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '10px', marginTop: '1rem' }}>
+           {todayAssignments.filter(a => a.endDate === today && a.status === 'pré').sort((a, b) => {
+            const hA = horses.find(h => h.id === a.horseId);
+            const hB = horses.find(h => h.id === b.horseId);
+            return (hA?.name || "").localeCompare(hB?.name || "");
+          }).map(a => {
+            const h = horses.find(h => h.id === a.horseId);
+            return h ? (
+              <div key={a.id} className="glass" style={{ padding: '10px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px', minWidth: '0', borderLeft: `4px solid ${h.color || 'var(--warning)'}` }}>
+                <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{h.emoji}</span> 
+                <strong style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>{h.name}</strong>
+              </div>
+            ) : null;
+          })}
+          {todayAssignments.filter(a => a.endDate === today && a.status === 'pré').length === 0 && <p style={{ fontSize: '0.8rem', opacity: 0.5 }}>Aucun retour.</p>}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderOwnerDashboard = () => {
+    const atPasture = myHorses.map(h => {
+      const assignment = todayAssignments.find(a => a.horseId === h.id && a.status === 'pré');
+      return { horse: h, assignment };
+    }).filter(h => h.assignment);
+
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <div className="card glass" style={{ background: 'rgba(33, 150, 243, 0.1)', border: '1px solid rgba(33, 150, 243, 0.3)', display: 'flex', gap: '15px', alignItems: 'center', padding: '1rem 1.5rem' }}>
+          <span style={{ fontSize: '1.5rem' }}>ℹ️</span>
+          <p style={{ margin: 0, fontSize: '0.9rem', lineHeight: '1.4', color: 'rgba(255,255,255,0.9)' }}>
+            Pour toute modification ou suppression d'une affectation, merci de contacter le club par téléphone ou par e-mail.
+          </p>
+        </div>
+
+        <div className="grid">
+          <div className="card glass">
+            <h3 style={{ color: 'var(--success)' }}>🌿 Chevaux Propriétaires (au Pré)</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '10px', marginTop: '1rem' }}>
+               {atPasture.sort((a, b) => a.horse.name.localeCompare(b.horse.name)).map(({horse: h, assignment: a}) => {
+                const days = Math.ceil((new Date(a.endDate) - new Date(a.startDate)) / (1000 * 60 * 60 * 24)) + 1;
+                return (
+                  <div key={h.id} className="horse-item glass" style={{ borderLeft: `4px solid ${h.color || 'var(--primary)'}`, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden', padding: '10px' }} onClick={() => alert(`Au pré du ${formatDate(a.startDate)} au ${formatDate(a.endDate)} (${days} jours)`)}>
+                    <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{h.emoji}</span>
+                    <strong style={{ fontWeight: '600', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>{h.name}</strong>
+                  </div>
+                );
+              })}
+              {atPasture.length === 0 && <p style={{ fontSize: '0.8rem', opacity: 0.5 }}>Aucun cheval au pré.</p>}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="animate-fade">
+      <header style={{ marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <h1 style={{ margin: 0 }}>Bonjour {isManager ? 'Daniel' : ''} 👋</h1>
+          <p style={{ color: 'var(--text-muted)', margin: 0 }}>{isManager ? 'Tableau de bord' : 'Emplacement actuel des chevaux propriétaires'}</p>
+      </header>
+
+      {isManager ? renderManagerDashboard() : renderOwnerDashboard()}
+    </div>
+  );
+};
+
+const SettingsView = ({ syncPath, setSyncPath, clientId, setClientId, initGoogleDrive, setIsDriveConnected, isDriveConnected, handleConnectDrive, isAutoSync, setIsAutoSync, lastSync, INITIAL_HORSES, fetchSupabaseData, INITIAL_PLANNINGS, handleManualSave, handleManualLoad }) => (
+  <div className="animate-fade">
+    <header style={{ marginBottom: '2rem' }}>
+      <h1>Paramètres - Automate Sync ☁️</h1>
+      <p style={{ color: 'var(--text-muted)' }}>Configurez la synchronisation Google Drive "Automate Edition".</p>
+    </header>
+
+    <div className="card glass">
+      <h3>📂 Chemin de synchronisation</h3>
+      <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div>
+          <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '5px', display: 'block' }}>Chemin ou ID du dossier Google Drive</label>
+          <input 
+            className="input" 
+            value={syncPath} 
+            onChange={e => setSyncPath(e.target.value)} 
+            placeholder="ex: DigitalSaurien/AUTOMATE/HorsePlanner"
+            style={{ width: '100%', padding: '12px', background: 'var(--bg-glass)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '8px' }}
+          />
+          <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '5px' }}>
+            ℹ️ Vous pouvez mettre soit un chemin (Dossier/SousDossier) soit directement l'ID unique (ID du dossier cible uniquement).
+          </p>
+        </div>
+
+        <div>
+          <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '5px', display: 'block' }}>Google Client ID (OAuth 2.0)</label>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <input 
+              className="input" 
+              value={clientId} 
+              onChange={e => setClientId(e.target.value)} 
+              placeholder="ex: 12345-abcde.apps.googleusercontent.com"
+              style={{ flex: 1, padding: '12px', background: 'var(--bg-glass)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '8px' }}
+            />
+            <button className="btn btn-accent" style={{ fontSize: '0.7rem' }} onClick={() => {
+              initGoogleDrive(clientId).then(() => alert("✅ Client ID appliqué ! Reconnectez-vous au Drive."));
+              setIsDriveConnected(false);
+            }}>Appliquer</button>
+          </div>
+          <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '5px' }}>
+            ⚠️ Si vous changez le Client ID, cliquez sur "Appliquer" puis reconnectez-vous au Drive ci-dessous.
+          </p>
+        </div>
+        
+        <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>Connexion Google :</span>
+            <span className={`badge ${isDriveConnected ? 'success' : 'info'}`}>
+              {isDriveConnected ? 'Actif ✅' : 'Inactif ❌'}
+            </span>
+          </div>
+          {!isDriveConnected && (
+            <button className="btn btn-primary" style={{ marginTop: '15px', width: '100%' }} onClick={handleConnectDrive}>
+              Établir la liaison Google Drive
+            </button>
+          )}
+          {isDriveConnected && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '8px', marginTop: '10px' }}>
+              <div>
+                <span style={{ fontSize: '0.9rem', display: 'block' }}>Synchronisation automatique</span>
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Sauvegarde automatiquement en tâche de fond.</span>
+              </div>
+              <input type="checkbox" checked={isAutoSync} onChange={(e) => {
+                setIsAutoSync(e.target.checked);
+                localStorage.setItem('hp_auto_sync', e.target.checked);
+              }} style={{ width: '20px', height: '20px', cursor: 'pointer' }} />
+            </div>
+          )}
+          {lastSync && <div style={{ fontSize: '0.7rem', marginTop: '10px', textAlign: 'right', opacity: 0.7 }}>Dernière synchro : {lastSync}</div>}
+        </div>
+
+        <div style={{ marginTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1.5rem' }}>
+          <h4 style={{ color: 'var(--danger)' }}>Zone de danger</h4>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>Rétablir les données de démonstration (Mars à Mai 2026).</p>
+          <button className="btn" style={{ border: '1px solid var(--danger)', color: 'var(--danger)', background: 'rgba(244, 67, 54, 0.05)', width: '100%' }} onClick={async () => {
+            if (confirm("Voulez-vous réinitialiser Supabase avec les chevaux des captures d'écran ?")) {
+              const seedData = INITIAL_HORSES.map(({id, ...rest}) => rest);
+              await supabase.from('horses').delete().neq('id', 0); // Vider
+              await supabase.from('horses').insert(seedData);
+              fetchSupabaseData();
+              alert("✅ Chevaux réinitialisés !");
+            }
+          }}>Injection Chevaux (Captures d'écran)</button>
+          
+          <button className="btn" style={{ border: '1px solid var(--warning)', color: 'var(--warning)', background: 'rgba(255, 193, 7, 0.05)', width: '100%', marginTop: '10px' }} onClick={async () => {
+            if (confirm("Voulez-vous réinitialiser Supabase avec le planning des captures d'écran ?")) {
+              await supabase.from('assignments').delete().neq('id', 0); // Vider
+              const seedAssigns = INITIAL_PLANNINGS.map(({id, horseId, startDate, endDate, status, period}) => ({
+                horse_id: horseId, // Note mapping logic might need manual alignment if IDs differ
+                start_date: startDate,
+                end_date: endDate,
+                status,
+                period: period || 'journée'
+              }));
+              // Warning: Mapping fixed IDs to DB IDs is tricky. Better to manually reassign or use name matching.
+              alert("⚠️ Le planning de démo nécessite des IDs fixes. Je vous conseille de recréer manuellement quelques affectations pour tester la synchro.");
+            }
+          }}>Réinstaller le Planning de Démo</button>
+        </div>
+      </div>
+    </div>
+
+      <div className="card glass" style={{ marginTop: '2rem', border: '1px solid rgba(66, 133, 244, 0.3)' }}>
+        <h3 style={{ color: '#4285F4', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          ☁️ Synchronisation Cloud
+        </h3>
+        <p style={{ fontSize: '0.8rem', opacity: 0.8, marginBottom: '1rem' }}>
+          Contrôlez manuellement vos données sur Google Drive.
+        </p>
+        
+        <div style={{ display: 'flex', gap: '10px', marginBottom: '1rem' }}>
+          <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleManualSave}>
+            📤 Sauvegarder
+          </button>
+          <button className="btn" style={{ flex: 1, background: 'rgba(255,255,255,0.05)' }} onClick={handleManualLoad}>
+            📥 Charger
+          </button>
+        </div>
+
+        <div style={{ fontSize: '0.7rem', opacity: 0.6, textAlign: 'center' }}>
+          Dernière action : {lastSync || 'Aucune dans cette session'}
+        </div>
+      </div>
+
+      <div className="card glass" style={{ marginTop: '2rem', border: '1px solid rgba(244, 67, 54, 0.3)' }}>
+        <h3 style={{ color: 'var(--danger)' }}>🆘 Zone de Secours</h3>
+      <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+        En cas de bug persistant ou d'écran blanc, vous pouvez réinitialiser l'application. 
+        Cela déconnectera Google Drive et videra le cache local.
+      </p>
+      <button 
+        className="btn" 
+        onClick={() => { if(confirm("Réinitialiser HorsePlanner ?")) { localStorage.clear(); window.location.reload(); } }}
+        style={{ width: '100%', background: 'rgba(244, 67, 54, 0.1)', color: 'var(--danger)', border: '1px solid var(--danger)' }}
+      >
+        🗑️ Réinitialiser tout le cache
+      </button>
+    </div>
+  </div>
+);
+
 function App() {
   const formatDate = (isoStr) => {
     if (!isoStr) return '';
@@ -368,761 +1035,21 @@ function App() {
   const updateAssignmentPeriod = (id, period) => syncUpdateAssignment(id, { period });
   const updateAssignmentDates = (id, startDate, endDate) => syncUpdateAssignment(id, { startDate, endDate });
 
-  // --- Components ---
-
-  const Sidebar = () => (
-    <>
-      <div className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
-      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
-        <button className={`btn ${mode === APP_MODES.DASHBOARD ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.DASHBOARD)}>🏠 Dashboard</button>
-        {user?.role === ROLES.GERANT && (
-          <button className={`btn ${mode === APP_MODES.HORSES ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.HORSES)}>🐴 Chevaux</button>
-        )}
-        <button className={`btn ${mode === APP_MODES.ASSIGNMENTS ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.ASSIGNMENTS)}>🗓️ Affectations</button>
-        <button className={`btn ${mode === APP_MODES.CALENDAR ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.CALENDAR)}>📅 Calendrier</button>
-        {user?.role === ROLES.GERANT && !user?.isDemo && (
-          <button className={`btn ${mode === APP_MODES.SETTINGS ? 'btn-primary' : ''}`} style={{ justifyContent: 'start', marginTop: 'auto' }} onClick={() => setMode(APP_MODES.SETTINGS)}>⚙️ Paramètres</button>
-        )}
-      </aside>
-    </>
-  );
-
-  const HorseManagement = () => {
-    const [name, setName] = useState('');
-    const [emoji, setEmoji] = useState('🐎');
-    const [owner, setOwner] = useState('');
-
-    const [editingHorseId, setEditingHorseId] = useState(null);
-    const [editName, setEditName] = useState('');
-    const [editEmoji, setEditEmoji] = useState('');
-    const [editOwner, setEditOwner] = useState('');
-
-    const startEditing = (h) => {
-      setEditingHorseId(h.id);
-      setEditName(h.name);
-      setEditEmoji(h.emoji);
-      setEditOwner(h.owner);
-    };
-
-    const saveEdit = (id) => {
-      updateHorse(id, { name: editName, emoji: editEmoji, owner: editOwner });
-      setEditingHorseId(null);
-    };
-
-    const handleSubmit = (e) => {
-      e.preventDefault();
-      if (!name || !owner) return;
-      addHorse({ name, emoji, owner, status: 'box' });
-      setName('');
-      setOwner('');
-    };
-
-    return (
-      <div className="animate-fade">
-        <header style={{ marginBottom: '2rem' }}>
-          <h1>Gestion des Chevaux</h1>
-          <p style={{ color: 'var(--text-muted)' }}>Ajoutez ou modifiez les pensionnaires du club.</p>
-        </header>
-
-        <div className="card glass" style={{ marginBottom: '2rem' }}>
-          <h4>Ajouter un cheval</h4>
-          <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexWrap: 'wrap' }}>
-            <input className="input" placeholder="Nom" value={name} onChange={e => setName(e.target.value)} style={{ flex: 1 }} />
-            <select className="input" value={emoji} onChange={e => setEmoji(e.target.value)} style={{ width: '80px', textAlign: 'center' }}>
-              {HORSE_ICONS.map(icon => <option key={icon} value={icon}>{icon}</option>)}
-            </select>
-            <input className="input" placeholder="Propriétaire" value={owner} onChange={e => setOwner(e.target.value)} style={{ flex: 1 }} />
-            <button className="btn btn-accent">Ajouter</button>
-          </form>
-        </div>
-
-        <div className="card glass" style={{ marginBottom: '2rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-             <h3>🐴 Liste des Chevaux ({horses.length})</h3>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
-            {horses.slice().sort((a, b) => a.name.localeCompare(b.name)).map(h => (
-              <div key={h.id} className="glass" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', borderRadius: '12px', borderLeft: `4px solid ${h.color || 'var(--accent)'}` }}>
-                {editingHorseId === h.id ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', flex: 1 }}>
-                    <div style={{ display: 'flex', gap: '5px' }}>
-                      <select className="input" value={editEmoji} onChange={e => setEditEmoji(e.target.value)} style={{ width: '60px' }}>
-                        {HORSE_ICONS.map(icon => <option key={icon} value={icon}>{icon}</option>)}
-                      </select>
-                      <input className="input" value={editName} onChange={e => setEditName(e.target.value)} style={{ flex: 1 }} />
-                    </div>
-                    <input className="input" value={editOwner} onChange={e => setEditOwner(e.target.value)} placeholder="Propriétaire" />
-                    <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
-                      <button className="btn btn-success" style={{ flex: 1, padding: '5px', fontSize: '0.8rem' }} onClick={() => saveEdit(h.id)}>Valider</button>
-                      <button className="btn" style={{ flex: 1, padding: '5px', fontSize: '0.8rem' }} onClick={() => setEditingHorseId(null)}>Annuler</button>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                      <span style={{ fontSize: '2.5rem' }}>{h.emoji}</span>
-                      <div>
-                        <strong style={{ fontSize: '1.1rem' }}>{h.name}</strong>
-                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Propriétaire: {h.owner}</div>
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', gap: '5px' }}>
-                      <button onClick={() => startEditing(h)} style={{ padding: '8px', background: 'rgba(66, 133, 244, 0.1)', border: 'none', color: 'var(--accent)', borderRadius: '50%', cursor: 'pointer' }}>✏️</button>
-                      <button onClick={() => deleteHorse(h.id)} style={{ padding: '8px', background: 'rgba(244, 67, 54, 0.1)', border: 'none', color: 'var(--danger)', borderRadius: '50%', cursor: 'pointer' }}>🗑️</button>
-                    </div>
-                  </>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const AssignmentView = () => {
-    const isOwner = user?.role === ROLES.PROPRIETAIRE;
-    const myHorses = isOwner ? horses.filter(h => h.owner.toLowerCase() !== 'club') : horses;
-    
-    const [hId, setHId] = useState(myHorses[0]?.id || '');
-    const [start, setStart] = useState(new Date().toISOString().split('T')[0]);
-    const [end, setEnd] = useState(new Date().toISOString().split('T')[0]);
-    const [loc, setLoc] = useState('pré');
-    const [period, setPeriod] = useState('journée');
-    const [viewType, setViewType] = useState('all');
-
-    useEffect(() => {
-      if (myHorses.length > 0 && !hId) setHId(myHorses[0].id);
-    }, [myHorses]);
-
-    const handleBulkAssign = (e) => {
-      e.preventDefault();
-      addAssignment({ horseId: Number(hId), startDate: start, endDate: end, status: loc, period });
-      alert('Affectation enregistrée !');
-    };
-
-    const todayStr = new Date().toISOString().split('T')[0];
-    
-    const filteredAssignments = assignments.filter(p => {
-      const h = horses.find(h => h.id === p.horseId);
-      if (!h) return false;
-      if (isOwner) return h.owner.toLowerCase() !== 'club';
-      if (viewType === 'club') return h.owner.toLowerCase() === 'club';
-      if (viewType === 'owner') return h.owner.toLowerCase() !== 'club';
-      return true;
-    }).sort((a, b) => {
-      const hA = horses.find(h => h.id === a.horseId);
-      const hB = horses.find(h => h.id === b.horseId);
-      return (hA?.name || "").localeCompare(hB?.name || "");
-    });
-
-    const activeAssignments = filteredAssignments.filter(p => p.endDate >= todayStr);
-    const pastAssignments = filteredAssignments.filter(p => p.endDate < todayStr);
-
-    // Group past by month
-    const groupedPast = pastAssignments.reduce((acc, p) => {
-      const date = new Date(p.endDate);
-      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-      if (!acc[monthKey]) acc[monthKey] = [];
-      acc[monthKey].push(p);
-      return acc;
-    }, {});
-
-    const sortedMonthKeys = Object.keys(groupedPast).sort().reverse();
-
-    const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
-
-    return (
-      <div className="animate-fade">
-         <header style={{ marginBottom: '2rem' }}>
-          <h1>Gestion des Affectations</h1>
-          <p style={{ color: 'var(--text-muted)' }}>Plannifiez les mises au pré par plages de dates.</p>
-        </header>
-
-        <div className="card glass">
-          <h4>Nouvelle affectation (Multi-jours)</h4>
-          <form onSubmit={handleBulkAssign} style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
-            <div style={{ flex: 1, minWidth: '150px' }}>
-               <label style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '5px', display: 'block' }}>Cheval</label>
-               <select className="input" value={hId} onChange={e => setHId(e.target.value)}>
-                 {myHorses.slice().sort((a, b) => a.name.localeCompare(b.name)).map(h => <option key={h.id} value={h.id}>{h.emoji} {h.name}</option>)}
-               </select>
-            </div>
-            <div style={{ flex: 1, minWidth: '150px' }}>
-               <label style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '5px', display: 'block' }}>Date de début</label>
-               <input type="date" className="input" value={start} onChange={e => setStart(e.target.value)} />
-            </div>
-            <div style={{ flex: 1, minWidth: '150px' }}>
-               <label style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '5px', display: 'block' }}>Date de fin</label>
-               <input type="date" className="input" value={end} onChange={e => setEnd(e.target.value)} />
-            </div>
-            <div style={{ flex: 1, minWidth: '150px' }}>
-               <label style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '5px', display: 'block' }}>Destination</label>
-               <select className="input" value={loc} onChange={e => setLoc(e.target.value)}>
-                 <option value="pré">🌿 Mise au pré</option>
-                 <option value="box">🏠 Mise au box</option>
-               </select>
-            </div>
-            <div style={{ flex: 1, minWidth: '150px' }}>
-               <label style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '5px', display: 'block' }}>Période</label>
-               <select className="input" value={period} onChange={e => setPeriod(e.target.value)}>
-                 <option value="journée">Journée entière</option>
-                 <option value="matin">Matin</option>
-                 <option value="après-midi">Après-midi</option>
-               </select>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-              <button className="btn btn-primary">Enregistrer la période</button>
-            </div>
-          </form>
-        </div>
-
-        <div style={{ marginTop: '2rem' }}>
-          <h4>Affectations actives et à venir</h4>
-          {!isOwner && (
-            <div style={{ display: 'flex', gap: '10px', marginTop: '1rem', marginBottom: '1rem' }}>
-              <button className={`btn ${viewType === 'all' ? 'btn-primary' : ''}`} onClick={() => setViewType('all')}>Toutes</button>
-              <button className={`btn ${viewType === 'club' ? 'btn-primary' : ''}`} onClick={() => setViewType('club')}>Equidés du Club</button>
-              <button className={`btn ${viewType === 'owner' ? 'btn-primary' : ''}`} onClick={() => setViewType('owner')}>Equidés Propriétaires</button>
-            </div>
-          )}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: isOwner ? '1rem' : '0' }}>
-            {activeAssignments.map(p => {
-              const h = horses.find(h => h.id === p.horseId);
-              return h ? (
-                <div key={p.id} className="card glass" style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', alignItems: 'center' }}>
-                  <span>{h.emoji} <strong>{h.name}</strong> du {formatDate(p.startDate)} au {formatDate(p.endDate)}</span>
-                  
-                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                    <span className={`badge ${p.status === 'pré' ? 'success' : 'info'}`} style={{ display: 'flex', gap: '5px', alignItems: 'center', fontWeight: '700' }}>
-                      {p.status === 'pré' ? 'Pré' : 'Box'} : {p.period === 'matin' ? 'Matin' : p.period === 'après-midi' ? 'Après-midi' : 'Journée'}
-                    </span>
-                    {user?.role === ROLES.GERANT && (
-                      <div style={{ display: 'flex', gap: '5px' }}>
-                        <div style={{ position: 'relative' }}>
-                          <button onClick={() => {
-                            const container = document.getElementById(`edit-${p.id}`);
-                            container.style.display = container.style.display === 'none' ? 'flex' : 'none';
-                          }} style={{ padding: '0px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>✏️</button>
-                          <div id={`edit-${p.id}`} className="glass" style={{ display: 'none', position: 'absolute', top: '100%', right: 0, zIndex: 10, padding: '15px', borderRadius: '12px', flexDirection: 'column', gap: '8px', minWidth: '220px', background: '#ffffff', border: '2px solid var(--accent)', boxShadow: '0 10px 25px rgba(0,0,0,0.5)' }}>
-                            <label style={{ fontSize: '0.8rem', color: '#333', fontWeight: 'bold' }}>📅 Date de début :</label>
-                            <input type="date" value={p.startDate} onChange={(e) => updateAssignmentDates(p.id, e.target.value, p.endDate)} className="input" style={{ padding: '8px', color: '#000', border: '1px solid #ccc', background: '#f5f5f5' }} />
-                            <label style={{ fontSize: '0.8rem', color: '#333', fontWeight: 'bold', marginTop: '5px' }}>📅 Date de fin :</label>
-                            <input type="date" value={p.endDate} onChange={(e) => updateAssignmentDates(p.id, p.startDate, e.target.value)} className="input" style={{ padding: '8px', color: '#000', border: '1px solid #ccc', background: '#f5f5f5' }} />
-                            <button onClick={() => document.getElementById(`edit-${p.id}`).style.display = 'none'} className="btn btn-primary" style={{ width: '100%', marginTop: '10px', fontSize: '0.8rem', padding: '5px' }}>Fermer</button>
-                          </div>
-                        </div>
-                        <button onClick={() => deleteAssignment(p.id)} style={{ padding: '0px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>🗑️</button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ) : null;
-            })}
-            {activeAssignments.length === 0 && <p style={{ fontSize: '0.8rem', opacity: 0.5 }}>Aucune affectation active.</p>}
-          </div>
-        </div>
-
-        {pastAssignments.length > 0 && (
-          <div style={{ marginTop: '3rem' }}>
-            <h4 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>📂 Archives (Affectations passées)</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '1rem' }}>
-              {sortedMonthKeys.map(key => {
-                const [year, month] = key.split('-');
-                const monthName = monthNames[parseInt(month) - 1];
-                return (
-                  <div key={key}>
-                    <h5 style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '5px', marginBottom: '10px', color: 'var(--text-muted)' }}>
-                      {monthName} {year}
-                    </h5>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      {groupedPast[key].map(p => {
-                        const h = horses.find(h => h.id === p.horseId);
-                        return h ? (
-                          <div key={p.id} className="glass" style={{ padding: '8px 12px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden' }}>
-                            <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{h.emoji}</span> 
-                            <strong style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1 }}>{h.name}</strong>
-                            <span style={{ fontSize: '0.8rem', opacity: 0.7, flexShrink: 0 }}>du {formatDate(p.startDate)} au {formatDate(p.endDate)}</span>
-                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                              <span className={`badge ${p.status === 'pré' ? 'success' : 'info'}`} style={{ fontSize: '0.7rem', fontWeight: '700' }}>
-                                {p.status === 'pré' ? 'Pré' : 'Box'} : {p.period === 'matin' ? 'Matin' : p.period === 'après-midi' ? 'Après-midi' : 'Journée'}
-                              </span>
-                              {user?.role === ROLES.GERANT && (
-                                <button onClick={() => deleteAssignment(p.id)} style={{ padding: '0px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1rem' }}>🗑️</button>
-                              )}
-                            </div>
-                          </div>
-                        ) : null;
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const CalendarView = () => {
-    const [filterHorseId, setFilterHorseId] = useState('all');
-    const [activeMonth, setActiveMonth] = useState(new Date().getMonth());
-    const [activeYear, setActiveYear] = useState(new Date().getFullYear());
-
-    const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
-    
-    const getDaysInMonth = (y, m) => new Date(y, m + 1, 0).getDate();
-    const getFirstDayOfMonth = (y, m) => {
-      let day = new Date(y, m, 1).getDay();
-      return day === 0 ? 6 : day - 1; // 0=Lun, 6=Dim
-    };
-
-    const myHorses = user?.role === ROLES.PROPRIETAIRE 
-      ? horses.filter(h => h.owner.toLowerCase() !== 'club')
-      : horses;
-
-    const myAssignments = user?.role === ROLES.PROPRIETAIRE 
-      ? assignments.filter(a => myHorses.some(h => h.id === a.horseId)) 
-      : assignments;
-
-    const daysCount = getDaysInMonth(activeYear, activeMonth);
-    const firstDayIdx = getFirstDayOfMonth(activeYear, activeMonth);
-    const calendarDays = [];
-    for (let i = 0; i < firstDayIdx; i++) calendarDays.push(null);
-    for (let i = 1; i <= daysCount; i++) calendarDays.push(i);
-
-    let daysAuPre = 0;
-    if (filterHorseId !== 'all') {
-      const filteredAssignments = myAssignments.filter(a => String(a.horseId) === String(filterHorseId) && a.status === 'pré');
-      for (let i = 1; i <= daysCount; i++) {
-        const dateStr = `${activeYear}-${String(activeMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-        const current = new Date(dateStr);
-        const dayAssigns = filteredAssignments.filter(p => current >= new Date(p.startDate) && current <= new Date(p.endDate));
-        
-        let dayValue = 0;
-        dayAssigns.forEach(a => {
-           if (!a.period || a.period === 'journée') dayValue = 1;
-           else if ((a.period === 'matin' || a.period === 'après-midi') && dayValue < 1) dayValue += 0.5;
-        });
-        daysAuPre += dayValue > 1 ? 1 : dayValue;
-      }
-    }
-
-    return (
-      <div className="animate-fade">
-         <header style={{ marginBottom: '1rem' }}>
-            <h1>Calendrier {activeYear}</h1>
-            <div style={{ display: 'flex', gap: '5px', overflowX: 'auto', padding: '10px 0', scrollbarWidth: 'none' }} className="hide-scrollbar">
-              {monthNames.map((m, idx) => (
-                <button 
-                  key={m} 
-                  className={`btn ${activeMonth === idx ? 'btn-primary' : ''}`} 
-                  style={{ fontSize: '0.7rem', padding: '6px 12px', whiteSpace: 'nowrap' }} 
-                  onClick={() => setActiveMonth(idx)}
-                >
-                  {m}
-                </button>
-              ))}
-            </div>
-         </header>
-
-         <header style={{ marginBottom: '2rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '1.5rem', flex: 1 }}>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: 0 }}>Visualisation globale pour {monthNames[activeMonth]}.</p>
-            <span style={{ color: 'var(--warning)', fontWeight: 'bold', fontSize: '1.2rem', whiteSpace: 'nowrap', opacity: filterHorseId === 'all' ? 0 : 1, transition: 'opacity 0.2s ease', pointerEvents: 'none' }}>
-              Ce mois-ci : {daysAuPre} jour{daysAuPre > 1 ? 's' : ''} au pré
-            </span>
-          </div>
-          <select className="input" style={{ width: '100%', minWidth: '150px', maxWidth: '200px' }} value={filterHorseId} onChange={e => setFilterHorseId(e.target.value)}>
-            <option value="all">Tous les chevaux</option>
-            {myHorses.slice().sort((a, b) => a.name.localeCompare(b.name)).map(h => <option key={h.id} value={h.id}>{h.emoji} {h.name}</option>)}
-          </select>
-        </header>
-
-        <div className="card glass" style={{ padding: '0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-          <div className="calendar-wrapper">
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', background: 'var(--bg-glass)' }}>
-            {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(d => <div key={d} style={{ padding: '12px', fontWeight: 'bold', fontSize: '0.8rem', color: 'var(--text-muted)' }}>{d}</div>)}
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
-            {calendarDays.map((day, i) => {
-              if (day === null) return <div key={`empty-${i}`} style={{ border: '1px solid rgba(255,255,255,0.02)' }}></div>;
-
-              const dateStr = `${activeYear}-${String(activeMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-              const todayStr = new Date().toISOString().split('T')[0];
-              const isToday = dateStr === todayStr;
-              
-              const filtered = filterHorseId === 'all' 
-                ? myAssignments 
-                : myAssignments.filter(a => String(a.horseId) === String(filterHorseId));
-              
-              const dayAssignments = filtered.filter(p => {
-                const start = new Date(p.startDate);
-                const end = new Date(p.endDate);
-                const current = new Date(dateStr);
-                return current >= start && current <= end;
-              });
-              
-              return (
-                <div key={i} style={{ minHeight: '120px', padding: '10px', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', gap: '6px', background: isToday ? 'rgba(66, 133, 244, 0.05)' : 'transparent' }}>
-                  <span style={{ fontSize: '0.75rem', fontWeight: '600', color: isToday ? 'var(--accent)' : 'inherit', opacity: isToday ? 1 : 0.4 }}>{day} {monthNames[activeMonth].substring(0, 3)}</span>
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    {dayAssignments.slice().sort((a, b) => {
-                      const hA = horses.find(h => h.id === a.horseId);
-                      const hB = horses.find(h => h.id === b.horseId);
-                      return (hA?.name || "").localeCompare(hB?.name || "");
-                    }).map(a => {
-                      const h = horses.find(h => h.id === a.horseId);
-                      return h ? (
-                        <div key={a.id} className="calendar-item" style={{ 
-                          fontSize: '0.7rem', 
-                          padding: '4px 8px', 
-                          borderRadius: '4px', 
-                          background: h.color || (a.status === 'pré' ? 'rgba(76, 175, 80, 0.4)' : 'rgba(139, 107, 97, 0.4)'), 
-                          color: '#fff', 
-                          border: '1px solid rgba(255,255,255,0.4)', 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          gap: '6px',
-                          boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
-                          textShadow: '0 1px 2px rgba(0,0,0,0.8)',
-                          width: '100%',
-                          minWidth: 0
-                        }}>
-                          <span className="hide-very-small" style={{ fontSize: '0.9rem', flexShrink: 0 }}>{h.emoji}</span> 
-                          <strong style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>{h.name}</strong>
-                        </div>
-                      ) : null;
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    </div>
-
-    );
-  };
-
-  const LoginView = () => (
-    <div className="flex-center animate-fade" style={{ minHeight: '80vh' }}>
-      <div className="card glass" style={{ width: '100%', maxWidth: '400px', textAlign: 'center' }}>
-        <h1 className="gradient-text" style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>HorsePlanner</h1>
-        <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Gérez votre club avec élégance.</p>
-        
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {!isGerantSelected ? (
-            <>
-              <button className="btn btn-primary" onClick={() => setIsGerantSelected(true)}>Connexion Gérant</button>
-              <button className="btn btn-accent" onClick={() => login(ROLES.PROPRIETAIRE, 'Dupont')}>Espace Propriétaire</button>
-            </>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <input 
-                type="password" 
-                className="input" 
-                placeholder="Mot de passe" 
-                autoFocus
-                value={passwordInput} 
-                onChange={e => setPasswordInput(e.target.value)} 
-                onKeyDown={e => e.key === 'Enter' && login(ROLES.GERANT)}
-              />
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <button className="btn btn-primary" style={{ flex: 1 }} onClick={() => login(ROLES.GERANT)}>Sésame</button>
-                <button className="btn" style={{ flex: 1, color: 'var(--text-muted)', border: '1px solid rgba(255,255,255,0.1)' }} onClick={() => setIsGerantSelected(false)}>Retour</button>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-
-  const Navbar = () => (
-    <nav className="navbar glass">
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <button className="btn menu-toggle" style={{ background: 'transparent', padding: '5px', fontSize: '1.2rem', color: '#fff' }} onClick={() => setIsSidebarOpen(true)}>☰</button>
-        <span style={{ fontSize: '1.5rem' }} className="hide-mobile">🐎</span>
-        <h2 className="gradient-text">HorsePlanner</h2>
-      </div>
-      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        {!user?.isDemo && (
-          <div style={{ fontSize: '0.7rem', color: 'var(--success)', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-            <span>⚡ Temps réel On (Supabase)</span>
-          </div>
-        )}
-        <span className="hide-mobile" style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>{user?.role === ROLES.GERANT ? (user?.isDemo ? '🛡️ Démo' : '🛡️ Admin') : '👤 Propriétaire'}</span>
-        <button onClick={logout} className="btn" style={{ padding: '0.5rem 1rem', background: 'rgba(244, 67, 54, 0.1)', color: 'var(--danger)', border: '1px solid var(--danger)' }}>Déconnexion</button>
-      </div>
-    </nav>
-  );
-
-  const Dashboard = () => {
-    const today = new Date().toISOString().split('T')[0];
-    const isManager = user?.role === ROLES.GERANT;
-
-    const myHorses = user?.role === ROLES.PROPRIETAIRE 
-      ? horses.filter(h => h.owner.toLowerCase() !== 'club')
-      : horses;
-
-    const todayAssignments = assignments.filter(p => {
-      const start = new Date(p.startDate);
-      const end = new Date(p.endDate);
-      const current = new Date(today);
-      return current >= start && current <= end;
-    });
-
-    const renderManagerDashboard = () => (
-      <div className="grid">
-        <div className="card glass" style={{ borderLeft: '4px solid var(--success)', overflow: 'hidden' }}>
-          <h3>☀️ Matin - Départ au pré</h3>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Mouvements prévus ce matin.</p>
-          <div className="dashboard-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '10px', marginTop: '1rem' }}>
-             {todayAssignments.filter(a => a.startDate === today && a.status === 'pré').sort((a, b) => {
-              const hA = horses.find(h => h.id === a.horseId);
-              const hB = horses.find(h => h.id === b.horseId);
-              return (hA?.name || "").localeCompare(hB?.name || "");
-            }).map(a => {
-              const h = horses.find(h => h.id === a.horseId);
-              return h ? (
-                <div key={a.id} className="glass" style={{ padding: '10px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px', minWidth: '0', borderLeft: `4px solid ${h.color || 'var(--success)'}` }}>
-                  <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{h.emoji}</span> 
-                  <strong style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>{h.name}</strong>
-                </div>
-              ) : null;
-            })}
-            {todayAssignments.filter(a => a.startDate === today && a.status === 'pré').length === 0 && <p style={{ fontSize: '0.8rem', opacity: 0.5 }}>Aucun départ.</p>}
-          </div>
-        </div>
-        <div className="card glass" style={{ borderLeft: '4px solid var(--warning)', overflow: 'hidden' }}>
-          <h3>🌑 Soir - Retour box</h3>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Mouvements prévus ce soir.</p>
-          <div className="dashboard-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '10px', marginTop: '1rem' }}>
-             {todayAssignments.filter(a => a.endDate === today && a.status === 'pré').sort((a, b) => {
-              const hA = horses.find(h => h.id === a.horseId);
-              const hB = horses.find(h => h.id === b.horseId);
-              return (hA?.name || "").localeCompare(hB?.name || "");
-            }).map(a => {
-              const h = horses.find(h => h.id === a.horseId);
-              return h ? (
-                <div key={a.id} className="glass" style={{ padding: '10px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px', minWidth: '0', borderLeft: `4px solid ${h.color || 'var(--warning)'}` }}>
-                  <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{h.emoji}</span> 
-                  <strong style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>{h.name}</strong>
-                </div>
-              ) : null;
-            })}
-            {todayAssignments.filter(a => a.endDate === today && a.status === 'pré').length === 0 && <p style={{ fontSize: '0.8rem', opacity: 0.5 }}>Aucun retour.</p>}
-          </div>
-        </div>
-      </div>
-    );
-
-    const renderOwnerDashboard = () => {
-      const atPasture = myHorses.map(h => {
-        const assignment = todayAssignments.find(a => a.horseId === h.id && a.status === 'pré');
-        return { horse: h, assignment };
-      }).filter(h => h.assignment);
-
-      return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div className="card glass" style={{ background: 'rgba(33, 150, 243, 0.1)', border: '1px solid rgba(33, 150, 243, 0.3)', display: 'flex', gap: '15px', alignItems: 'center', padding: '1rem 1.5rem' }}>
-            <span style={{ fontSize: '1.5rem' }}>ℹ️</span>
-            <p style={{ margin: 0, fontSize: '0.9rem', lineHeight: '1.4', color: 'rgba(255,255,255,0.9)' }}>
-              Pour toute modification ou suppression d'une affectation, merci de contacter le club par téléphone ou par e-mail.
-            </p>
-          </div>
-
-          <div className="grid">
-            <div className="card glass">
-              <h3 style={{ color: 'var(--success)' }}>🌿 Chevaux Propriétaires (au Pré)</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '10px', marginTop: '1rem' }}>
-                 {atPasture.sort((a, b) => a.horse.name.localeCompare(b.horse.name)).map(({horse: h, assignment: a}) => {
-                  const days = Math.ceil((new Date(a.endDate) - new Date(a.startDate)) / (1000 * 60 * 60 * 24)) + 1;
-                  return (
-                    <div key={h.id} className="horse-item glass" style={{ borderLeft: `4px solid ${h.color || 'var(--primary)'}`, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden', padding: '10px' }} onClick={() => alert(`Au pré du ${formatDate(a.startDate)} au ${formatDate(a.endDate)} (${days} jours)`)}>
-                      <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{h.emoji}</span>
-                      <strong style={{ fontWeight: '600', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>{h.name}</strong>
-                    </div>
-                  );
-                })}
-                {atPasture.length === 0 && <p style={{ fontSize: '0.8rem', opacity: 0.5 }}>Aucun cheval au pré.</p>}
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    };
-
-    return (
-      <div className="animate-fade">
-        <header style={{ marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <h1 style={{ margin: 0 }}>Bonjour {isManager ? 'Daniel' : ''} 👋</h1>
-            <p style={{ color: 'var(--text-muted)', margin: 0 }}>{isManager ? 'Tableau de bord' : 'Emplacement actuel des chevaux propriétaires'}</p>
-        </header>
-
-        {isManager ? renderManagerDashboard() : renderOwnerDashboard()}
-      </div>
-    );
-  };
-
-  const SettingsView = () => (
-    <div className="animate-fade">
-      <header style={{ marginBottom: '2rem' }}>
-        <h1>Paramètres - Automate Sync ☁️</h1>
-        <p style={{ color: 'var(--text-muted)' }}>Configurez la synchronisation Google Drive "Automate Edition".</p>
-      </header>
-
-      <div className="card glass">
-        <h3>📂 Chemin de synchronisation</h3>
-        <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div>
-            <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '5px', display: 'block' }}>Chemin ou ID du dossier Google Drive</label>
-            <input 
-              className="input" 
-              value={syncPath} 
-              onChange={e => setSyncPath(e.target.value)} 
-              placeholder="ex: DigitalSaurien/AUTOMATE/HorsePlanner"
-              style={{ width: '100%', padding: '12px', background: 'var(--bg-glass)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '8px' }}
-            />
-            <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '5px' }}>
-              ℹ️ Vous pouvez mettre soit un chemin (Dossier/SousDossier) soit directement l'ID unique (ID du dossier cible uniquement).
-            </p>
-          </div>
-
-          <div>
-            <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '5px', display: 'block' }}>Google Client ID (OAuth 2.0)</label>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <input 
-                className="input" 
-                value={clientId} 
-                onChange={e => setClientId(e.target.value)} 
-                placeholder="ex: 12345-abcde.apps.googleusercontent.com"
-                style={{ flex: 1, padding: '12px', background: 'var(--bg-glass)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '8px' }}
-              />
-              <button className="btn btn-accent" style={{ fontSize: '0.7rem' }} onClick={() => {
-                initGoogleDrive(clientId).then(() => alert("✅ Client ID appliqué ! Reconnectez-vous au Drive."));
-                setIsDriveConnected(false);
-              }}>Appliquer</button>
-            </div>
-            <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '5px' }}>
-              ⚠️ Si vous changez le Client ID, cliquez sur "Appliquer" puis reconnectez-vous au Drive ci-dessous.
-            </p>
-          </div>
-          
-          <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span>Connexion Google :</span>
-              <span className={`badge ${isDriveConnected ? 'success' : 'info'}`}>
-                {isDriveConnected ? 'Actif ✅' : 'Inactif ❌'}
-              </span>
-            </div>
-            {!isDriveConnected && (
-              <button className="btn btn-primary" style={{ marginTop: '15px', width: '100%' }} onClick={handleConnectDrive}>
-                Établir la liaison Google Drive
-              </button>
-            )}
-            {isDriveConnected && (
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '8px', marginTop: '10px' }}>
-                <div>
-                  <span style={{ fontSize: '0.9rem', display: 'block' }}>Synchronisation automatique</span>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Sauvegarde automatiquement en tâche de fond.</span>
-                </div>
-                <input type="checkbox" checked={isAutoSync} onChange={(e) => {
-                  setIsAutoSync(e.target.checked);
-                  localStorage.setItem('hp_auto_sync', e.target.checked);
-                }} style={{ width: '20px', height: '20px', cursor: 'pointer' }} />
-              </div>
-            )}
-            {lastSync && <div style={{ fontSize: '0.7rem', marginTop: '10px', textAlign: 'right', opacity: 0.7 }}>Dernière synchro : {lastSync}</div>}
-          </div>
-
-          <div style={{ marginTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1.5rem' }}>
-            <h4 style={{ color: 'var(--danger)' }}>Zone de danger</h4>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>Rétablir les données de démonstration (Mars à Mai 2026).</p>
-            <button className="btn" style={{ border: '1px solid var(--danger)', color: 'var(--danger)', background: 'rgba(244, 67, 54, 0.05)', width: '100%' }} onClick={async () => {
-              if (confirm("Voulez-vous réinitialiser Supabase avec les chevaux des captures d'écran ?")) {
-                const seedData = INITIAL_HORSES.map(({id, ...rest}) => rest);
-                await supabase.from('horses').delete().neq('id', 0); // Vider
-                await supabase.from('horses').insert(seedData);
-                fetchSupabaseData();
-                alert("✅ Chevaux réinitialisés !");
-              }
-            }}>Injection Chevaux (Captures d'écran)</button>
-            
-            <button className="btn" style={{ border: '1px solid var(--warning)', color: 'var(--warning)', background: 'rgba(255, 193, 7, 0.05)', width: '100%', marginTop: '10px' }} onClick={async () => {
-              if (confirm("Voulez-vous réinitialiser Supabase avec le planning des captures d'écran ?")) {
-                await supabase.from('assignments').delete().neq('id', 0); // Vider
-                const seedAssigns = INITIAL_PLANNINGS.map(({id, horseId, startDate, endDate, status, period}) => ({
-                  horse_id: horseId, // Note mapping logic might need manual alignment if IDs differ
-                  start_date: startDate,
-                  end_date: endDate,
-                  status,
-                  period: period || 'journée'
-                }));
-                // Warning: Mapping fixed IDs to DB IDs is tricky. Better to manually reassign or use name matching.
-                alert("⚠️ Le planning de démo nécessite des IDs fixes. Je vous conseille de recréer manuellement quelques affectations pour tester la synchro.");
-              }
-            }}>Réinstaller le Planning de Démo</button>
-          </div>
-        </div>
-      </div>
-
-        <div className="card glass" style={{ marginTop: '2rem', border: '1px solid rgba(66, 133, 244, 0.3)' }}>
-          <h3 style={{ color: '#4285F4', display: 'flex', alignItems: 'center', gap: '10px' }}>
-            ☁️ Synchronisation Cloud
-          </h3>
-          <p style={{ fontSize: '0.8rem', opacity: 0.8, marginBottom: '1rem' }}>
-            Contrôlez manuellement vos données sur Google Drive.
-          </p>
-          
-          <div style={{ display: 'flex', gap: '10px', marginBottom: '1rem' }}>
-            <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleManualSave}>
-              📤 Sauvegarder
-            </button>
-            <button className="btn" style={{ flex: 1, background: 'rgba(255,255,255,0.05)' }} onClick={handleManualLoad}>
-              📥 Charger
-            </button>
-          </div>
-
-          <div style={{ fontSize: '0.7rem', opacity: 0.6, textAlign: 'center' }}>
-            Dernière action : {lastSync || 'Aucune dans cette session'}
-          </div>
-        </div>
-
-        <div className="card glass" style={{ marginTop: '2rem', border: '1px solid rgba(244, 67, 54, 0.3)' }}>
-          <h3 style={{ color: 'var(--danger)' }}>🆘 Zone de Secours</h3>
-        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-          En cas de bug persistant ou d'écran blanc, vous pouvez réinitialiser l'application. 
-          Cela déconnectera Google Drive et videra le cache local.
-        </p>
-        <button 
-          className="btn" 
-          onClick={() => { if(confirm("Réinitialiser HorsePlanner ?")) { localStorage.clear(); window.location.reload(); } }}
-          style={{ width: '100%', background: 'rgba(244, 67, 54, 0.1)', color: 'var(--danger)', border: '1px solid var(--danger)' }}
-        >
-          🗑️ Réinitialiser tout le cache
-        </button>
-      </div>
-    </div>
-  );
+  // Sub-components are moved outside for stability.
 
   return (
     <div style={{ background: '#121212', minHeight: '100vh', color: '#fff' }}>
-      {mode === APP_MODES.LOGIN ? <LoginView /> : (
+      {mode === APP_MODES.LOGIN ? <LoginView isGerantSelected={isGerantSelected} setIsGerantSelected={setIsGerantSelected} passwordInput={passwordInput} setPasswordInput={setPasswordInput} login={login} /> : (
         <div style={{ display: 'flex', width: '100%' }}>
-          <Sidebar />
+          <Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} mode={mode} setMode={setMode} user={user} />
           <main className="main-content container">
-            <Navbar />
+            <Navbar setIsSidebarOpen={setIsSidebarOpen} />
             <div>
-              {mode === APP_MODES.DASHBOARD && <Dashboard />}
-              {mode === APP_MODES.HORSES && <HorseManagement />}
-              {mode === APP_MODES.ASSIGNMENTS && <AssignmentView />}
-              {mode === APP_MODES.CALENDAR && <CalendarView />}
-              {mode === APP_MODES.SETTINGS && <SettingsView />}
+              {mode === APP_MODES.DASHBOARD && <Dashboard user={user} ROLES={ROLES} horses={horses} assignments={assignments} formatDate={formatDate} />}
+              {mode === APP_MODES.HORSES && <HorseManagement horses={horses} HORSE_ICONS={HORSE_ICONS} addHorse={addHorse} updateHorse={updateHorse} syncDeleteHorse={deleteHorse} />}
+              {mode === APP_MODES.ASSIGNMENTS && <AssignmentView user={user} ROLES={ROLES} horses={horses} assignments={assignments} formatDate={formatDate} addAssignment={addAssignment} deleteAssignment={deleteAssignment} updateAssignmentDates={updateAssignmentDates} />}
+              {mode === APP_MODES.CALENDAR && <CalendarView horses={horses} assignments={assignments} />}
+              {mode === APP_MODES.SETTINGS && <SettingsView syncPath={syncPath} setSyncPath={setSyncPath} clientId={clientId} setClientId={setClientId} initGoogleDrive={(id) => Promise.resolve()} setIsDriveConnected={setIsDriveConnected} isDriveConnected={isDriveConnected} handleConnectDrive={handleConnectDrive} isAutoSync={isAutoSync} setIsAutoSync={setIsAutoSync} lastSync={lastSync} INITIAL_HORSES={INITIAL_HORSES} fetchSupabaseData={fetchSupabaseData} INITIAL_PLANNINGS={INITIAL_PLANNINGS} handleManualSave={handleManualSave} handleManualLoad={handleManualLoad} />}
             </div>
           </main>
         </div>
