@@ -40,6 +40,8 @@ Créer une application simple pour gérer la mise au pré ou au box des chevaux 
 - [x] Calendrier dynamique sur 12 mois avec alignement correct des jours de la semaine
 - [x] Autorisation d'affectation pour les propriétaires (restreint à leurs chevaux) avec synchronisation gérant/propriétaire
 - [x] Initialisation automatique du calendrier sur le mois et l'année en cours (Vue Gérant & Propriétaire)
+- [x] Archivage automatique des affectations passées avec groupement par mois (Menu Affectations)
+
 
 **OUT (exclu / plus tard):**
 - Réservation avancée des prés par propriétaire
@@ -76,4 +78,6 @@ Créer une application simple pour gérer la mise au pré ou au box des chevaux 
 - [x] Le déploiement sur Vercel et GitHub Pages est 100% synchronisé
 - [x] Les listes de chevaux sont triées par ordre alphabétique partout (Dashboard, Menus, Affectations)
 - [x] Le calendrier s'ouvre automatiquement sur le mois et l'année actuels pour tous les utilisateurs
+- [x] Les affectations terminées sont automatiquement déplacées vers une section "Archives" groupée par mois
+
 

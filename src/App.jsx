@@ -403,6 +403,37 @@ function App() {
       alert('Affectation enregistrée !');
     };
 
+    const todayStr = new Date().toISOString().split('T')[0];
+    
+    const filteredAssignments = assignments.filter(p => {
+      const h = horses.find(h => h.id === p.horseId);
+      if (!h) return false;
+      if (isOwner) return h.owner.toLowerCase() !== 'club';
+      if (viewType === 'club') return h.owner.toLowerCase() === 'club';
+      if (viewType === 'owner') return h.owner.toLowerCase() !== 'club';
+      return true;
+    }).sort((a, b) => {
+      const hA = horses.find(h => h.id === a.horseId);
+      const hB = horses.find(h => h.id === b.horseId);
+      return (hA?.name || "").localeCompare(hB?.name || "");
+    });
+
+    const activeAssignments = filteredAssignments.filter(p => p.endDate >= todayStr);
+    const pastAssignments = filteredAssignments.filter(p => p.endDate < todayStr);
+
+    // Group past by month
+    const groupedPast = pastAssignments.reduce((acc, p) => {
+      const date = new Date(p.endDate);
+      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      if (!acc[monthKey]) acc[monthKey] = [];
+      acc[monthKey].push(p);
+      return acc;
+    }, {});
+
+    const sortedMonthKeys = Object.keys(groupedPast).sort().reverse();
+
+    const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+
     return (
       <div className="animate-fade">
          <header style={{ marginBottom: '2rem' }}>
@@ -449,7 +480,7 @@ function App() {
         </div>
 
         <div style={{ marginTop: '2rem' }}>
-          <h4>Affectations actives</h4>
+          <h4>Affectations actives et à venir</h4>
           {!isOwner && (
             <div style={{ display: 'flex', gap: '10px', marginTop: '1rem', marginBottom: '1rem' }}>
               <button className={`btn ${viewType === 'all' ? 'btn-primary' : ''}`} onClick={() => setViewType('all')}>Toutes</button>
@@ -458,18 +489,7 @@ function App() {
             </div>
           )}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: isOwner ? '1rem' : '0' }}>
-            {assignments.filter(p => {
-              const h = horses.find(h => h.id === p.horseId);
-              if (!h) return false;
-              if (isOwner) return h.owner.toLowerCase() !== 'club';
-              if (viewType === 'club') return h.owner.toLowerCase() === 'club';
-              if (viewType === 'owner') return h.owner.toLowerCase() !== 'club';
-              return true;
-            }).sort((a, b) => {
-              const hA = horses.find(h => h.id === a.horseId);
-              const hB = horses.find(h => h.id === b.horseId);
-              return (hA?.name || "").localeCompare(hB?.name || "");
-            }).map(p => {
+            {activeAssignments.map(p => {
               const h = horses.find(h => h.id === p.horseId);
               return h ? (
                 <div key={p.id} className="card glass" style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', alignItems: 'center' }}>
@@ -512,8 +532,44 @@ function App() {
                 </div>
               ) : null;
             })}
+            {activeAssignments.length === 0 && <p style={{ fontSize: '0.8rem', opacity: 0.5 }}>Aucune affectation active.</p>}
           </div>
         </div>
+
+        {pastAssignments.length > 0 && (
+          <div style={{ marginTop: '3rem' }}>
+            <h4 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>📂 Archives (Affectations passées)</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '1rem' }}>
+              {sortedMonthKeys.map(key => {
+                const [year, month] = key.split('-');
+                const monthName = monthNames[parseInt(month) - 1];
+                return (
+                  <div key={key}>
+                    <h5 style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '5px', marginBottom: '10px', color: 'var(--text-muted)' }}>
+                      {monthName} {year}
+                    </h5>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {groupedPast[key].map(p => {
+                        const h = horses.find(h => h.id === p.horseId);
+                        return h ? (
+                          <div key={p.id} className="card glass" style={{ display: 'flex', justifyContent: 'space-between', padding: '0.8rem 1rem', alignItems: 'center', opacity: 0.7, background: 'rgba(255,255,255,0.02)' }}>
+                            <span style={{ fontSize: '0.9rem' }}>{h.emoji} <strong>{h.name}</strong> du {p.startDate} au {p.endDate}</span>
+                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                              <span className="badge" style={{ fontSize: '0.7rem', background: 'rgba(255,255,255,0.1)' }}>{p.status}</span>
+                              {user?.role === ROLES.GERANT && (
+                                <button onClick={() => deleteAssignment(p.id)} style={{ padding: '0px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1rem' }}>🗑️</button>
+                              )}
+                            </div>
+                          </div>
+                        ) : null;
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     );
   };
