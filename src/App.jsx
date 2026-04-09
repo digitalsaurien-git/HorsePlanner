@@ -520,8 +520,8 @@ function App() {
 
   const CalendarView = () => {
     const [filterHorseId, setFilterHorseId] = useState('all');
-    const [activeMonth, setActiveMonth] = useState(2); // Mars par défaut
-    const [activeYear, setActiveYear] = useState(2026);
+    const [activeMonth, setActiveMonth] = useState(new Date().getMonth());
+    const [activeYear, setActiveYear] = useState(new Date().getFullYear());
 
     const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
     

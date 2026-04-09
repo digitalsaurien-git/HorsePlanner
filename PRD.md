@@ -39,6 +39,7 @@ Créer une application simple pour gérer la mise au pré ou au box des chevaux 
 - [x] Configuration générique Google Drive (Client ID personnalisable et Dossier/ID cible)
 - [x] Calendrier dynamique sur 12 mois avec alignement correct des jours de la semaine
 - [x] Autorisation d'affectation pour les propriétaires (restreint à leurs chevaux) avec synchronisation gérant/propriétaire
+- [x] Initialisation automatique du calendrier sur le mois et l'année en cours (Vue Gérant & Propriétaire)
 
 **OUT (exclu / plus tard):**
 - Réservation avancée des prés par propriétaire
@@ -60,7 +61,7 @@ Créer une application simple pour gérer la mise au pré ou au box des chevaux 
 - [x] Page d’accueil avec login selon profil visible et fonctionnel
 - [x] Ajout d’un cheval avec nom et émoticône visible immédiatement
 - [x] Suppression d’un cheval met bien à jour toutes les vues concernées
-- [x] Navigation mois par mois sur le calendrier (Avril simulé)
+- [x] Navigation mois par mois sur le calendrier (Mois en cours par défaut)
 - [x] Affectation “au pré/au box” modifiable pour chaque cheval
 - [x] Vue propriétaire n’affiche que les chevaux du compte connecté actuellement au pré (personnalisation retirée)
 - [x] Vue “chevaux du jour” affiche le statut et les notifications de mouvement
@@ -74,3 +75,5 @@ Créer une application simple pour gérer la mise au pré ou au box des chevaux 
 - [x] La personnalisation d'un cheval est strictement isolée (ne se propage plus aux autres)
 - [x] Le déploiement sur Vercel et GitHub Pages est 100% synchronisé
 - [x] Les listes de chevaux sont triées par ordre alphabétique partout (Dashboard, Menus, Affectations)
+- [x] Le calendrier s'ouvre automatiquement sur le mois et l'année actuels pour tous les utilisateurs
+
