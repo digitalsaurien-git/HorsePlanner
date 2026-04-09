@@ -61,13 +61,99 @@ const INITIAL_PLANNINGS = [
   { id: 2007, horseId: 8, startDate: '2026-03-02', endDate: '2026-03-02', status: 'pré' },
   { id: 2008, horseId: 11, startDate: '2026-03-02', endDate: '2026-03-02', status: 'pré' },
   
-  // Avril 2026
-  { id: 3001, horseId: 2, startDate: '2026-04-01', endDate: '2026-04-04', status: 'pré' },
-  { id: 3002, horseId: 4, startDate: '2026-04-01', endDate: '2026-04-05', status: 'pré' },
-  { id: 3003, horseId: 6, startDate: '2026-04-01', endDate: '2026-04-01', status: 'pré' },
+  // Avril 2026 - Data from Screenshot
+  { id: 3001, horseId: 1, startDate: '2026-04-01', endDate: '2026-04-02', status: 'pré', period: 'journée' },
+  { id: 3002, horseId: 6, startDate: '2026-04-01', endDate: '2026-04-30', status: 'pré', period: 'journée' },
+  { id: 3003, horseId: 3, startDate: '2026-04-01', endDate: '2026-04-03', status: 'pré', period: 'journée' },
+  { id: 3004, horseId: 15, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré', period: 'matin' },
+  { id: 3005, horseId: 14, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré', period: 'après-midi' },
+  { id: 3006, horseId: 11, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré', period: 'matin' },
+  { id: 3007, horseId: 4, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré', period: 'journée' },
+  { id: 3008, horseId: 2, startDate: '2026-04-02', endDate: '2026-04-04', status: 'pré', period: 'journée' },
+  { id: 3009, horseId: 8, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré', period: 'matin' },
+  { id: 3010, horseId: 12, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré', period: 'après-midi' },
+  { id: 3011, horseId: 5, startDate: '2026-04-02', endDate: '2026-04-03', status: 'pré', period: 'journée' },
+  { id: 3012, horseId: 13, startDate: '2026-04-02', endDate: '2026-04-05', status: 'pré', period: 'journée' },
+  { id: 3013, horseId: 7, startDate: '2026-04-03', endDate: '2026-04-03', status: 'pré', period: 'journée' },
+  { id: 3014, horseId: 9, startDate: '2026-04-04', endDate: '2026-04-04', status: 'pré', period: 'journée' },
+  { id: 3015, horseId: 12, startDate: '2026-04-04', endDate: '2026-04-04', status: 'pré', period: 'matin' },
+  { id: 3016, horseId: 10, startDate: '2026-04-05', endDate: '2026-04-05', status: 'pré', period: 'journée' },
+  { id: 3017, horseId: 7, startDate: '2026-04-05', endDate: '2026-04-05', status: 'pré', period: 'journée' },
+  { id: 3018, horseId: 5, startDate: '2026-04-05', endDate: '2026-04-05', status: 'pré', period: 'journée' },
+  { id: 3019, horseId: 8, startDate: '2026-04-05', endDate: '2026-04-05', status: 'pré', period: 'après-midi' },
   
-  // Mai 2026 (simplified for brevity)
-  { id: 4001, horseId: 10, startDate: '2026-05-01', endDate: '2026-05-05', status: 'pré' },
+  { id: 3020, horseId: 9, startDate: '2026-04-06', endDate: '2026-04-06', status: 'pré', period: 'journée' },
+  { id: 3021, horseId: 4, startDate: '2026-04-06', endDate: '2026-04-06', status: 'pré', period: 'journée' },
+  { id: 3022, horseId: 2, startDate: '2026-04-06', endDate: '2026-04-06', status: 'pré', period: 'matin' },
+  { id: 3023, horseId: 3, startDate: '2026-04-06', endDate: '2026-04-06', status: 'pré', period: 'après-midi' },
+  { id: 3024, horseId: 5, startDate: '2026-04-06', endDate: '2026-04-13', status: 'pré', period: 'journée' },
+  { id: 3025, horseId: 12, startDate: '2026-04-06', endDate: '2026-04-06', status: 'pré', period: 'matin' },
+  { id: 3026, horseId: 11, startDate: '2026-04-06', endDate: '2026-04-07', status: 'pré', period: 'après-midi' },
+  
+  { id: 3027, horseId: 1, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'matin' },
+  { id: 3028, horseId: 15, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'après-midi' },
+  { id: 3029, horseId: 14, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'matin' },
+  { id: 3030, horseId: 16, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'après-midi' },
+  { id: 3031, horseId: 7, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'journée' },
+  { id: 3032, horseId: 3, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'matin' },
+  { id: 3033, horseId: 8, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'après-midi' },
+  
+  { id: 3034, horseId: 13, startDate: '2026-04-08', endDate: '2026-04-09', status: 'pré', period: 'journée' },
+  { id: 3035, horseId: 3, startDate: '2026-04-08', endDate: '2026-04-10', status: 'pré', period: 'journée' },
+  
+  { id: 3036, horseId: 1, startDate: '2026-04-09', endDate: '2026-04-09', status: 'pré', period: 'matin' },
+  { id: 3037, horseId: 16, startDate: '2026-04-09', endDate: '2026-04-09', status: 'pré', period: 'après-midi' },
+  { id: 3038, horseId: 4, startDate: '2026-04-09', endDate: '2026-04-09', status: 'pré', period: 'journée' },
+  { id: 3039, horseId: 8, startDate: '2026-04-09', endDate: '2026-04-09', status: 'pré', period: 'matin' },
+  { id: 3040, horseId: 2, startDate: '2026-04-09', endDate: '2026-04-09', status: 'pré', period: 'après-midi' },
+  
+  { id: 3041, horseId: 7, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },
+  { id: 3042, horseId: 9, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'matin' },
+  { id: 3043, horseId: 10, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'après-midi' },
+  { id: 3044, horseId: 3, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'matin' },
+  { id: 3045, horseId: 2, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'après-midi' },
+  { id: 3046, horseId: 15, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },
+  
+  { id: 3047, horseId: 10, startDate: '2026-04-11', endDate: '2026-04-11', status: 'pré', period: 'journée' },
+  { id: 3048, horseId: 9, startDate: '2026-04-11', endDate: '2026-04-11', status: 'pré', period: 'journée' },
+  
+  { id: 3049, horseId: 1, startDate: '2026-04-13', endDate: '2026-04-14', status: 'pré', period: 'journée' },
+  { id: 3050, horseId: 14, startDate: '2026-04-13', endDate: '2026-04-13', status: 'pré', period: 'journée' },
+  { id: 3051, horseId: 4, startDate: '2026-04-13', endDate: '2026-04-13', status: 'pré', period: 'matin' },
+  { id: 3052, horseId: 2, startDate: '2026-04-13', endDate: '2026-04-13', status: 'pré', period: 'après-midi' },
+  { id: 3053, horseId: 12, startDate: '2026-04-13', endDate: '2026-04-13', status: 'pré', period: 'journée' },
+  { id: 3054, horseId: 3, startDate: '2026-04-13', endDate: '2026-04-13', status: 'pré', period: 'journée' },
+  
+  { id: 3055, horseId: 5, startDate: '2026-04-14', endDate: '2026-04-14', status: 'pré', period: 'journée' },
+  { id: 3056, horseId: 15, startDate: '2026-04-14', endDate: '2026-04-14', status: 'pré', period: 'matin' },
+  { id: 3057, horseId: 3, startDate: '2026-04-14', endDate: '2026-04-15', status: 'pré', period: 'journée' },
+  
+  { id: 3058, horseId: 2, startDate: '2026-04-15', endDate: '2026-04-15', status: 'pré', period: 'journée' },
+  
+  { id: 3059, horseId: 1, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
+  { id: 3060, horseId: 14, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
+  { id: 3061, horseId: 4, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
+  { id: 3062, horseId: 12, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
+  { id: 3063, horseId: 3, startDate: '2026-04-16', endDate: '2026-04-17', status: 'pré', period: 'journée' },
+  { id: 3064, horseId: 2, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
+  
+  { id: 3065, horseId: 15, startDate: '2026-04-17', endDate: '2026-04-17', status: 'pré', period: 'journée' },
+  
+  { id: 3066, horseId: 12, startDate: '2026-04-18', endDate: '2026-04-18', status: 'pré', period: 'journée' },
+  
+  { id: 3067, horseId: 1, startDate: '2026-04-20', endDate: '2026-04-21', status: 'pré', period: 'journée' },
+  { id: 3068, horseId: 4, startDate: '2026-04-20', endDate: '2026-04-20', status: 'pré', period: 'journée' },
+  { id: 3069, horseId: 3, startDate: '2026-04-20', endDate: '2026-04-24', status: 'pré', period: 'journée' },
+  
+  { id: 3070, horseId: 1, startDate: '2026-04-23', endDate: '2026-04-23', status: 'pré', period: 'journée' },
+  
+  { id: 3071, horseId: 4, startDate: '2026-04-25', endDate: '2026-04-30', status: 'pré', period: 'journée' },
+  
+  { id: 3072, horseId: 1, startDate: '2026-04-27', endDate: '2026-04-28', status: 'pré', period: 'journée' },
+  { id: 3073, horseId: 3, startDate: '2026-04-27', endDate: '2026-04-30', status: 'pré', period: 'journée' },
+  { id: 3074, horseId: 12, startDate: '2026-04-27', endDate: '2026-04-29', status: 'pré', period: 'journée' },
+  
+  { id: 3075, horseId: 1, startDate: '2026-04-30', endDate: '2026-04-30', status: 'pré', period: 'journée' },
 ];
 
 function App() {
