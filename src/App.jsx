@@ -928,20 +928,29 @@ function App() {
       }).filter(h => h.assignment);
 
       return (
-        <div className="grid">
-          <div className="card glass">
-            <h3 style={{ color: 'var(--success)' }}>🌿 Chevaux Propriétaires (au Pré)</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '10px', marginTop: '1rem' }}>
-               {atPasture.sort((a, b) => a.horse.name.localeCompare(b.horse.name)).map(({horse: h, assignment: a}) => {
-                const days = Math.ceil((new Date(a.endDate) - new Date(a.startDate)) / (1000 * 60 * 60 * 24)) + 1;
-                return (
-                  <div key={h.id} className="horse-item glass" style={{ borderLeft: `4px solid ${h.color || 'var(--primary)'}`, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden', padding: '10px' }} onClick={() => alert(`Au pré du ${formatDate(a.startDate)} au ${formatDate(a.endDate)} (${days} jours)`)}>
-                    <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{h.emoji}</span>
-                    <strong style={{ fontWeight: '600', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>{h.name}</strong>
-                  </div>
-                );
-              })}
-              {atPasture.length === 0 && <p style={{ fontSize: '0.8rem', opacity: 0.5 }}>Aucun cheval au pré.</p>}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div className="card glass" style={{ background: 'rgba(33, 150, 243, 0.1)', border: '1px solid rgba(33, 150, 243, 0.3)', display: 'flex', gap: '15px', alignItems: 'center', padding: '1rem 1.5rem' }}>
+            <span style={{ fontSize: '1.5rem' }}>ℹ️</span>
+            <p style={{ margin: 0, fontSize: '0.9rem', lineHeight: '1.4', color: 'rgba(255,255,255,0.9)' }}>
+              Pour toute modification ou suppression d'une affectation, merci de contacter le club par téléphone ou par e-mail.
+            </p>
+          </div>
+
+          <div className="grid">
+            <div className="card glass">
+              <h3 style={{ color: 'var(--success)' }}>🌿 Chevaux Propriétaires (au Pré)</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '10px', marginTop: '1rem' }}>
+                 {atPasture.sort((a, b) => a.horse.name.localeCompare(b.horse.name)).map(({horse: h, assignment: a}) => {
+                  const days = Math.ceil((new Date(a.endDate) - new Date(a.startDate)) / (1000 * 60 * 60 * 24)) + 1;
+                  return (
+                    <div key={h.id} className="horse-item glass" style={{ borderLeft: `4px solid ${h.color || 'var(--primary)'}`, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden', padding: '10px' }} onClick={() => alert(`Au pré du ${formatDate(a.startDate)} au ${formatDate(a.endDate)} (${days} jours)`)}>
+                      <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{h.emoji}</span>
+                      <strong style={{ fontWeight: '600', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>{h.name}</strong>
+                    </div>
+                  );
+                })}
+                {atPasture.length === 0 && <p style={{ fontSize: '0.8rem', opacity: 0.5 }}>Aucun cheval au pré.</p>}
+              </div>
             </div>
           </div>
         </div>
