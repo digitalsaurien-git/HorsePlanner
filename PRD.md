@@ -42,6 +42,8 @@ Créer une application simple pour gérer la mise au pré ou au box des chevaux 
 - [x] Initialisation automatique du calendrier sur le mois et l'année en cours (Vue Gérant & Propriétaire)
 - [x] Archivage automatique des affectations passées avec groupement par mois (Menu Affectations)
 - [x] Optimisation Mobile-First complète : affichage premium sur iPhone 12 Pro, suppression des scrolls horizontaux indésirables, et réduction de l'encombrement visuel.
+- [x] Simplification du calendrier : affichage exclusif des noms des chevaux (sans indicateurs de période).
+- [x] Localisation française des dates (JJ/MM/AAAA) dans la gestion des affectations.
 
 
 **OUT (exclu / plus tard):**

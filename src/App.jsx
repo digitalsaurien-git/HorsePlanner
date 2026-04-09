@@ -71,6 +71,12 @@ const INITIAL_PLANNINGS = [
 ];
 
 function App() {
+  const formatDate = (isoStr) => {
+    if (!isoStr) return '';
+    const [y, m, d] = isoStr.split('-');
+    return `${d}/${m}/${y}`;
+  };
+
   const [user, setUser] = useState(null);
   const [mode, setMode] = useState(APP_MODES.LOGIN);
   const [horses, setHorses] = useState(INITIAL_HORSES);
@@ -493,7 +499,7 @@ function App() {
               const h = horses.find(h => h.id === p.horseId);
               return h ? (
                 <div key={p.id} className="card glass" style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', alignItems: 'center' }}>
-                  <span>{h.emoji} <strong>{h.name}</strong> du {p.startDate} au {p.endDate}</span>
+                  <span>{h.emoji} <strong>{h.name}</strong> du {formatDate(p.startDate)} au {formatDate(p.endDate)}</span>
                   
                   <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                     <span className={`badge ${p.status === 'pré' ? 'success' : 'info'}`} style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
@@ -555,7 +561,7 @@ function App() {
                           <div key={p.id} className="glass" style={{ padding: '8px 12px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden' }}>
                             <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{h.emoji}</span> 
                             <strong style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1 }}>{h.name}</strong>
-                            <span style={{ fontSize: '0.8rem', opacity: 0.7, flexShrink: 0 }}>du {p.startDate} au {p.endDate}</span>
+                            <span style={{ fontSize: '0.8rem', opacity: 0.7, flexShrink: 0 }}>du {formatDate(p.startDate)} au {formatDate(p.endDate)}</span>
                             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                               <span className="badge" style={{ fontSize: '0.7rem', background: 'rgba(255,255,255,0.1)' }}>{p.status}</span>
                               {user?.role === ROLES.GERANT && (
@@ -704,7 +710,6 @@ function App() {
                         }}>
                           <span className="hide-very-small" style={{ fontSize: '0.9rem', flexShrink: 0 }}>{h.emoji}</span> 
                           <strong style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>{h.name}</strong>
-                          {a.period && a.period !== 'journée' && <span style={{ fontSize: '0.6rem', opacity: 0.8, flexShrink: 0 }}>{a.period === 'mat' ? 'mat' : a.period === 'apr' ? 'apr' : a.period}</span>}
                         </div>
                       ) : null;
                     })}
