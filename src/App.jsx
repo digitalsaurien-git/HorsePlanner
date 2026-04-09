@@ -208,7 +208,13 @@ function App() {
           status: a.status,
           period: a.period
         }));
-        setAssignments(mapped);
+        
+        // Merge with INITIAL_PLANNINGS to ensure April 2026 is populated if not in Supabase
+        const merged = [...mapped];
+        INITIAL_PLANNINGS.forEach(init => {
+          if (!merged.some(m => m.id === init.id)) merged.push(init);
+        });
+        setAssignments(merged);
       }
     } catch (err) {
       console.error("Supabase Load Error:", err);
@@ -588,19 +594,8 @@ function App() {
                   <span>{h.emoji} <strong>{h.name}</strong> du {formatDate(p.startDate)} au {formatDate(p.endDate)}</span>
                   
                   <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                    <span className={`badge ${p.status === 'pré' ? 'success' : 'info'}`} style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
-                      {p.status} 
-                      {user?.role === ROLES.GERANT ? (
-                        <select value={p.period || 'journée'} onChange={(e) => updateAssignmentPeriod(p.id, e.target.value)} style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: 'inherit', fontSize: 'inherit', borderRadius: '4px', cursor: 'pointer' }}>
-                          <option value="journée" style={{ color: '#000', background: '#fff' }}>Journée</option>
-                          <option value="matin" style={{ color: '#000', background: '#fff' }}>Matin</option>
-                          <option value="après-midi" style={{ color: '#000', background: '#fff' }}>Après-midi</option>
-                        </select>
-                      ) : (
-                        <span style={{ fontSize: '0.8rem', opacity: 0.9 }}>
-                          ({p.period === 'matin' ? 'Matin' : p.period === 'après-midi' ? 'Après-midi' : 'Journée'})
-                        </span>
-                      )}
+                    <span className={`badge ${p.status === 'pré' ? 'success' : 'info'}`} style={{ display: 'flex', gap: '5px', alignItems: 'center', fontWeight: '700' }}>
+                      {p.status === 'pré' ? 'Pré' : 'Box'} : {p.period === 'matin' ? 'Matin' : p.period === 'après-midi' ? 'Après-midi' : 'Journée'}
                     </span>
                     {user?.role === ROLES.GERANT && (
                       <div style={{ display: 'flex', gap: '5px' }}>
@@ -649,7 +644,9 @@ function App() {
                             <strong style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1 }}>{h.name}</strong>
                             <span style={{ fontSize: '0.8rem', opacity: 0.7, flexShrink: 0 }}>du {formatDate(p.startDate)} au {formatDate(p.endDate)}</span>
                             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                              <span className="badge" style={{ fontSize: '0.7rem', background: 'rgba(255,255,255,0.1)' }}>{p.status}</span>
+                              <span className={`badge ${p.status === 'pré' ? 'success' : 'info'}`} style={{ fontSize: '0.7rem', fontWeight: '700' }}>
+                                {p.status === 'pré' ? 'Pré' : 'Box'} : {p.period === 'matin' ? 'Matin' : p.period === 'après-midi' ? 'Après-midi' : 'Journée'}
+                              </span>
                               {user?.role === ROLES.GERANT && (
                                 <button onClick={() => deleteAssignment(p.id)} style={{ padding: '0px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1rem' }}>🗑️</button>
                               )}
