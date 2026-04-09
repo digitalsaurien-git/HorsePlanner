@@ -649,7 +649,9 @@ function App() {
           </select>
         </header>
 
-        <div className="card glass" style={{ padding: '0', overflow: 'hidden' }}>
+        <div className="card glass" style={{ padding: '0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <div style={{ minWidth: '700px' }}>
+
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', background: 'var(--bg-glass)' }}>
             {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(d => <div key={d} style={{ padding: '12px', fontWeight: 'bold', fontSize: '0.8rem', color: 'var(--text-muted)' }}>{d}</div>)}
           </div>
@@ -708,6 +710,8 @@ function App() {
           </div>
         </div>
       </div>
+    </div>
+
     );
   };
 
@@ -781,10 +785,10 @@ function App() {
 
     const renderManagerDashboard = () => (
       <div className="grid">
-        <div className="card glass" style={{ borderLeft: '4px solid var(--success)' }}>
+        <div className="card glass" style={{ borderLeft: '4px solid var(--success)', overflow: 'hidden' }}>
           <h3>☀️ Matin - Départ au pré</h3>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Mouvements prévus ce matin.</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '10px', marginTop: '1rem' }}>
+          <div className="dashboard-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '10px', marginTop: '1rem' }}>
              {todayAssignments.filter(a => a.startDate === today && a.status === 'pré').sort((a, b) => {
               const hA = horses.find(h => h.id === a.horseId);
               const hB = horses.find(h => h.id === b.horseId);
@@ -803,10 +807,10 @@ function App() {
             {todayAssignments.filter(a => a.startDate === today && a.status === 'pré').length === 0 && <p style={{ fontSize: '0.8rem', opacity: 0.5 }}>Aucun départ.</p>}
           </div>
         </div>
-        <div className="card glass" style={{ borderLeft: '4px solid var(--warning)' }}>
+        <div className="card glass" style={{ borderLeft: '4px solid var(--warning)', overflow: 'hidden' }}>
           <h3>🌑 Soir - Retour box</h3>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Mouvements prévus ce soir.</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '10px', marginTop: '1rem' }}>
+          <div className="dashboard-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '10px', marginTop: '1rem' }}>
              {todayAssignments.filter(a => a.endDate === today && a.status === 'pré').sort((a, b) => {
               const hA = horses.find(h => h.id === a.horseId);
               const hB = horses.find(h => h.id === b.horseId);
@@ -858,9 +862,9 @@ function App() {
 
     return (
       <div className="animate-fade">
-        <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h1>Bonjour {isManager ? 'Daniel' : ''} 👋</h1>
-            <p style={{ color: 'var(--text-muted)' }}>{isManager ? 'Tableau de bord' : 'Emplacement actuel des chevaux propriétaires'}.</p>
+        <header style={{ marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <h1 style={{ margin: 0 }}>Bonjour {isManager ? 'Daniel' : ''} 👋</h1>
+            <p style={{ color: 'var(--text-muted)', margin: 0 }}>{isManager ? 'Tableau de bord' : 'Emplacement actuel des chevaux propriétaires'}</p>
         </header>
 
         {isManager ? renderManagerDashboard() : renderOwnerDashboard()}

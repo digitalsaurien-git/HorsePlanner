@@ -35,6 +35,7 @@ body {
   color: var(--text-main);
   line-height: 1.6;
   overflow-x: hidden;
+  width: 100vw;
   background-image: 
     radial-gradient(circle at 10% 20%, rgba(93, 64, 55, 0.1) 0%, transparent 40%),
     radial-gradient(circle at 90% 80%, rgba(76, 175, 80, 0.1) 0%, transparent 40%);
@@ -165,19 +166,21 @@ select.input option {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 2rem;
+  padding: 0 1.5rem;
   position: sticky;
   top: 0;
   width: 100%;
   z-index: 1000;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .main-content {
   flex: 1;
   padding: 1rem;
   width: 100%;
-  transition: margin-left 0.3s ease;
+  max-width: 100vw;
+  transition: var(--transition-smooth);
 }
 
 /* Animations */
@@ -201,19 +204,20 @@ select.input option {
   position: fixed;
   left: 0;
   top: 0;
-  width: 250px;
+  width: 280px;
   height: 100vh;
-  padding-top: 100px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  padding: 100px 10px 10px 10px;
-  background: var(--bg-card);
-  backdrop-filter: blur(15px);
+  gap: 8px;
+  padding: 80px 15px 20px 15px;
+  background: rgba(30, 30, 30, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   z-index: 1050;
-  transition: transform 0.3s ease;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   transform: translateX(-100%);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
 }
 
 .sidebar.open {
@@ -236,21 +240,23 @@ select.input option {
   display: block;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
   }
   
   .sidebar {
     transform: translateX(0);
     background: var(--bg-glass);
+    width: 250px;
   }
   
   .main-content {
     margin-left: 250px;
     width: calc(100% - 250px);
-    padding: 2rem;
+    padding: 3rem;
   }
   
   .menu-toggle {
@@ -269,14 +275,41 @@ select.input option {
   
   .navbar {
     padding: 0 1rem;
+    height: 60px;
+    margin-bottom: 1rem;
   }
   
   .navbar h2 {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
   
   .btn {
     padding: 0.6rem 1rem;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+  }
+
+  h1 { font-size: 1.8rem; }
+  h3 { font-size: 1.2rem; }
+
+  .card {
+    padding: 1.2rem;
+  }
+
+  .sidebar {
+    width: 85%;
+    max-width: 300px;
+  }
+}
+
+/* Fix for horizontal scroll issues on small devices */
+.main-content.container {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Better item scaling for mobile grids */
+@media (max-width: 480px) {
+  .dashboard-list {
+    grid-template-columns: 1fr !important;
   }
 }
