@@ -1061,23 +1061,21 @@ function App() {
       // Remap Assignments
       const { data: assignData, error: aError } = await supabase.from('assignments').select('*');
       if (aError) throw aError;
-      if (assignData) {
-        const mapped = assignData.map(a => ({
-          id: a.id,
-          horseId: Number(a.horse_id),
-          startDate: a.start_date,
-          endDate: a.end_date,
-          status: a.status,
-          period: a.period
-        }));
-        
-        // Merge with INITIAL_PLANNINGS to ensure April 2026 is populated if not in Supabase
-        const merged = [...mapped];
-        INITIAL_PLANNINGS.forEach(init => {
-          if (!merged.some(m => m.id === init.id)) merged.push(init);
-        });
-        setAssignments(merged);
-      }
+      // Strategy: INITIAL_PLANNINGS is the source of truth for demo data.
+      // Only add Supabase entries whose IDs are NOT in INITIAL_PLANNINGS (i.e., user-created entries).
+      const initIds = new Set(INITIAL_PLANNINGS.map(p => p.id));
+      const mapped = assignData.map(a => ({
+        id: a.id,
+        horseId: Number(a.horse_id),
+        startDate: a.start_date,
+        endDate: a.end_date,
+        status: a.status,
+        period: a.period
+      }));
+      // Only keep Supabase entries that are NOT already in INITIAL_PLANNINGS
+      const userCreated = mapped.filter(m => !initIds.has(m.id));
+      setAssignments([...INITIAL_PLANNINGS, ...userCreated]);
+
     } catch (err) {
       console.error("Supabase Load Error:", err);
     }
