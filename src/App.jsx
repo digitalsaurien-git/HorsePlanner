@@ -64,13 +64,121 @@ const INITIAL_PLANNINGS = [
   { id: 2007, horseId: 8, startDate: '2026-03-16', endDate: '2026-03-20', status: 'pré', period: 'journée' },
   { id: 2008, horseId: 11, startDate: '2026-03-23', endDate: '2026-03-27', status: 'pré', period: 'journée' },
 
-  // === AVRIL 2026 - Données exactes de la capture d'écran ===
+  // === AVRIL 2026 - Plages consolidées par cheval ===
 
-  // Mercredi 1 Avril
-  { id: 3001, horseId: 1,  startDate: '2026-04-01', endDate: '2026-04-01', status: 'pré', period: 'journée' },  // Florette
-  { id: 3002, horseId: 6,  startDate: '2026-04-01', endDate: '2026-04-01', status: 'pré', period: 'journée' },  // Kiss
-  { id: 3003, horseId: 3,  startDate: '2026-04-01', endDate: '2026-04-01', status: 'pré', period: 'journée' },  // Cloony
-  { id: 3004, horseId: 14, startDate: '2026-04-01', endDate: '2026-04-01', status: 'pré', period: 'journée' },  // Eiddy
+  // Cliff (2): 2, 4, 6, 8-10, 15, 20-21, 23, 27-28, 30
+  { id: 3011, horseId: 2, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré', period: 'journée' },
+  { id: 3012, horseId: 2, startDate: '2026-04-04', endDate: '2026-04-04', status: 'pré', period: 'journée' },
+  { id: 3013, horseId: 2, startDate: '2026-04-06', endDate: '2026-04-06', status: 'pré', period: 'journée' },
+  { id: 3014, horseId: 2, startDate: '2026-04-08', endDate: '2026-04-10', status: 'pré', period: 'journée' },
+  { id: 3015, horseId: 2, startDate: '2026-04-15', endDate: '2026-04-15', status: 'pré', period: 'journée' },
+  { id: 3016, horseId: 2, startDate: '2026-04-20', endDate: '2026-04-21', status: 'pré', period: 'journée' },
+  { id: 3017, horseId: 2, startDate: '2026-04-23', endDate: '2026-04-23', status: 'pré', period: 'journée' },
+  { id: 3018, horseId: 2, startDate: '2026-04-27', endDate: '2026-04-28', status: 'pré', period: 'journée' },
+  { id: 3019, horseId: 2, startDate: '2026-04-30', endDate: '2026-04-30', status: 'pré', period: 'journée' },
+
+  // Cloony (3): 1-3, 6-10, 13-17
+  { id: 3021, horseId: 3, startDate: '2026-04-01', endDate: '2026-04-03', status: 'pré', period: 'journée' },
+  { id: 3022, horseId: 3, startDate: '2026-04-06', endDate: '2026-04-10', status: 'pré', period: 'journée' },
+  { id: 3023, horseId: 3, startDate: '2026-04-13', endDate: '2026-04-17', status: 'pré', period: 'journée' },
+
+  // Conquérant (4): 2-6, 8-17, 19-23, 25-30
+  { id: 3031, horseId: 4, startDate: '2026-04-02', endDate: '2026-04-06', status: 'pré', period: 'journée' },
+  { id: 3032, horseId: 4, startDate: '2026-04-08', endDate: '2026-04-17', status: 'pré', period: 'journée' },
+  { id: 3033, horseId: 4, startDate: '2026-04-19', endDate: '2026-04-23', status: 'pré', period: 'journée' },
+  { id: 3034, horseId: 4, startDate: '2026-04-25', endDate: '2026-04-30', status: 'pré', period: 'journée' },
+
+  // Eiddy (14): 1, 5, 7, 13-14, 16-17, 24-30
+  { id: 3131, horseId: 14, startDate: '2026-04-01', endDate: '2026-04-01', status: 'pré', period: 'journée' },
+  { id: 3132, horseId: 14, startDate: '2026-04-05', endDate: '2026-04-05', status: 'pré', period: 'journée' },
+  { id: 3133, horseId: 14, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'journée' },
+  { id: 3134, horseId: 14, startDate: '2026-04-13', endDate: '2026-04-14', status: 'pré', period: 'journée' },
+  { id: 3135, horseId: 14, startDate: '2026-04-16', endDate: '2026-04-17', status: 'pré', period: 'journée' },
+  { id: 3136, horseId: 14, startDate: '2026-04-24', endDate: '2026-04-30', status: 'pré', period: 'journée' },
+
+  // Fakir (15): 2, 4, 7, 9-11, 14
+  { id: 3141, horseId: 15, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré', period: 'journée' },
+  { id: 3142, horseId: 15, startDate: '2026-04-04', endDate: '2026-04-04', status: 'pré', period: 'journée' },
+  { id: 3143, horseId: 15, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'journée' },
+  { id: 3144, horseId: 15, startDate: '2026-04-09', endDate: '2026-04-11', status: 'pré', period: 'journée' },
+  { id: 3145, horseId: 15, startDate: '2026-04-14', endDate: '2026-04-14', status: 'pré', period: 'journée' },
+
+  // Florette (1): 1-2, 7, 9, 13-14, 16
+  { id: 3001, horseId: 1, startDate: '2026-04-01', endDate: '2026-04-02', status: 'pré', period: 'journée' },
+  { id: 3002, horseId: 1, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'journée' },
+  { id: 3003, horseId: 1, startDate: '2026-04-09', endDate: '2026-04-09', status: 'pré', period: 'journée' },
+  { id: 3004, horseId: 1, startDate: '2026-04-13', endDate: '2026-04-14', status: 'pré', period: 'journée' },
+  { id: 3005, horseId: 1, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
+
+  // Foudre (8): 2, 5, 7, 9, 16
+  { id: 3071, horseId: 8, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré', period: 'journée' },
+  { id: 3072, horseId: 8, startDate: '2026-04-05', endDate: '2026-04-05', status: 'pré', period: 'journée' },
+  { id: 3073, horseId: 8, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'journée' },
+  { id: 3074, horseId: 8, startDate: '2026-04-09', endDate: '2026-04-09', status: 'pré', period: 'journée' },
+  { id: 3075, horseId: 8, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
+
+  // Gemini (17): 5, 11
+  { id: 3161, horseId: 17, startDate: '2026-04-05', endDate: '2026-04-05', status: 'pré', period: 'journée' },
+  { id: 3162, horseId: 17, startDate: '2026-04-11', endDate: '2026-04-11', status: 'pré', period: 'journée' },
+
+  // Goria (12): 2, 4, 6, 13, 16, 18, 27, 29
+  { id: 3111, horseId: 12, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré', period: 'journée' },
+  { id: 3112, horseId: 12, startDate: '2026-04-04', endDate: '2026-04-04', status: 'pré', period: 'journée' },
+  { id: 3113, horseId: 12, startDate: '2026-04-06', endDate: '2026-04-06', status: 'pré', period: 'journée' },
+  { id: 3114, horseId: 12, startDate: '2026-04-13', endDate: '2026-04-13', status: 'pré', period: 'journée' },
+  { id: 3115, horseId: 12, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
+  { id: 3116, horseId: 12, startDate: '2026-04-18', endDate: '2026-04-18', status: 'pré', period: 'journée' },
+  { id: 3117, horseId: 12, startDate: '2026-04-27', endDate: '2026-04-27', status: 'pré', period: 'journée' },
+  { id: 3118, horseId: 12, startDate: '2026-04-29', endDate: '2026-04-29', status: 'pré', period: 'journée' },
+
+  // Gringo (10): 10-11, 13, 16-17, 20, 23-30
+  { id: 3091, horseId: 10, startDate: '2026-04-10', endDate: '2026-04-11', status: 'pré', period: 'journée' },
+  { id: 3092, horseId: 10, startDate: '2026-04-13', endDate: '2026-04-13', status: 'pré', period: 'journée' },
+  { id: 3093, horseId: 10, startDate: '2026-04-16', endDate: '2026-04-17', status: 'pré', period: 'journée' },
+  { id: 3094, horseId: 10, startDate: '2026-04-20', endDate: '2026-04-20', status: 'pré', period: 'journée' },
+  { id: 3095, horseId: 10, startDate: '2026-04-23', endDate: '2026-04-30', status: 'pré', period: 'journée' },
+
+  // Jimmy (7): 3, 5, 7, 10, 14, 17
+  { id: 3061, horseId: 7, startDate: '2026-04-03', endDate: '2026-04-03', status: 'pré', period: 'journée' },
+  { id: 3062, horseId: 7, startDate: '2026-04-05', endDate: '2026-04-05', status: 'pré', period: 'journée' },
+  { id: 3063, horseId: 7, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'journée' },
+  { id: 3064, horseId: 7, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },
+  { id: 3065, horseId: 7, startDate: '2026-04-14', endDate: '2026-04-14', status: 'pré', period: 'journée' },
+  { id: 3066, horseId: 7, startDate: '2026-04-17', endDate: '2026-04-17', status: 'pré', period: 'journée' },
+
+  // Joliette (11): 2, 6 (après-midi), 7
+  { id: 3101, horseId: 11, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré', period: 'journée' },
+  { id: 3102, horseId: 11, startDate: '2026-04-06', endDate: '2026-04-06', status: 'pré', period: 'après-midi' },
+  { id: 3103, horseId: 11, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'journée' },
+
+  // Juariste (9): 4, 6
+  { id: 3081, horseId: 9, startDate: '2026-04-04', endDate: '2026-04-04', status: 'pré', period: 'journée' },
+  { id: 3082, horseId: 9, startDate: '2026-04-06', endDate: '2026-04-06', status: 'pré', period: 'journée' },
+
+  // Kiss (6): sem 1-3, sem 6-10, sem 13-17, sem 20-24, sem 27-30 (JAMAIS le week-end)
+  { id: 3051, horseId: 6, startDate: '2026-04-01', endDate: '2026-04-03', status: 'pré', period: 'journée' },
+  { id: 3052, horseId: 6, startDate: '2026-04-06', endDate: '2026-04-10', status: 'pré', period: 'journée' },
+  { id: 3053, horseId: 6, startDate: '2026-04-13', endDate: '2026-04-17', status: 'pré', period: 'journée' },
+  { id: 3054, horseId: 6, startDate: '2026-04-22', endDate: '2026-04-24', status: 'pré', period: 'journée' },
+  { id: 3055, horseId: 6, startDate: '2026-04-27', endDate: '2026-04-30', status: 'pré', period: 'journée' },
+
+  // Lipton (5): 2-3, 6-14, 18-19, 21, 24, 28
+  { id: 3041, horseId: 5, startDate: '2026-04-02', endDate: '2026-04-03', status: 'pré', period: 'journée' },
+  { id: 3042, horseId: 5, startDate: '2026-04-06', endDate: '2026-04-14', status: 'pré', period: 'journée' },
+  { id: 3043, horseId: 5, startDate: '2026-04-18', endDate: '2026-04-19', status: 'pré', period: 'journée' },
+  { id: 3044, horseId: 5, startDate: '2026-04-21', endDate: '2026-04-21', status: 'pré', period: 'journée' },
+  { id: 3045, horseId: 5, startDate: '2026-04-24', endDate: '2026-04-24', status: 'pré', period: 'journée' },
+  { id: 3046, horseId: 5, startDate: '2026-04-28', endDate: '2026-04-28', status: 'pré', period: 'journée' },
+
+  // Little (13): 2-5, 8-9
+  { id: 3121, horseId: 13, startDate: '2026-04-02', endDate: '2026-04-05', status: 'pré', period: 'journée' },
+  { id: 3122, horseId: 13, startDate: '2026-04-08', endDate: '2026-04-09', status: 'pré', period: 'journée' },
+
+  // Towingo (16): 7, 9
+  { id: 3151, horseId: 16, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'journée' },
+  { id: 3152, horseId: 16, startDate: '2026-04-09', endDate: '2026-04-09', status: 'pré', period: 'journée' },
+];
+
 
   // Jeudi 2 Avril
   { id: 3005, horseId: 1,  startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré', period: 'journée' },  // Florette
@@ -473,6 +581,7 @@ const AssignmentView = ({ user, ROLES, horses, assignments, formatDate, addAssig
   const [status, setStatus] = useState('pré');
   const [period, setPeriod] = useState('journée');
   const [viewType, setViewType] = useState('all');
+  const [activeTab, setActiveTab] = useState('actives'); // 'actives' | 'upcoming' | 'past'
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -483,30 +592,118 @@ const AssignmentView = ({ user, ROLES, horses, assignments, formatDate, addAssig
   };
 
   const isOwner = user?.role === ROLES.PROPRIETAIRE;
-  // Filter by hardcoded proprietary horse IDs (bypass Supabase owner field override)
   const myHorseIds = isOwner ? PROPRIETARY_HORSE_IDS : horses.map(h => h.id);
   const myHorses = horses.filter(h => myHorseIds.includes(h.id));
 
-  const displayAssignments = isOwner 
+  const baseAssignments = isOwner
     ? assignments.filter(p => myHorseIds.includes(p.horseId))
-    : viewType === 'club' 
+    : viewType === 'club'
       ? assignments.filter(p => horses.find(h => h.id === p.horseId && h.owner === 'Club'))
-      : assignments.filter(p => horses.find(h => h.id === p.horseId && h.owner !== 'Club'));
+      : viewType === 'owner'
+        ? assignments.filter(p => horses.find(h => h.id === p.horseId && h.owner !== 'Club'))
+        : assignments;
 
   const today = new Date().toISOString().split('T')[0];
-  const activeAssignments = displayAssignments.filter(p => p.endDate >= today).sort((a, b) => a.startDate.localeCompare(b.startDate));
-  const pastAssignments = displayAssignments.filter(p => p.endDate < today).sort((a, b) => b.endDate.localeCompare(a.endDate));
 
-  // Archives grouping
-  const groupedPast = pastAssignments.reduce((acc, p) => {
-    const d = new Date(p.endDate);
-    const key = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}`;
-    if (!acc[key]) acc[key] = [];
-    acc[key].push(p);
-    return acc;
-  }, {});
-  const sortedMonthKeys = Object.keys(groupedPast).sort((a, b) => b.localeCompare(a));
+  const activeAssignments  = baseAssignments.filter(p => p.startDate <= today && p.endDate >= today);
+  const upcomingAssignments = baseAssignments.filter(p => p.startDate > today);
+  const pastAssignments    = baseAssignments.filter(p => p.endDate < today);
+
   const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+
+  // Group assignments by horse (alphabetical), then sorted by date
+  const groupByHorse = (list) => {
+    const grouped = {};
+    list.forEach(p => {
+      const h = horses.find(h => h.id === p.horseId);
+      if (!h) return;
+      if (!grouped[h.name]) grouped[h.name] = { horse: h, items: [] };
+      grouped[h.name].items.push(p);
+    });
+    // Sort items by startDate within each horse
+    Object.values(grouped).forEach(g => g.items.sort((a, b) => a.startDate.localeCompare(b.startDate)));
+    // Return sorted alphabetically by horse name
+    return Object.keys(grouped).sort().map(k => grouped[k]);
+  };
+
+  const renderAssignmentCard = (p, h) => (
+    <div key={p.id} className="glass" style={{
+      padding: '10px 14px', borderRadius: '10px',
+      display: 'flex', alignItems: 'center', gap: '10px',
+      borderLeft: `3px solid ${h.color || 'var(--accent)'}`,
+      flex: '1 1 200px'
+    }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <span style={{ fontSize: '0.75rem', opacity: 0.6 }}>
+          {p.startDate === p.endDate
+            ? formatDate(p.startDate)
+            : `du ${formatDate(p.startDate)} au ${formatDate(p.endDate)}`}
+        </span>
+        <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginTop: '2px' }}>
+          <span className={`badge ${p.status === 'pré' ? 'success' : 'info'}`} style={{ fontSize: '0.65rem', padding: '2px 6px' }}>
+            {p.status === 'pré' ? '🌿 Pré' : '🏠 Box'}
+            {p.period !== 'journée' && ` · ${p.period}`}
+          </span>
+        </div>
+      </div>
+      {user?.role === ROLES.GERANT && (
+        <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
+          <div style={{ position: 'relative' }}>
+            <button onClick={() => {
+              const el = document.getElementById(`edit-${p.id}`);
+              if (el) el.style.display = el.style.display === 'none' ? 'flex' : 'none';
+            }} style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1rem', padding: '4px' }}>✏️</button>
+            <div id={`edit-${p.id}`} className="glass" style={{
+              display: 'none', position: 'absolute', top: '100%', right: 0, zIndex: 100,
+              padding: '12px', borderRadius: '10px', flexDirection: 'column', gap: '6px',
+              minWidth: '200px', background: '#1a1a2e', border: '1px solid var(--accent)',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.6)'
+            }}>
+              <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Début</label>
+              <input type="date" value={p.startDate} onChange={e => updateAssignmentDates(p.id, e.target.value, p.endDate)} className="input" style={{ padding: '6px', color: '#fff', fontSize: '0.8rem' }} />
+              <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Fin</label>
+              <input type="date" value={p.endDate} onChange={e => updateAssignmentDates(p.id, p.startDate, e.target.value)} className="input" style={{ padding: '6px', color: '#fff', fontSize: '0.8rem' }} />
+              <button onClick={() => { const el = document.getElementById(`edit-${p.id}`); if(el) el.style.display='none'; }} className="btn btn-primary" style={{ fontSize: '0.75rem', padding: '4px', marginTop: '4px' }}>Fermer</button>
+            </div>
+          </div>
+          <button onClick={() => deleteAssignment(p.id)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1rem', padding: '4px' }}>🗑️</button>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderHorseGroups = (list) => {
+    const groups = groupByHorse(list);
+    if (groups.length === 0) return <p style={{ fontSize: '0.85rem', opacity: 0.5, padding: '1rem 0' }}>Aucune affectation.</p>;
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        {groups.map(({ horse: h, items }) => (
+          <div key={h.id}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+              <span style={{ fontSize: '1.3rem' }}>{h.emoji}</span>
+              <strong style={{ fontSize: '1rem', color: h.color || 'var(--accent)' }}>{h.name}</strong>
+              <span style={{ fontSize: '0.7rem', opacity: 0.5, background: 'rgba(255,255,255,0.07)', padding: '2px 8px', borderRadius: '20px' }}>{items.length} affectation{items.length > 1 ? 's' : ''}</span>
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', paddingLeft: '1rem', borderLeft: `2px solid ${h.color || 'rgba(255,255,255,0.1)'}` }}>
+              {items.map(p => renderAssignmentCard(p, h))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const tabStyle = (tab) => ({
+    padding: '6px 16px',
+    borderRadius: '20px',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '0.8rem',
+    fontWeight: '600',
+    transition: 'all 0.2s',
+    background: activeTab === tab ? 'var(--accent)' : 'rgba(255,255,255,0.07)',
+    color: activeTab === tab ? '#fff' : 'rgba(255,255,255,0.6)',
+  });
 
   return (
     <div className="animate-fade">
@@ -552,8 +749,9 @@ const AssignmentView = ({ user, ROLES, horses, assignments, formatDate, addAssig
       )}
 
       <div className="card glass">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <h3>{isOwner ? "📜 Rapport d'activité - Vue Propriétaire" : "Affectations actives"}</h3>
+        {/* Header + filtres */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem', flexWrap: 'wrap', gap: '1rem' }}>
+          <h3 style={{ margin: 0 }}>{isOwner ? '📜 Mes affectations' : '📅 Toutes les affectations'}</h3>
           {!isOwner && (
             <div className="btn-group">
               <button className={`btn ${viewType === 'all' ? 'btn-primary' : ''}`} onClick={() => setViewType('all')}>Toutes</button>
@@ -562,84 +760,32 @@ const AssignmentView = ({ user, ROLES, horses, assignments, formatDate, addAssig
             </div>
           )}
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {activeAssignments.map(p => {
-              const h = horses.find(h => h.id === p.horseId);
-              return h ? (
-                <div key={p.id} className="card glass" style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', alignItems: 'center' }}>
-                  <span>{h.emoji} <strong>{h.name}</strong> du {formatDate(p.startDate)} au {formatDate(p.endDate)}</span>
-                  
-                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                    <span className={`badge ${p.status === 'pré' ? 'success' : 'info'}`} style={{ display: 'flex', gap: '5px', alignItems: 'center', fontWeight: '700' }}>
-                      {p.status === 'pré' ? 'Pré' : 'Box'} : {p.period === 'matin' ? 'Matin' : p.period === 'après-midi' ? 'Après-midi' : 'Journée'}
-                    </span>
-                    {user?.role === ROLES.GERANT && (
-                      <div style={{ display: 'flex', gap: '5px' }}>
-                        <div style={{ position: 'relative' }}>
-                          <button onClick={() => {
-                            const container = document.getElementById(`edit-${p.id}`);
-                            container.style.display = container.style.display === 'none' ? 'flex' : 'none';
-                          }} style={{ padding: '0px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>✏️</button>
-                          <div id={`edit-${p.id}`} className="glass" style={{ display: 'none', position: 'absolute', top: '100%', right: 0, zIndex: 10, padding: '15px', borderRadius: '12px', flexDirection: 'column', gap: '8px', minWidth: '220px', background: '#ffffff', border: '2px solid var(--accent)', boxShadow: '0 10px 25px rgba(0,0,0,0.5)' }}>
-                            <label style={{ fontSize: '0.8rem', color: '#333', fontWeight: 'bold' }}>📅 Date de début :</label>
-                            <input type="date" value={p.startDate} onChange={(e) => updateAssignmentDates(p.id, e.target.value, p.endDate)} className="input" style={{ padding: '8px', color: '#000', border: '1px solid #ccc', background: '#f5f5f5' }} />
-                            <label style={{ fontSize: '0.8rem', color: '#333', fontWeight: 'bold', marginTop: '5px' }}>📅 Date de fin :</label>
-                            <input type="date" value={p.endDate} onChange={(e) => updateAssignmentDates(p.id, p.startDate, e.target.value)} className="input" style={{ padding: '8px', color: '#000', border: '1px solid #ccc', background: '#f5f5f5' }} />
-                            <button onClick={() => document.getElementById(`edit-${p.id}`).style.display = 'none'} className="btn btn-primary" style={{ width: '100%', marginTop: '10px', fontSize: '0.8rem', padding: '5px' }}>Fermer</button>
-                          </div>
-                        </div>
-                        <button onClick={() => deleteAssignment(p.id)} style={{ padding: '0px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}>🗑️</button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ) : null;
-            })}
-            {activeAssignments.length === 0 && <p style={{ fontSize: '0.8rem', opacity: 0.5 }}>Aucune affectation active.</p>}
+
+        {/* Sous-onglets */}
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+          <button style={tabStyle('actives')} onClick={() => setActiveTab('actives')}>
+            🟢 Actives
+            <span style={{ marginLeft: '6px', background: 'rgba(255,255,255,0.15)', borderRadius: '10px', padding: '1px 6px', fontSize: '0.7rem' }}>{activeAssignments.length}</span>
+          </button>
+          <button style={tabStyle('upcoming')} onClick={() => setActiveTab('upcoming')}>
+            ⏳ À venir
+            <span style={{ marginLeft: '6px', background: 'rgba(255,255,255,0.15)', borderRadius: '10px', padding: '1px 6px', fontSize: '0.7rem' }}>{upcomingAssignments.length}</span>
+          </button>
+          <button style={tabStyle('past')} onClick={() => setActiveTab('past')}>
+            📂 Passées
+            <span style={{ marginLeft: '6px', background: 'rgba(255,255,255,0.15)', borderRadius: '10px', padding: '1px 6px', fontSize: '0.7rem' }}>{pastAssignments.length}</span>
+          </button>
         </div>
 
-        {pastAssignments.length > 0 && (
-          <div style={{ marginTop: '3rem' }}>
-            <h4>Affectations passées</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '1rem' }}>
-              {sortedMonthKeys.map(key => {
-                const [year, month] = key.split('-');
-                const monthName = monthNames[parseInt(month) - 1];
-                return (
-                  <div key={key}>
-                    <h5 style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '5px', marginBottom: '10px', color: 'var(--text-muted)' }}>
-                      {monthName} {year}
-                    </h5>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      {groupedPast[key].map(p => {
-                        const h = horses.find(h => h.id === p.horseId);
-                        return h ? (
-                          <div key={p.id} className="glass" style={{ padding: '8px 12px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden' }}>
-                            <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{h.emoji}</span> 
-                            <strong style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>{h.name}</strong>
-                            <span style={{ fontSize: '0.8rem', opacity: 0.7, flexShrink: 0 }}>du {formatDate(p.startDate)} au {formatDate(p.endDate)}</span>
-                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                              <span className={`badge ${p.status === 'pré' ? 'success' : 'info'}`} style={{ fontSize: '0.7rem', fontWeight: '700' }}>
-                                {p.status === 'pré' ? 'Pré' : 'Box'} : {p.period === 'matin' ? 'Matin' : p.period === 'après-midi' ? 'Après-midi' : 'Journée'}
-                              </span>
-                              {user?.role === ROLES.GERANT && (
-                                <button onClick={() => deleteAssignment(p.id)} style={{ padding: '0px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1rem' }}>🗑️</button>
-                              )}
-                            </div>
-                          </div>
-                        ) : null;
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
+        {/* Contenu par onglet */}
+        {activeTab === 'actives'  && renderHorseGroups(activeAssignments)}
+        {activeTab === 'upcoming' && renderHorseGroups(upcomingAssignments)}
+        {activeTab === 'past'     && renderHorseGroups(pastAssignments)}
       </div>
     </div>
   );
 };
+
 
 
 
@@ -1088,7 +1234,7 @@ function App() {
 
   // Load from localStorage
   useEffect(() => {
-    const APP_VERSION = 'v1.5';
+    const APP_VERSION = 'v1.6';
     try {
       const savedVersion = localStorage.getItem('hp_version');
       if (savedVersion !== APP_VERSION) {
@@ -1104,14 +1250,14 @@ function App() {
         setMode(APP_MODES.DASHBOARD);
       }
       
-      const savedHorses = localStorage.getItem('horsePlanner_horses_v1.5');
+      const savedHorses = localStorage.getItem('horsePlanner_horses_v1.6');
       if (savedHorses && JSON.parse(savedHorses).length > 0) setHorses(JSON.parse(savedHorses));
       else setHorses(INITIAL_HORSES);
 
       const savedClientId = localStorage.getItem('hp_client_id');
       if (savedClientId) setClientId(savedClientId);
 
-      const savedAssignments = localStorage.getItem('horsePlanner_assignments_v1.5');
+      const savedAssignments = localStorage.getItem('horsePlanner_assignments_v1.6');
       if (savedAssignments && JSON.parse(savedAssignments).length > 0) setAssignments(JSON.parse(savedAssignments));
       else setAssignments(INITIAL_PLANNINGS);
 
@@ -1129,8 +1275,8 @@ function App() {
 
   // Persistence
   useEffect(() => {
-    localStorage.setItem('horsePlanner_horses_v1.5', JSON.stringify(horses));
-    localStorage.setItem('horsePlanner_assignments_v1.5', JSON.stringify(assignments));
+    localStorage.setItem('horsePlanner_horses_v1.6', JSON.stringify(horses));
+    localStorage.setItem('horsePlanner_assignments_v1.6', JSON.stringify(assignments));
     localStorage.setItem('hp_sync_path', syncPath);
     localStorage.setItem('hp_master_password', masterPassword);
     localStorage.setItem('hp_client_id', clientId);
