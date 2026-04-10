@@ -107,14 +107,15 @@ const INITIAL_PLANNINGS = [
   { id: 3039, horseId: 8, startDate: '2026-04-09', endDate: '2026-04-09', status: 'pré', period: 'matin' },
   { id: 3040, horseId: 2, startDate: '2026-04-09', endDate: '2026-04-09', status: 'pré', period: 'après-midi' },
   
-  { id: 3041, horseId: 7, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },
-  { id: 3042, horseId: 9, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'matin' },
-  { id: 3043, horseId: 10, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'après-midi' },
-  { id: 3044, horseId: 3, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'matin' },
-  { id: 3045, horseId: 2, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'après-midi' },
-  { id: 3046, horseId: 15, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },
+  { id: 3041, horseId: 4, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },
+  { id: 3042, horseId: 5, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },
+  { id: 3043, horseId: 14, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },
+  { id: 3044, horseId: 15, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },
+  { id: 3045, horseId: 6, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },
+  { id: 3046, horseId: 3, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },
+  { id: 3047, horseId: 7, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },
   
-  { id: 3047, horseId: 10, startDate: '2026-04-11', endDate: '2026-04-11', status: 'pré', period: 'journée' },
+  { id: 3048, horseId: 10, startDate: '2026-04-11', endDate: '2026-04-11', status: 'pré', period: 'journée' },
   { id: 3048, horseId: 9, startDate: '2026-04-11', endDate: '2026-04-11', status: 'pré', period: 'journée' },
   
   { id: 3049, horseId: 1, startDate: '2026-04-13', endDate: '2026-04-14', status: 'pré', period: 'journée' },
@@ -538,38 +539,34 @@ const CalendarView = ({ horses, assignments }) => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
           <h2 style={{ margin: 0, color: 'var(--accent)' }}>{monthLabel}</h2>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontSize: '0.8rem', opacity: 0.7 }}>Filtrer par cheval :</span>
-              <select className="input" style={{ width: 'auto', minWidth: '180px' }} value={selectedHorseId} onChange={e => setSelectedHorseId(e.target.value)}>
-                <option value="all">Tous les chevaux</option>
-                {horses.slice().sort((a, b) => a.name.localeCompare(b.name)).map(h => (
-                  <option key={h.id} value={h.id}>{h.emoji} {h.name}</option>
-                ))}
-              </select>
-            </div>
+          {selectedHorseId !== 'all' && (() => {
+            const selectedHorse = horses.find(h => h.id === Number(selectedHorseId));
+            const horseAssigns = assignments.filter(a => a.horseId === Number(selectedHorseId) && a.status === 'pré');
+            
+            let totalDays = 0;
+            days.forEach(day => {
+              const dateStr = `${activeYear}-${(activeMonth + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+              const daily = horseAssigns.find(a => dateStr >= a.startDate && dateStr <= a.endDate);
+              if (daily) {
+                totalDays += (daily.period === 'journée' ? 1 : 0.5);
+              }
+            });
 
-            {selectedHorseId !== 'all' && (() => {
-              const selectedHorse = horses.find(h => h.id === Number(selectedHorseId));
-              const horseAssigns = assignments.filter(a => a.horseId === Number(selectedHorseId) && a.status === 'pré');
-              
-              let totalDays = 0;
-              days.forEach(day => {
-                const dateStr = `${activeYear}-${(activeMonth + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-                const daily = horseAssigns.find(a => dateStr >= a.startDate && dateStr <= a.endDate);
-                if (daily) {
-                  totalDays += (daily.period === 'journée' ? 1 : 0.5);
-                }
-              });
+            return selectedHorse ? (
+              <div style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--warning)', animation: 'fadeIn 0.4s' }}>
+                📊 Ce mois-ci : {totalDays} jours au pré
+              </div>
+            ) : null;
+          })()}
 
-              return selectedHorse ? (
-                <div className="glass" style={{ padding: '8px 15px', borderRadius: '30px', border: '1px solid var(--success)', display: 'flex', alignItems: 'center', gap: '10px', animation: 'fadeIn 0.4s' }}>
-                  <span style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>
-                    📊 {selectedHorse.name} : <span style={{ color: 'var(--success)', fontSize: '1rem' }}>{totalDays}</span> jours au pré ce mois-ci
-                  </span>
-                </div>
-              ) : null;
-            })()}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '0.8rem', opacity: 0.7 }}>Filtrer par :</span>
+            <select className="input" style={{ width: 'auto', minWidth: '180px' }} value={selectedHorseId} onChange={e => setSelectedHorseId(e.target.value)}>
+              <option value="all">Tous les chevaux</option>
+              {horses.slice().sort((a, b) => a.name.localeCompare(b.name)).map(h => (
+                <option key={h.id} value={h.id}>{h.emoji} {h.name}</option>
+              ))}
+            </select>
           </div>
         </div>
 
