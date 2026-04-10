@@ -202,10 +202,10 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, mode, setMode, user, logout 
       )}
       <button className={`btn ${mode === APP_MODES.ASSIGNMENTS ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.ASSIGNMENTS)}>🗓️ Affectations</button>
       <button className={`btn ${mode === APP_MODES.CALENDAR ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.CALENDAR)}>📅 Calendrier</button>
+      <button className="btn" style={{ justifyContent: 'start', marginTop: '10px', color: 'var(--danger)', border: '1px solid rgba(244, 67, 54, 0.2)' }} onClick={logout}>🚪 Déconnexion</button>
       {user?.role === ROLES.GERANT && !user?.isDemo && (
         <button className={`btn ${mode === APP_MODES.SETTINGS ? 'btn-primary' : ''}`} style={{ justifyContent: 'start', marginTop: 'auto' }} onClick={() => setMode(APP_MODES.SETTINGS)}>⚙️ Paramètres</button>
       )}
-      <button className="btn" style={{ justifyContent: 'start', marginTop: user?.role === ROLES.GERANT ? '10px' : 'auto', color: 'var(--danger)' }} onClick={logout}>🚪 Déconnexion</button>
     </aside>
   </>
 );
