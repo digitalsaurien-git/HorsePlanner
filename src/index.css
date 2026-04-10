@@ -334,5 +334,37 @@ select.input option {
 }
 
 .calendar-wrapper {
-  min-width: 850px;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  min-width: 800px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--rounded-lg);
+  overflow: hidden;
+}
+
+.calendar-day {
+  min-height: 120px;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: var(--transition-smooth);
+}
+
+.calendar-day:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.calendar-item {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: white;
+  margin-bottom: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }

@@ -540,30 +540,29 @@ const CalendarView = ({ horses, assignments }) => {
           </div>
         </div>
 
-        <div className="calendar-wrapper" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: '10px' }}>
-          <div className="calendar-grid" style={{ minWidth: '600px' }}>
+        <div className="calendar-wrapper">
+          <div className="calendar-grid">
             {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(d => (
-              <div key={d} style={{ textAlign: 'center', fontWeight: 'bold', padding: '10px', color: 'var(--accent)', fontSize: '0.8rem' }}>{d}</div>
+              <div key={d} style={{ textAlign: 'center', fontWeight: 'bold', padding: '15px 10px', color: 'var(--accent)', fontSize: '0.8rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>{d}</div>
             ))}
             {Array.from({ length: (firstDayOfMonth + 6) % 7 }).map((_, i) => (
-              <div key={`empty-${i}`} />
+              <div key={`empty-${i}`} className="calendar-day" style={{ opacity: 0.2 }} />
             ))}
             {days.map(day => {
               const dayAssigns = getHorseAssignments(day);
               return (
-                <div key={day} className="calendar-day" style={{ minHeight: '100px', border: '1px solid rgba(255,255,255,0.05)', padding: '5px', borderRadius: '8px' }}>
-                  <div style={{ fontSize: '0.7rem', opacity: 0.5, marginBottom: '5px' }}>{day}</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                    {dayAssigns.slice(0, 4).map(a => {
+                <div key={day} className="calendar-day">
+                  <div style={{ fontSize: '0.75rem', fontWeight: '700', opacity: 0.5, marginBottom: '8px' }}>{day}</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    {dayAssigns.slice(0, 5).map(a => {
                       const h = horses.find(h => h.id === a.horseId);
                       return h ? (
-                        <div key={a.id} className="calendar-item" style={{ background: h.color || 'var(--primary)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.65rem', color: 'white', display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap', overflow: 'hidden' }}>
-                          <span className="hide-very-small">{h.emoji}</span>
-                          <span style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{h.name}</span>
+                        <div key={a.id} className="calendar-item" style={{ background: h.color || 'var(--primary)' }}>
+                          <span className="hide-very-small">{h.emoji}</span> {h.name}
                         </div>
                       ) : null;
                     })}
-                    {dayAssigns.length > 4 && <div style={{ fontSize: '0.6rem', opacity: 0.5, textAlign: 'center' }}>+{dayAssigns.length - 4} autres</div>}
+                    {dayAssigns.length > 5 && <div style={{ fontSize: '0.65rem', opacity: 0.6, textAlign: 'center', padding: '2px' }}>+{dayAssigns.length - 5} autres</div>}
                   </div>
                 </div>
               );
@@ -866,7 +865,7 @@ function App() {
       // Remap Assignments
       const { data: assignData, error: aError } = await supabase.from('assignments').select('*');
       if (aError) throw aError;
-      if (assignData) {
+      if (assignData && assignData.length > 0) {
         const mapped = assignData.map(a => ({
           id: a.id,
           horseId: Number(a.horse_id),
@@ -875,13 +874,7 @@ function App() {
           status: a.status,
           period: a.period
         }));
-        
-        // Merge with INITIAL_PLANNINGS to ensure April 2026 is populated if not in Supabase
-        const merged = [...mapped];
-        INITIAL_PLANNINGS.forEach(init => {
-          if (!merged.some(m => m.id === init.id)) merged.push(init);
-        });
-        setAssignments(merged);
+        setAssignments(mapped);
       }
     } catch (err) {
       console.error("Supabase Load Error:", err);
@@ -903,14 +896,12 @@ function App() {
 
   // Load from localStorage
   useEffect(() => {
-    const APP_VERSION = 'v1.1';
+    const APP_VERSION = 'v1.2';
     try {
       const savedVersion = localStorage.getItem('hp_version');
       if (savedVersion !== APP_VERSION) {
-        localStorage.clear();
+        // Migration or clear
         localStorage.setItem('hp_version', APP_VERSION);
-        window.location.reload();
-        return;
       }
 
       const savedUser = localStorage.getItem('hp_user');
@@ -919,16 +910,14 @@ function App() {
         setMode(APP_MODES.DASHBOARD);
       }
       
-      const savedHorses = localStorage.getItem('horsePlanner_horses_v1.1');
+      const savedHorses = localStorage.getItem('horsePlanner_horses_v1.2');
       if (savedHorses && JSON.parse(savedHorses).length > 0) setHorses(JSON.parse(savedHorses));
-      else setHorses(INITIAL_HORSES);
 
       const savedClientId = localStorage.getItem('hp_client_id');
       if (savedClientId) setClientId(savedClientId);
 
-      const savedAssignments = localStorage.getItem('horsePlanner_assignments_v1.1');
+      const savedAssignments = localStorage.getItem('horsePlanner_assignments_v1.2');
       if (savedAssignments && JSON.parse(savedAssignments).length > 0) setAssignments(JSON.parse(savedAssignments));
-      else setAssignments(INITIAL_PLANNINGS);
 
       const savedPath = localStorage.getItem('hp_sync_path');
       if (savedPath) setSyncPath(savedPath);
@@ -937,8 +926,6 @@ function App() {
       if (savedMaster) setMasterPassword(savedMaster);
     } catch (err) {
       console.error("Critical localStorage Load Error:", err);
-      localStorage.clear();
-      window.location.reload();
     }
   }, []);
 
@@ -1040,11 +1027,11 @@ function App() {
   return (
     <div style={{ background: '#121212', minHeight: '100vh', color: '#fff' }}>
       {mode === APP_MODES.LOGIN ? <LoginView isGerantSelected={isGerantSelected} setIsGerantSelected={setIsGerantSelected} passwordInput={passwordInput} setPasswordInput={setPasswordInput} login={login} /> : (
-        <div style={{ display: 'flex', width: '100%' }}>
+        <div style={{ display: 'flex' }}>
           <Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} mode={mode} setMode={setMode} user={user} />
-          <main className="main-content container">
+          <main className="main-content">
             <Navbar setIsSidebarOpen={setIsSidebarOpen} />
-            <div>
+            <div className="container">
               {mode === APP_MODES.DASHBOARD && <Dashboard user={user} ROLES={ROLES} horses={horses} assignments={assignments} formatDate={formatDate} />}
               {mode === APP_MODES.HORSES && <HorseManagement horses={horses} HORSE_ICONS={HORSE_ICONS} addHorse={addHorse} updateHorse={updateHorse} syncDeleteHorse={deleteHorse} />}
               {mode === APP_MODES.ASSIGNMENTS && <AssignmentView user={user} ROLES={ROLES} horses={horses} assignments={assignments} formatDate={formatDate} addAssignment={addAssignment} deleteAssignment={deleteAssignment} updateAssignmentDates={updateAssignmentDates} />}
