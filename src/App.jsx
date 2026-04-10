@@ -854,19 +854,29 @@ function App() {
       // Fetch Horses
       const { data: horsesData, error: hError } = await supabase.from('horses').select('*').order('name');
       if (hError) throw hError;
-      if (horsesData && horsesData.length > 0) setHorses(horsesData.map(h => ({...h, id: Number(h.id)})));
-      else {
-        // Seed if empty
-        const seedData = INITIAL_HORSES.map(({id, ...rest}) => rest);
-        const { error: seedHError } = await supabase.from('horses').insert(seedData);
-        if (!seedHError) fetchSupabaseData();
+      
+      let currentHorses = [];
+      if (horsesData) {
+        currentHorses = horsesData.map(h => ({...h, id: Number(h.id)}));
       }
+
+      // Merge with INITIAL_HORSES by name to avoid duplicates
+      const mergedHorses = [...currentHorses];
+      INITIAL_HORSES.forEach(init => {
+        if (!mergedHorses.some(m => m.name.toLowerCase() === init.name.toLowerCase())) {
+          mergedHorses.push(init);
+        }
+      });
+      
+      setHorses(mergedHorses);
 
       // Remap Assignments
       const { data: assignData, error: aError } = await supabase.from('assignments').select('*');
       if (aError) throw aError;
-      if (assignData && assignData.length > 0) {
-        const mapped = assignData.map(a => ({
+      
+      let mapped = [];
+      if (assignData) {
+        mapped = assignData.map(a => ({
           id: a.id,
           horseId: Number(a.horse_id),
           startDate: a.start_date,
@@ -874,8 +884,21 @@ function App() {
           status: a.status,
           period: a.period
         }));
-        setAssignments(mapped);
       }
+
+      // Merge with INITIAL_PLANNINGS to ensure demo data (April 2026) is available
+      // Safely check for duplicates by (horseId, startDate, endDate)
+      const merged = [...mapped];
+      INITIAL_PLANNINGS.forEach(init => {
+        const isDuplicate = merged.some(m => 
+          m.horseId === init.horseId && 
+          m.startDate === init.startDate && 
+          m.endDate === init.endDate
+        );
+        if (!isDuplicate) merged.push(init);
+      });
+
+      setAssignments(merged);
     } catch (err) {
       console.error("Supabase Load Error:", err);
     }
