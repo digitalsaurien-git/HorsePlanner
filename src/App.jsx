@@ -131,30 +131,30 @@ const INITIAL_PLANNINGS = [
   
   { id: 3059, horseId: 2, startDate: '2026-04-15', endDate: '2026-04-15', status: 'pré', period: 'journée' },
   
-  { id: 3059, horseId: 1, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
-  { id: 3060, horseId: 14, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
-  { id: 3061, horseId: 4, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
-  { id: 3062, horseId: 12, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
-  { id: 3063, horseId: 3, startDate: '2026-04-16', endDate: '2026-04-17', status: 'pré', period: 'journée' },
-  { id: 3064, horseId: 2, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
+  { id: 3060, horseId: 1, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
+  { id: 3061, horseId: 14, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
+  { id: 3062, horseId: 4, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
+  { id: 3063, horseId: 12, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
+  { id: 3064, horseId: 3, startDate: '2026-04-16', endDate: '2026-04-17', status: 'pré', period: 'journée' },
+  { id: 3065, horseId: 2, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
   
-  { id: 3065, horseId: 15, startDate: '2026-04-17', endDate: '2026-04-17', status: 'pré', period: 'journée' },
+  { id: 3066, horseId: 15, startDate: '2026-04-17', endDate: '2026-04-17', status: 'pré', period: 'journée' },
   
-  { id: 3066, horseId: 12, startDate: '2026-04-18', endDate: '2026-04-18', status: 'pré', period: 'journée' },
+  { id: 3067, horseId: 12, startDate: '2026-04-18', endDate: '2026-04-18', status: 'pré', period: 'journée' },
   
-  { id: 3067, horseId: 1, startDate: '2026-04-20', endDate: '2026-04-21', status: 'pré', period: 'journée' },
-  { id: 3068, horseId: 4, startDate: '2026-04-20', endDate: '2026-04-20', status: 'pré', period: 'journée' },
-  { id: 3069, horseId: 3, startDate: '2026-04-20', endDate: '2026-04-24', status: 'pré', period: 'journée' },
+  { id: 3068, horseId: 1, startDate: '2026-04-20', endDate: '2026-04-21', status: 'pré', period: 'journée' },
+  { id: 3069, horseId: 4, startDate: '2026-04-20', endDate: '2026-04-20', status: 'pré', period: 'journée' },
+  { id: 3070, horseId: 3, startDate: '2026-04-20', endDate: '2026-04-24', status: 'pré', period: 'journée' },
   
-  { id: 3070, horseId: 1, startDate: '2026-04-23', endDate: '2026-04-23', status: 'pré', period: 'journée' },
+  { id: 3071, horseId: 1, startDate: '2026-04-23', endDate: '2026-04-23', status: 'pré', period: 'journée' },
   
-  { id: 3071, horseId: 4, startDate: '2026-04-25', endDate: '2026-04-30', status: 'pré', period: 'journée' },
+  { id: 3072, horseId: 4, startDate: '2026-04-25', endDate: '2026-04-30', status: 'pré', period: 'journée' },
   
-  { id: 3072, horseId: 1, startDate: '2026-04-27', endDate: '2026-04-28', status: 'pré', period: 'journée' },
-  { id: 3073, horseId: 3, startDate: '2026-04-27', endDate: '2026-04-30', status: 'pré', period: 'journée' },
-  { id: 3074, horseId: 12, startDate: '2026-04-27', endDate: '2026-04-29', status: 'pré', period: 'journée' },
+  { id: 3073, horseId: 1, startDate: '2026-04-27', endDate: '2026-04-28', status: 'pré', period: 'journée' },
+  { id: 3074, horseId: 3, startDate: '2026-04-27', endDate: '2026-04-30', status: 'pré', period: 'journée' },
+  { id: 3075, horseId: 12, startDate: '2026-04-27', endDate: '2026-04-29', status: 'pré', period: 'journée' },
   
-  { id: 3075, horseId: 1, startDate: '2026-04-30', endDate: '2026-04-30', status: 'pré', period: 'journée' },
+  { id: 3076, horseId: 1, startDate: '2026-04-30', endDate: '2026-04-30', status: 'pré', period: 'journée' },
 ];
 
 // --- Sub-components (outside for stability) ---
@@ -197,15 +197,16 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, mode, setMode, user, logout 
   <>
     <div className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
     <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
-      <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
         <button className={`btn ${mode === APP_MODES.DASHBOARD ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.DASHBOARD)}>🏠 Dashboard</button>
         {user?.role === ROLES.GERANT && (
           <button className={`btn ${mode === APP_MODES.HORSES ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.HORSES)}>🐴 Chevaux</button>
         )}
         <button className={`btn ${mode === APP_MODES.ASSIGNMENTS ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.ASSIGNMENTS)}>🗓️ Affectations</button>
         <button className={`btn ${mode === APP_MODES.CALENDAR ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.CALENDAR)}>📅 Calendrier</button>
+        <div style={{ flex: 1 }} />
         {user?.role === ROLES.GERANT && !user?.isDemo && (
-          <button className={`btn ${mode === APP_MODES.SETTINGS ? 'btn-primary' : ''}`} style={{ justifyContent: 'start', marginTop: 'auto' }} onClick={() => setMode(APP_MODES.SETTINGS)}>⚙️ Paramètres</button>
+          <button className={`btn ${mode === APP_MODES.SETTINGS ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.SETTINGS)}>⚙️ Paramètres</button>
         )}
       </div>
     </aside>
@@ -332,7 +333,7 @@ const AssignmentView = ({ user, ROLES, horses, assignments, formatDate, addAssig
   const [endDate, setEndDate] = useState('');
   const [status, setStatus] = useState('pré');
   const [period, setPeriod] = useState('journée');
-  const [viewType, setViewType] = useState('club');
+  const [viewType, setViewType] = useState('all');
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -420,7 +421,8 @@ const AssignmentView = ({ user, ROLES, horses, assignments, formatDate, addAssig
               <button className={`btn ${viewType === 'owner' ? 'btn-primary' : ''}`} onClick={() => setViewType('owner')}>Propriétaires</button>
             </div>
           )}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: isOwner ? '1rem' : '0' }}>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {activeAssignments.map(p => {
               const h = horses.find(h => h.id === p.horseId);
               return h ? (
@@ -454,7 +456,6 @@ const AssignmentView = ({ user, ROLES, horses, assignments, formatDate, addAssig
               ) : null;
             })}
             {activeAssignments.length === 0 && <p style={{ fontSize: '0.8rem', opacity: 0.5 }}>Aucune affectation active.</p>}
-          </div>
         </div>
 
         {pastAssignments.length > 0 && (
@@ -948,7 +949,7 @@ function App() {
 
   // Load from localStorage
   useEffect(() => {
-    const APP_VERSION = 'v1.2';
+    const APP_VERSION = 'v1.3';
     try {
       const savedVersion = localStorage.getItem('hp_version');
       if (savedVersion !== APP_VERSION) {
@@ -964,14 +965,14 @@ function App() {
         setMode(APP_MODES.DASHBOARD);
       }
       
-      const savedHorses = localStorage.getItem('horsePlanner_horses_v1.2');
+      const savedHorses = localStorage.getItem('horsePlanner_horses_v1.3');
       if (savedHorses && JSON.parse(savedHorses).length > 0) setHorses(JSON.parse(savedHorses));
       else setHorses(INITIAL_HORSES);
 
       const savedClientId = localStorage.getItem('hp_client_id');
       if (savedClientId) setClientId(savedClientId);
 
-      const savedAssignments = localStorage.getItem('horsePlanner_assignments_v1.2');
+      const savedAssignments = localStorage.getItem('horsePlanner_assignments_v1.3');
       if (savedAssignments && JSON.parse(savedAssignments).length > 0) setAssignments(JSON.parse(savedAssignments));
       else setAssignments(INITIAL_PLANNINGS);
 
@@ -989,8 +990,8 @@ function App() {
 
   // Persistence
   useEffect(() => {
-    localStorage.setItem('horsePlanner_horses_v1.2', JSON.stringify(horses));
-    localStorage.setItem('horsePlanner_assignments_v1.2', JSON.stringify(assignments));
+    localStorage.setItem('horsePlanner_horses_v1.3', JSON.stringify(horses));
+    localStorage.setItem('horsePlanner_assignments_v1.3', JSON.stringify(assignments));
     localStorage.setItem('hp_sync_path', syncPath);
     localStorage.setItem('hp_master_password', masterPassword);
     localStorage.setItem('hp_client_id', clientId);
