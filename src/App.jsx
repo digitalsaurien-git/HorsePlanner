@@ -64,120 +64,109 @@ const INITIAL_PLANNINGS = [
   { id: 2007, horseId: 8, startDate: '2026-03-16', endDate: '2026-03-20', status: 'pré', period: 'journée' },
   { id: 2008, horseId: 11, startDate: '2026-03-23', endDate: '2026-03-27', status: 'pré', period: 'journée' },
 
-  // === AVRIL 2026 - Plages consolidées par cheval ===
+  // === AVRIL 2026 - Sources : calendrier officiel photographié ===
 
-  // Cliff (2): 2, 4, 6, 8-10, 15, 20-21, 23, 27-28, 30
-  { id: 3011, horseId: 2, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré', period: 'journée' },
-  { id: 3012, horseId: 2, startDate: '2026-04-04', endDate: '2026-04-04', status: 'pré', period: 'journée' },
-  { id: 3013, horseId: 2, startDate: '2026-04-06', endDate: '2026-04-06', status: 'pré', period: 'journée' },
-  { id: 3014, horseId: 2, startDate: '2026-04-08', endDate: '2026-04-09', status: 'pré', period: 'journée' },
-  { id: 3015, horseId: 2, startDate: '2026-04-15', endDate: '2026-04-15', status: 'pré', period: 'journée' },
+  // Cliff (2) : 1-2, 7, 9, 13-14, 16, 20-21, 23, 27-30
+  { id: 3011, horseId: 2, startDate: '2026-04-01', endDate: '2026-04-02', status: 'pré', period: 'journée' },
+  { id: 3012, horseId: 2, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'journée' },
+  { id: 3013, horseId: 2, startDate: '2026-04-09', endDate: '2026-04-09', status: 'pré', period: 'journée' },
+  { id: 3014, horseId: 2, startDate: '2026-04-13', endDate: '2026-04-14', status: 'pré', period: 'journée' },
+  { id: 3015, horseId: 2, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
   { id: 3016, horseId: 2, startDate: '2026-04-20', endDate: '2026-04-21', status: 'pré', period: 'journée' },
   { id: 3017, horseId: 2, startDate: '2026-04-23', endDate: '2026-04-23', status: 'pré', period: 'journée' },
-  { id: 3018, horseId: 2, startDate: '2026-04-27', endDate: '2026-04-28', status: 'pré', period: 'journée' },
-  { id: 3019, horseId: 2, startDate: '2026-04-30', endDate: '2026-04-30', status: 'pré', period: 'journée' },
+  { id: 3018, horseId: 2, startDate: '2026-04-27', endDate: '2026-04-30', status: 'pré', period: 'journée' },
 
-  // Cloony (3): 1-3, 6-10, 13-17
-  { id: 3021, horseId: 3, startDate: '2026-04-01', endDate: '2026-04-03', status: 'pré', period: 'journée' },
-  { id: 3022, horseId: 3, startDate: '2026-04-06', endDate: '2026-04-10', status: 'pré', period: 'journée' },
-  { id: 3023, horseId: 3, startDate: '2026-04-13', endDate: '2026-04-17', status: 'pré', period: 'journée' },
+  // Cloony (3) : 2-4, 6, 9-10, 13, 15-16
+  { id: 3021, horseId: 3, startDate: '2026-04-02', endDate: '2026-04-04', status: 'pré', period: 'journée' },
+  { id: 3022, horseId: 3, startDate: '2026-04-06', endDate: '2026-04-06', status: 'pré', period: 'journée' },
+  { id: 3023, horseId: 3, startDate: '2026-04-09', endDate: '2026-04-10', status: 'pré', period: 'journée' },
+  { id: 3024, horseId: 3, startDate: '2026-04-13', endDate: '2026-04-13', status: 'pré', period: 'journée' },
+  { id: 3025, horseId: 3, startDate: '2026-04-15', endDate: '2026-04-16', status: 'pré', period: 'journée' },
 
-  // Conquérant (4): 2-6, 8-17, 19-23, 25-30
-  { id: 3031, horseId: 4, startDate: '2026-04-02', endDate: '2026-04-06', status: 'pré', period: 'journée' },
-  { id: 3032, horseId: 4, startDate: '2026-04-08', endDate: '2026-04-17', status: 'pré', period: 'journée' },
-  { id: 3033, horseId: 4, startDate: '2026-04-19', endDate: '2026-04-23', status: 'pré', period: 'journée' },
-  { id: 3034, horseId: 4, startDate: '2026-04-25', endDate: '2026-04-30', status: 'pré', period: 'journée' },
+  // Conquérant (4) : tout le mois (présent chaque jour)
+  { id: 3031, horseId: 4, startDate: '2026-04-01', endDate: '2026-04-30', status: 'pré', period: 'journée' },
 
-  // Eiddy (14): 1, 5, 7, 13-14, 16-17, 24-30
-  { id: 3131, horseId: 14, startDate: '2026-04-01', endDate: '2026-04-01', status: 'pré', period: 'journée' },
+  // Eiddy (14) : 3, 5, 7, 10, 14, 16, 24-30
+  { id: 3131, horseId: 14, startDate: '2026-04-03', endDate: '2026-04-03', status: 'pré', period: 'journée' },
   { id: 3132, horseId: 14, startDate: '2026-04-05', endDate: '2026-04-05', status: 'pré', period: 'journée' },
   { id: 3133, horseId: 14, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'journée' },
-  { id: 3199, horseId: 14, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },
-  { id: 3134, horseId: 14, startDate: '2026-04-13', endDate: '2026-04-14', status: 'pré', period: 'journée' },
-  { id: 3135, horseId: 14, startDate: '2026-04-16', endDate: '2026-04-17', status: 'pré', period: 'journée' },
-  { id: 3136, horseId: 14, startDate: '2026-04-24', endDate: '2026-04-30', status: 'pré', period: 'journée' },
+  { id: 3134, horseId: 14, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },
+  { id: 3135, horseId: 14, startDate: '2026-04-14', endDate: '2026-04-14', status: 'pré', period: 'journée' },
+  { id: 3136, horseId: 14, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
+  { id: 3137, horseId: 14, startDate: '2026-04-24', endDate: '2026-04-30', status: 'pré', period: 'journée' },
 
-  // Fakir (15): 2, 4, 7, 9-11, 14
-  { id: 3141, horseId: 15, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré', period: 'journée' },
-  { id: 3142, horseId: 15, startDate: '2026-04-04', endDate: '2026-04-04', status: 'pré', period: 'journée' },
-  { id: 3143, horseId: 15, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'journée' },
-  { id: 3144, horseId: 15, startDate: '2026-04-09', endDate: '2026-04-11', status: 'pré', period: 'journée' },
-  { id: 3145, horseId: 15, startDate: '2026-04-14', endDate: '2026-04-14', status: 'pré', period: 'journée' },
+  // Fakir (15) : 4, 6, 9-11
+  { id: 3141, horseId: 15, startDate: '2026-04-04', endDate: '2026-04-04', status: 'pré', period: 'journée' },
+  { id: 3142, horseId: 15, startDate: '2026-04-06', endDate: '2026-04-06', status: 'pré', period: 'journée' },
+  { id: 3143, horseId: 15, startDate: '2026-04-09', endDate: '2026-04-11', status: 'pré', period: 'journée' },
 
-  // Florette (1): 1-2, 7, 9, 13-14, 16
-  { id: 3001, horseId: 1, startDate: '2026-04-01', endDate: '2026-04-02', status: 'pré', period: 'journée' },
-  { id: 3002, horseId: 1, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'journée' },
-  { id: 3003, horseId: 1, startDate: '2026-04-09', endDate: '2026-04-09', status: 'pré', period: 'journée' },
-  { id: 3004, horseId: 1, startDate: '2026-04-13', endDate: '2026-04-14', status: 'pré', period: 'journée' },
-  { id: 3005, horseId: 1, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
+  // Bally (18) : 7, 9
+  { id: 3151, horseId: 18, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'journée' },
+  { id: 3152, horseId: 18, startDate: '2026-04-09', endDate: '2026-04-09', status: 'pré', period: 'journée' },
 
-  // Foudre (8): 2, 5, 7, 9, 16
+  // Foudre (8) : 2, 7, 13, 16
   { id: 3071, horseId: 8, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré', period: 'journée' },
-  { id: 3072, horseId: 8, startDate: '2026-04-05', endDate: '2026-04-05', status: 'pré', period: 'journée' },
-  { id: 3073, horseId: 8, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'journée' },
-  { id: 3074, horseId: 8, startDate: '2026-04-09', endDate: '2026-04-09', status: 'pré', period: 'journée' },
-  { id: 3075, horseId: 8, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
+  { id: 3072, horseId: 8, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'journée' },
+  { id: 3073, horseId: 8, startDate: '2026-04-13', endDate: '2026-04-13', status: 'pré', period: 'journée' },
+  { id: 3074, horseId: 8, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
 
-  // Gemini (17): 5, 11
+  // Gemini (17) : 5, 11
   { id: 3161, horseId: 17, startDate: '2026-04-05', endDate: '2026-04-05', status: 'pré', period: 'journée' },
   { id: 3162, horseId: 17, startDate: '2026-04-11', endDate: '2026-04-11', status: 'pré', period: 'journée' },
 
-  // Goria (12): 2, 4, 6, 13, 16, 18, 27, 29
+  // Goria (12) : 2, 4, 6, 13, 16, 18, 27-29
   { id: 3111, horseId: 12, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré', period: 'journée' },
   { id: 3112, horseId: 12, startDate: '2026-04-04', endDate: '2026-04-04', status: 'pré', period: 'journée' },
   { id: 3113, horseId: 12, startDate: '2026-04-06', endDate: '2026-04-06', status: 'pré', period: 'journée' },
   { id: 3114, horseId: 12, startDate: '2026-04-13', endDate: '2026-04-13', status: 'pré', period: 'journée' },
   { id: 3115, horseId: 12, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
   { id: 3116, horseId: 12, startDate: '2026-04-18', endDate: '2026-04-18', status: 'pré', period: 'journée' },
-  { id: 3117, horseId: 12, startDate: '2026-04-27', endDate: '2026-04-27', status: 'pré', period: 'journée' },
-  { id: 3118, horseId: 12, startDate: '2026-04-29', endDate: '2026-04-29', status: 'pré', period: 'journée' },
+  { id: 3117, horseId: 12, startDate: '2026-04-27', endDate: '2026-04-29', status: 'pré', period: 'journée' },
 
-  // Gringo (10): 10-11, 13, 16-17, 20, 23-30
-  { id: 3091, horseId: 10, startDate: '2026-04-11', endDate: '2026-04-11', status: 'pré', period: 'journée' },
-  { id: 3092, horseId: 10, startDate: '2026-04-13', endDate: '2026-04-13', status: 'pré', period: 'journée' },
-  { id: 3093, horseId: 10, startDate: '2026-04-16', endDate: '2026-04-17', status: 'pré', period: 'journée' },
-  { id: 3094, horseId: 10, startDate: '2026-04-20', endDate: '2026-04-20', status: 'pré', period: 'journée' },
-  { id: 3095, horseId: 10, startDate: '2026-04-23', endDate: '2026-04-30', status: 'pré', period: 'journée' },
+  // Gringo (10) : 2, 6, 9, 13, 16, 20, 24-30
+  { id: 3091, horseId: 10, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré', period: 'journée' },
+  { id: 3092, horseId: 10, startDate: '2026-04-06', endDate: '2026-04-06', status: 'pré', period: 'journée' },
+  { id: 3093, horseId: 10, startDate: '2026-04-09', endDate: '2026-04-09', status: 'pré', period: 'journée' },
+  { id: 3094, horseId: 10, startDate: '2026-04-13', endDate: '2026-04-13', status: 'pré', period: 'journée' },
+  { id: 3095, horseId: 10, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
+  { id: 3096, horseId: 10, startDate: '2026-04-20', endDate: '2026-04-20', status: 'pré', period: 'journée' },
+  { id: 3097, horseId: 10, startDate: '2026-04-24', endDate: '2026-04-30', status: 'pré', period: 'journée' },
 
-  // Jimmy (7): 3, 5, 7, 10, 14, 17
-  { id: 3061, horseId: 7, startDate: '2026-04-03', endDate: '2026-04-03', status: 'pré', period: 'journée' },
-  { id: 3062, horseId: 7, startDate: '2026-04-05', endDate: '2026-04-05', status: 'pré', period: 'journée' },
-  { id: 3063, horseId: 7, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'journée' },
-  { id: 3064, horseId: 7, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },
-  { id: 3065, horseId: 7, startDate: '2026-04-14', endDate: '2026-04-14', status: 'pré', period: 'journée' },
-  { id: 3066, horseId: 7, startDate: '2026-04-17', endDate: '2026-04-17', status: 'pré', period: 'journée' },
+  // Jimmy (7) : 2, 7, 10, 14, 17
+  { id: 3061, horseId: 7, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré', period: 'journée' },
+  { id: 3062, horseId: 7, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'journée' },
+  { id: 3063, horseId: 7, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },
+  { id: 3064, horseId: 7, startDate: '2026-04-14', endDate: '2026-04-14', status: 'pré', period: 'journée' },
+  { id: 3065, horseId: 7, startDate: '2026-04-17', endDate: '2026-04-17', status: 'pré', period: 'journée' },
 
-  // Joliette (11): 2, 6 (après-midi), 7
+  // Joliette (11) : 2, 5 (après-midi), 7, 9
   { id: 3101, horseId: 11, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré', period: 'journée' },
-  { id: 3102, horseId: 11, startDate: '2026-04-06', endDate: '2026-04-06', status: 'pré', period: 'après-midi' },
+  { id: 3102, horseId: 11, startDate: '2026-04-05', endDate: '2026-04-05', status: 'pré', period: 'après-midi' },
   { id: 3103, horseId: 11, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'journée' },
+  { id: 3104, horseId: 11, startDate: '2026-04-09', endDate: '2026-04-09', status: 'pré', period: 'journée' },
 
-  // Juariste (9): 4, 6
-  { id: 3081, horseId: 9, startDate: '2026-04-04', endDate: '2026-04-04', status: 'pré', period: 'journée' },
-  { id: 3082, horseId: 9, startDate: '2026-04-06', endDate: '2026-04-06', status: 'pré', period: 'journée' },
+  // Juariste (9) : 2, 6-7
+  { id: 3081, horseId: 9, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré', period: 'journée' },
+  { id: 3082, horseId: 9, startDate: '2026-04-06', endDate: '2026-04-07', status: 'pré', period: 'journée' },
 
-  // Kiss (6): sem 1-3, sem 6-10, sem 13-17, sem 20-24, sem 27-30 (JAMAIS le week-end)
+  // Kiss (6) : 1-3, 6-10, 13-17, 20-24, 27-30 (jamais les week-ends)
   { id: 3051, horseId: 6, startDate: '2026-04-01', endDate: '2026-04-03', status: 'pré', period: 'journée' },
   { id: 3052, horseId: 6, startDate: '2026-04-06', endDate: '2026-04-10', status: 'pré', period: 'journée' },
   { id: 3053, horseId: 6, startDate: '2026-04-13', endDate: '2026-04-17', status: 'pré', period: 'journée' },
-  { id: 3054, horseId: 6, startDate: '2026-04-22', endDate: '2026-04-24', status: 'pré', period: 'journée' },
+  { id: 3054, horseId: 6, startDate: '2026-04-20', endDate: '2026-04-24', status: 'pré', period: 'journée' },
   { id: 3055, horseId: 6, startDate: '2026-04-27', endDate: '2026-04-30', status: 'pré', period: 'journée' },
 
-  // Lipton (5): 2-3, 6-14, 18-19, 21, 24, 28
-  { id: 3041, horseId: 5, startDate: '2026-04-02', endDate: '2026-04-03', status: 'pré', period: 'journée' },
+  // Lipton (5) : 2-4, 6-14, 16-19, 21, 24, 28
+  { id: 3041, horseId: 5, startDate: '2026-04-02', endDate: '2026-04-04', status: 'pré', period: 'journée' },
   { id: 3042, horseId: 5, startDate: '2026-04-06', endDate: '2026-04-14', status: 'pré', period: 'journée' },
-  { id: 3043, horseId: 5, startDate: '2026-04-18', endDate: '2026-04-19', status: 'pré', period: 'journée' },
+  { id: 3043, horseId: 5, startDate: '2026-04-16', endDate: '2026-04-19', status: 'pré', period: 'journée' },
   { id: 3044, horseId: 5, startDate: '2026-04-21', endDate: '2026-04-21', status: 'pré', period: 'journée' },
   { id: 3045, horseId: 5, startDate: '2026-04-24', endDate: '2026-04-24', status: 'pré', period: 'journée' },
   { id: 3046, horseId: 5, startDate: '2026-04-28', endDate: '2026-04-28', status: 'pré', period: 'journée' },
 
-  // Little (13): 2-5, 8-9
+  // Little (13) : 2-5, 8-9
   { id: 3121, horseId: 13, startDate: '2026-04-02', endDate: '2026-04-05', status: 'pré', period: 'journée' },
   { id: 3122, horseId: 13, startDate: '2026-04-08', endDate: '2026-04-09', status: 'pré', period: 'journée' },
-
-  // Towingo (16): 7, 9
-  { id: 3151, horseId: 16, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'journée' },
-  { id: 3152, horseId: 16, startDate: '2026-04-09', endDate: '2026-04-09', status: 'pré', period: 'journée' },
 ];
 
 // --- Sub-components (outside for stability) ---
