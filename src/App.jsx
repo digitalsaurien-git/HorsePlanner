@@ -948,7 +948,7 @@ function App() {
 
   // Load from localStorage
   useEffect(() => {
-    const APP_VERSION = 'v1.1';
+    const APP_VERSION = 'v1.2';
     try {
       const savedVersion = localStorage.getItem('hp_version');
       if (savedVersion !== APP_VERSION) {
@@ -964,14 +964,14 @@ function App() {
         setMode(APP_MODES.DASHBOARD);
       }
       
-      const savedHorses = localStorage.getItem('horsePlanner_horses_v1.1');
+      const savedHorses = localStorage.getItem('horsePlanner_horses_v1.2');
       if (savedHorses && JSON.parse(savedHorses).length > 0) setHorses(JSON.parse(savedHorses));
       else setHorses(INITIAL_HORSES);
 
       const savedClientId = localStorage.getItem('hp_client_id');
       if (savedClientId) setClientId(savedClientId);
 
-      const savedAssignments = localStorage.getItem('horsePlanner_assignments_v1.1');
+      const savedAssignments = localStorage.getItem('horsePlanner_assignments_v1.2');
       if (savedAssignments && JSON.parse(savedAssignments).length > 0) setAssignments(JSON.parse(savedAssignments));
       else setAssignments(INITIAL_PLANNINGS);
 
@@ -989,8 +989,8 @@ function App() {
 
   // Persistence
   useEffect(() => {
-    localStorage.setItem('horsePlanner_horses_v1.1', JSON.stringify(horses));
-    localStorage.setItem('horsePlanner_assignments_v1.1', JSON.stringify(assignments));
+    localStorage.setItem('horsePlanner_horses_v1.2', JSON.stringify(horses));
+    localStorage.setItem('horsePlanner_assignments_v1.2', JSON.stringify(assignments));
     localStorage.setItem('hp_sync_path', syncPath);
     localStorage.setItem('hp_master_password', masterPassword);
     localStorage.setItem('hp_client_id', clientId);
