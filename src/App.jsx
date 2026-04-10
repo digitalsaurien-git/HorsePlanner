@@ -25,8 +25,8 @@ const INITIAL_HORSES = [
   { id: 1, name: 'Florette', emoji: '🌸', owner: 'Club', color: '#ff80ab', status: 'box' },
   { id: 2, name: 'Cliff', emoji: '🐴', owner: 'Propriétaire', color: '#b08d57', status: 'box' },
   { id: 3, name: 'Cloony', emoji: '🍀', owner: 'Propriétaire', color: '#4caf50', status: 'box' },
-  { id: 4, name: 'Conquérant', emoji: '🦓', owner: 'Club', color: '#333333', status: 'box' },
-  { id: 5, name: 'Lipton', emoji: '🐰', owner: 'Club', color: '#90caf9', status: 'box' },
+  { id: 4, name: 'Conquérant', emoji: '🦓', owner: 'Propriétaire', color: '#333333', status: 'box' },
+  { id: 5, name: 'Lipton', emoji: '🐰', owner: 'Propriétaire', color: '#90caf9', status: 'box' },
   { id: 6, name: 'Kiss', emoji: '💋', owner: 'Club', color: '#f44336', status: 'box' },
   { id: 7, name: 'Jimmy', emoji: '🐎', owner: 'Club', color: '#a1887f', status: 'box' },
   { id: 8, name: 'Foudre', emoji: '⚡', owner: 'Club', color: '#ffd54f', status: 'box' },
@@ -44,8 +44,7 @@ const INITIAL_HORSES = [
   { id: 20, name: 'Haker', emoji: '🕶️', owner: 'Club', color: '#90a4ae', status: 'box' },
 ];
 
-
-const PROPRIETARY_HORSE_IDS = [2, 3, 15]; // Cliff, Cloony, Fakir - horse IDs belonging to the owner
+const PROPRIETARY_HORSE_IDS = [2, 3, 15, 4, 5]; // Cliff, Cloony, Fakir, Conquérant, Lipton - horse IDs belonging to the owner
 
 const INITIAL_PLANNINGS = [
   // Fevrier 2026
