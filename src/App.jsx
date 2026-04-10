@@ -70,7 +70,7 @@ const INITIAL_PLANNINGS = [
   { id: 3011, horseId: 2, startDate: '2026-04-02', endDate: '2026-04-02', status: 'pré', period: 'journée' },
   { id: 3012, horseId: 2, startDate: '2026-04-04', endDate: '2026-04-04', status: 'pré', period: 'journée' },
   { id: 3013, horseId: 2, startDate: '2026-04-06', endDate: '2026-04-06', status: 'pré', period: 'journée' },
-  { id: 3014, horseId: 2, startDate: '2026-04-08', endDate: '2026-04-10', status: 'pré', period: 'journée' },
+  { id: 3014, horseId: 2, startDate: '2026-04-08', endDate: '2026-04-09', status: 'pré', period: 'journée' },
   { id: 3015, horseId: 2, startDate: '2026-04-15', endDate: '2026-04-15', status: 'pré', period: 'journée' },
   { id: 3016, horseId: 2, startDate: '2026-04-20', endDate: '2026-04-21', status: 'pré', period: 'journée' },
   { id: 3017, horseId: 2, startDate: '2026-04-23', endDate: '2026-04-23', status: 'pré', period: 'journée' },
@@ -92,6 +92,7 @@ const INITIAL_PLANNINGS = [
   { id: 3131, horseId: 14, startDate: '2026-04-01', endDate: '2026-04-01', status: 'pré', period: 'journée' },
   { id: 3132, horseId: 14, startDate: '2026-04-05', endDate: '2026-04-05', status: 'pré', period: 'journée' },
   { id: 3133, horseId: 14, startDate: '2026-04-07', endDate: '2026-04-07', status: 'pré', period: 'journée' },
+  { id: 3199, horseId: 14, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },
   { id: 3134, horseId: 14, startDate: '2026-04-13', endDate: '2026-04-14', status: 'pré', period: 'journée' },
   { id: 3135, horseId: 14, startDate: '2026-04-16', endDate: '2026-04-17', status: 'pré', period: 'journée' },
   { id: 3136, horseId: 14, startDate: '2026-04-24', endDate: '2026-04-30', status: 'pré', period: 'journée' },
@@ -132,7 +133,7 @@ const INITIAL_PLANNINGS = [
   { id: 3118, horseId: 12, startDate: '2026-04-29', endDate: '2026-04-29', status: 'pré', period: 'journée' },
 
   // Gringo (10): 10-11, 13, 16-17, 20, 23-30
-  { id: 3091, horseId: 10, startDate: '2026-04-10', endDate: '2026-04-11', status: 'pré', period: 'journée' },
+  { id: 3091, horseId: 10, startDate: '2026-04-11', endDate: '2026-04-11', status: 'pré', period: 'journée' },
   { id: 3092, horseId: 10, startDate: '2026-04-13', endDate: '2026-04-13', status: 'pré', period: 'journée' },
   { id: 3093, horseId: 10, startDate: '2026-04-16', endDate: '2026-04-17', status: 'pré', period: 'journée' },
   { id: 3094, horseId: 10, startDate: '2026-04-20', endDate: '2026-04-20', status: 'pré', period: 'journée' },
@@ -457,7 +458,10 @@ const AssignmentView = ({ user, ROLES, horses, assignments, formatDate, addAssig
           <div key={h.id}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
               <span style={{ fontSize: '1.3rem' }}>{h.emoji}</span>
-              <strong style={{ fontSize: '1rem', color: h.color || 'var(--accent)' }}>{h.name}</strong>
+              <strong style={{ fontSize: '1rem', color: '#ffffff' }}>
+                <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: h.color || 'var(--accent)', marginRight: '6px', verticalAlign: 'middle', flexShrink: 0 }}></span>
+                {h.name}
+              </strong>
               <span style={{ fontSize: '0.7rem', opacity: 0.5, background: 'rgba(255,255,255,0.07)', padding: '2px 8px', borderRadius: '20px' }}>{items.length} affectation{items.length > 1 ? 's' : ''}</span>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', paddingLeft: '1rem', borderLeft: `2px solid ${h.color || 'rgba(255,255,255,0.1)'}` }}>
