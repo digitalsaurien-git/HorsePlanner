@@ -23,8 +23,8 @@ const HORSE_ICONS = ['🐎', '🐴', '🦄', '🐆', '🦓', '🦒', '🐿️', 
 
 const INITIAL_HORSES = [
   { id: 1, name: 'Florette', emoji: '🌸', owner: 'Club', color: '#ff80ab', status: 'box' },
-  { id: 2, name: 'Cliff', emoji: '🐴', owner: 'Dupont', color: '#b08d57', status: 'box' },
-  { id: 3, name: 'Cloony', emoji: '🍀', owner: 'Dupont', color: '#4caf50', status: 'box' },
+  { id: 2, name: 'Cliff', emoji: '🐴', owner: 'Propriétaire', color: '#b08d57', status: 'box' },
+  { id: 3, name: 'Cloony', emoji: '🍀', owner: 'Propriétaire', color: '#4caf50', status: 'box' },
   { id: 4, name: 'Conquérant', emoji: '🦓', owner: 'Club', color: '#333333', status: 'box' },
   { id: 5, name: 'Lipton', emoji: '🐰', owner: 'Club', color: '#90caf9', status: 'box' },
   { id: 6, name: 'Kiss', emoji: '💋', owner: 'Club', color: '#f44336', status: 'box' },
@@ -36,7 +36,7 @@ const INITIAL_HORSES = [
   { id: 12, name: 'Goria', emoji: '🦄', owner: 'Club', color: '#ba68c8', status: 'box' },
   { id: 13, name: 'Little', emoji: '🐎', owner: 'Club', color: '#e0e0e0', status: 'box' },
   { id: 14, name: 'Eiddy', emoji: '🌷', owner: 'Club', color: '#f06292', status: 'box' },
-  { id: 15, name: 'Fakir', emoji: '🐹', owner: 'Club', color: '#ff8a65', status: 'box' },
+  { id: 15, name: 'Fakir', emoji: '🐹', owner: 'Propriétaire', color: '#ff8a65', status: 'box' },
   { id: 16, name: 'Towingo', emoji: '🐅', owner: 'Club', color: '#9575cd', status: 'box' },
   { id: 17, name: 'Gemini', emoji: '👯', owner: 'Club', color: '#4fc3f7', status: 'box' },
   { id: 18, name: 'Bally', emoji: '🏐', owner: 'Club', color: '#aed581', status: 'box' },
@@ -169,7 +169,7 @@ const LoginView = ({ isGerantSelected, setIsGerantSelected, passwordInput, setPa
         {!isGerantSelected ? (
           <>
             <button className="btn btn-primary" onClick={() => setIsGerantSelected(true)}>Connexion Gérant</button>
-            <button className="btn btn-accent" onClick={() => login(ROLES.PROPRIETAIRE, 'Dupont')}>Espace Propriétaire</button>
+            <button className="btn btn-accent" onClick={() => login(ROLES.PROPRIETAIRE, 'Propriétaire')}>Espace Propriétaire</button>
           </>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -221,7 +221,7 @@ const Navbar = ({ setIsSidebarOpen, logout, user }) => (
     </div>
     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
       <span style={{ fontSize: '0.8rem', opacity: 0.7 }} className="hide-mobile">
-        {user?.role === ROLES.GERANT ? "Chef d'écurie" : `Propriétaire : ${user?.name}`}
+        {user?.role === ROLES.GERANT ? "Chef d'écurie" : "Espace Propriétaire"}
       </span>
       <button className="btn btn-accent" style={{ padding: '6px 15px', fontSize: '0.8rem' }} onClick={logout}>
         🚪 Déconnexion
@@ -412,7 +412,7 @@ const AssignmentView = ({ user, ROLES, horses, assignments, formatDate, addAssig
 
       <div className="card glass">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <h3>{isOwner ? "Mes Affectations Propriétaire" : "Affectations actives"}</h3>
+          <h3>{isOwner ? "📜 Rapport d'activité - Vue Propriétaire" : "Affectations actives"}</h3>
           {!isOwner && (
             <div className="btn-group">
               <button className={`btn ${viewType === 'all' ? 'btn-primary' : ''}`} onClick={() => setViewType('all')}>Toutes</button>
