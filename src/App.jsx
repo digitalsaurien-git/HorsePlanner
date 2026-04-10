@@ -192,7 +192,7 @@ const LoginView = ({ isGerantSelected, setIsGerantSelected, passwordInput, setPa
   </div>
 );
 
-const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, mode, setMode, user }) => (
+const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, mode, setMode, user, logout }) => (
   <>
     <div className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
     <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
@@ -205,6 +205,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, mode, setMode, user }) => (
       {user?.role === ROLES.GERANT && !user?.isDemo && (
         <button className={`btn ${mode === APP_MODES.SETTINGS ? 'btn-primary' : ''}`} style={{ justifyContent: 'start', marginTop: 'auto' }} onClick={() => setMode(APP_MODES.SETTINGS)}>⚙️ Paramètres</button>
       )}
+      <button className="btn" style={{ justifyContent: 'start', marginTop: user?.role === ROLES.GERANT ? '10px' : 'auto', color: 'var(--danger)' }} onClick={logout}>🚪 Déconnexion</button>
     </aside>
   </>
 );
@@ -401,13 +402,12 @@ const AssignmentView = ({ user, ROLES, horses, assignments, formatDate, addAssig
 
       <div className="card glass">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <h3>📋 Planning des Sorties</h3>
-          {user?.role === ROLES.GERANT && (
-            <div className="btn-group">
-              <button className={`btn ${viewType === 'club' ? 'btn-primary' : ''}`} onClick={() => setViewType('club')}>Pensions Club</button>
-              <button className={`btn ${viewType === 'owner' ? 'btn-primary' : ''}`} onClick={() => setViewType('owner')}>Equidés Propriétaires</button>
-            </div>
-          )}
+          <h3>Affectations actives</h3>
+          <div className="btn-group">
+            <button className={`btn ${viewType === 'all' ? 'btn-primary' : ''}`} onClick={() => setViewType('all')}>Toutes</button>
+            <button className={`btn ${viewType === 'club' ? 'btn-primary' : ''}`} onClick={() => setViewType('club')}>Club</button>
+            <button className={`btn ${viewType === 'owner' ? 'btn-primary' : ''}`} onClick={() => setViewType('owner')}>Propriétaires</button>
+          </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: isOwner ? '1rem' : '0' }}>
             {activeAssignments.map(p => {
               const h = horses.find(h => h.id === p.horseId);
@@ -447,7 +447,7 @@ const AssignmentView = ({ user, ROLES, horses, assignments, formatDate, addAssig
 
         {pastAssignments.length > 0 && (
           <div style={{ marginTop: '3rem' }}>
-            <h4 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>📂 Archives (Affectations passées)</h4>
+            <h4>Affectations passées</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '1rem' }}>
               {sortedMonthKeys.map(key => {
                 const [year, month] = key.split('-');
@@ -521,17 +521,17 @@ const CalendarView = ({ horses, assignments }) => {
         <p style={{ color: 'var(--text-muted)' }}>Visualisez l'occupation du pré d'un coup d'œil.</p>
       </header>
 
-      <div className="card" style={{ background: '#fff', padding: '1rem', color: '#000' }}>
+      <div className="card glass">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <button className="btn" style={{ padding: '8px', border: '1px solid #ccc', color: '#000' }} onClick={prevMonth}>◀</button>
-            <h3 style={{ margin: 0, minWidth: '150px', textAlign: 'center', textTransform: 'capitalize', color: '#000' }}>{monthLabel}</h3>
-            <button className="btn" style={{ padding: '8px', border: '1px solid #ccc', color: '#000' }} onClick={nextMonth}>▶</button>
+            <button className="btn" style={{ padding: '8px' }} onClick={prevMonth}>◀</button>
+            <h3 style={{ margin: 0, minWidth: '150px', textAlign: 'center', textTransform: 'capitalize' }}>{monthLabel}</h3>
+            <button className="btn" style={{ padding: '8px' }} onClick={nextMonth}>▶</button>
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontSize: '0.8rem', color: '#666' }}>Filtrer :</span>
-            <select className="input" style={{ width: 'auto', minWidth: '150px', color: '#000', border: '1px solid #ccc' }} value={selectedHorseId} onChange={e => setSelectedHorseId(e.target.value)}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Filtrer par cheval :</span>
+            <select className="input" style={{ width: 'auto', minWidth: '150px' }} value={selectedHorseId} onChange={e => setSelectedHorseId(e.target.value)}>
               <option value="all">Tous les chevaux</option>
               {horses.slice().sort((a, b) => a.name.localeCompare(b.name)).map(h => (
                 <option key={h.id} value={h.id}>{h.emoji} {h.name}</option>
@@ -540,33 +540,38 @@ const CalendarView = ({ horses, assignments }) => {
           </div>
         </div>
 
-        <div className="calendar-wrapper" style={{ overflowX: 'auto' }}>
-          <div className="calendar-grid">
-            {['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI', 'DIMANCHE'].map(d => (
-              <div key={d} className="calendar-header-cell">{d}</div>
+        <div className="calendar-wrapper" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: '10px' }}>
+          <div className="calendar-grid" style={{ minWidth: '600px' }}>
+            {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(d => (
+              <div key={d} style={{ textAlign: 'center', fontWeight: 'bold', padding: '10px', color: 'var(--accent)', fontSize: '0.8rem' }}>{d}</div>
             ))}
             {Array.from({ length: (firstDayOfMonth + 6) % 7 }).map((_, i) => (
-              <div key={`empty-${i}`} className="calendar-day calendar-empty" />
+              <div key={`empty-${i}`} />
             ))}
             {days.map(day => {
               const dayAssigns = getHorseAssignments(day);
-              
-              // Logical pairing like in the screenshot
-              const paired = [];
+              // Group into pairs for screenshot-style layout
+              const pairs = [];
               for (let i = 0; i < dayAssigns.length; i += 2) {
-                if (i + 1 < dayAssigns.length) {
-                  paired.push([dayAssigns[i], dayAssigns[i+1]]);
-                } else {
-                  paired.push([dayAssigns[i]]);
-                }
+                if (i + 1 < dayAssigns.length) pairs.push([dayAssigns[i], dayAssigns[i + 1]]);
+                else pairs.push([dayAssigns[i]]);
               }
 
               return (
-                <div key={day} className="calendar-day">
-                  <div className="calendar-day-number">{day}</div>
-                  <div style={{ marginTop: '24px' }}>
-                    {paired.map((pair, idx) => (
-                      <div key={idx} className="calendar-item-row">
+                <div key={day} className="calendar-day" style={{ minHeight: '120px', border: '1px solid rgba(255,255,255,0.05)', padding: '5px', borderRadius: '8px' }}>
+                  <div style={{ fontSize: '0.7rem', opacity: 0.5, marginBottom: '5px' }}>{day}</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                    {pairs.map((pair, idx) => (
+                      <div key={idx} style={{ 
+                        display: 'flex', 
+                        gap: '4px', 
+                        fontSize: '0.65rem', 
+                        background: 'rgba(255,255,255,0.05)', 
+                        padding: '2px 4px', 
+                        borderRadius: '4px',
+                        flexWrap: 'wrap',
+                        alignItems: 'center'
+                      }}>
                         {pair.map((a, aIdx) => {
                           const h = horses.find(h => h.id === a.horseId);
                           return h ? (
@@ -869,29 +874,19 @@ function App() {
       // Fetch Horses
       const { data: horsesData, error: hError } = await supabase.from('horses').select('*').order('name');
       if (hError) throw hError;
-      
-      let currentHorses = [];
-      if (horsesData) {
-        currentHorses = horsesData.map(h => ({...h, id: Number(h.id)}));
+      if (horsesData && horsesData.length > 0) setHorses(horsesData.map(h => ({...h, id: Number(h.id)})));
+      else {
+        // Seed if empty
+        const seedData = INITIAL_HORSES.map(({id, ...rest}) => rest);
+        const { error: seedHError } = await supabase.from('horses').insert(seedData);
+        if (!seedHError) fetchSupabaseData();
       }
-
-      // Merge with INITIAL_HORSES by name to avoid duplicates
-      const mergedHorses = [...currentHorses];
-      INITIAL_HORSES.forEach(init => {
-        if (!mergedHorses.some(m => m.name.toLowerCase() === init.name.toLowerCase())) {
-          mergedHorses.push(init);
-        }
-      });
-      
-      setHorses(mergedHorses);
 
       // Remap Assignments
       const { data: assignData, error: aError } = await supabase.from('assignments').select('*');
       if (aError) throw aError;
-      
-      let mapped = [];
       if (assignData) {
-        mapped = assignData.map(a => ({
+        const mapped = assignData.map(a => ({
           id: a.id,
           horseId: Number(a.horse_id),
           startDate: a.start_date,
@@ -899,21 +894,14 @@ function App() {
           status: a.status,
           period: a.period
         }));
+        
+        // Merge with INITIAL_PLANNINGS to ensure April 2026 is populated if not in Supabase
+        const merged = [...mapped];
+        INITIAL_PLANNINGS.forEach(init => {
+          if (!merged.some(m => m.id === init.id)) merged.push(init);
+        });
+        setAssignments(merged);
       }
-
-      // Merge with INITIAL_PLANNINGS to ensure demo data (April 2026) is available
-      // Safely check for duplicates by (horseId, startDate, endDate)
-      const merged = [...mapped];
-      INITIAL_PLANNINGS.forEach(init => {
-        const isDuplicate = merged.some(m => 
-          m.horseId === init.horseId && 
-          m.startDate === init.startDate && 
-          m.endDate === init.endDate
-        );
-        if (!isDuplicate) merged.push(init);
-      });
-
-      setAssignments(merged);
     } catch (err) {
       console.error("Supabase Load Error:", err);
     }
@@ -934,12 +922,14 @@ function App() {
 
   // Load from localStorage
   useEffect(() => {
-    const APP_VERSION = 'v1.2';
+    const APP_VERSION = 'v1.1';
     try {
       const savedVersion = localStorage.getItem('hp_version');
       if (savedVersion !== APP_VERSION) {
-        // Migration or clear
+        localStorage.clear();
         localStorage.setItem('hp_version', APP_VERSION);
+        window.location.reload();
+        return;
       }
 
       const savedUser = localStorage.getItem('hp_user');
@@ -948,14 +938,16 @@ function App() {
         setMode(APP_MODES.DASHBOARD);
       }
       
-      const savedHorses = localStorage.getItem('horsePlanner_horses_v1.2');
+      const savedHorses = localStorage.getItem('horsePlanner_horses_v1.1');
       if (savedHorses && JSON.parse(savedHorses).length > 0) setHorses(JSON.parse(savedHorses));
+      else setHorses(INITIAL_HORSES);
 
       const savedClientId = localStorage.getItem('hp_client_id');
       if (savedClientId) setClientId(savedClientId);
 
-      const savedAssignments = localStorage.getItem('horsePlanner_assignments_v1.2');
+      const savedAssignments = localStorage.getItem('horsePlanner_assignments_v1.1');
       if (savedAssignments && JSON.parse(savedAssignments).length > 0) setAssignments(JSON.parse(savedAssignments));
+      else setAssignments(INITIAL_PLANNINGS);
 
       const savedPath = localStorage.getItem('hp_sync_path');
       if (savedPath) setSyncPath(savedPath);
@@ -964,13 +956,15 @@ function App() {
       if (savedMaster) setMasterPassword(savedMaster);
     } catch (err) {
       console.error("Critical localStorage Load Error:", err);
+      localStorage.clear();
+      window.location.reload();
     }
   }, []);
 
   // Persistence
   useEffect(() => {
-    localStorage.setItem('horsePlanner_horses_v1.2', JSON.stringify(horses));
-    localStorage.setItem('horsePlanner_assignments_v1.2', JSON.stringify(assignments));
+    localStorage.setItem('horsePlanner_horses_v1.1', JSON.stringify(horses));
+    localStorage.setItem('horsePlanner_assignments_v1.1', JSON.stringify(assignments));
     localStorage.setItem('hp_sync_path', syncPath);
     localStorage.setItem('hp_master_password', masterPassword);
     localStorage.setItem('hp_client_id', clientId);
@@ -1065,11 +1059,11 @@ function App() {
   return (
     <div style={{ background: '#121212', minHeight: '100vh', color: '#fff' }}>
       {mode === APP_MODES.LOGIN ? <LoginView isGerantSelected={isGerantSelected} setIsGerantSelected={setIsGerantSelected} passwordInput={passwordInput} setPasswordInput={setPasswordInput} login={login} /> : (
-        <div style={{ display: 'flex' }}>
-          <Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} mode={mode} setMode={setMode} user={user} />
-          <main className="main-content">
+        <div style={{ display: 'flex', width: '100%' }}>
+          <Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} mode={mode} setMode={setMode} user={user} logout={logout} />
+          <main className="main-content container">
             <Navbar setIsSidebarOpen={setIsSidebarOpen} />
-            <div className="container">
+            <div>
               {mode === APP_MODES.DASHBOARD && <Dashboard user={user} ROLES={ROLES} horses={horses} assignments={assignments} formatDate={formatDate} />}
               {mode === APP_MODES.HORSES && <HorseManagement horses={horses} HORSE_ICONS={HORSE_ICONS} addHorse={addHorse} updateHorse={updateHorse} syncDeleteHorse={deleteHorse} />}
               {mode === APP_MODES.ASSIGNMENTS && <AssignmentView user={user} ROLES={ROLES} horses={horses} assignments={assignments} formatDate={formatDate} addAssignment={addAssignment} deleteAssignment={deleteAssignment} updateAssignmentDates={updateAssignmentDates} />}

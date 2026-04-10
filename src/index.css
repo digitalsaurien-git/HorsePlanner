@@ -333,61 +333,6 @@ select.input option {
   }
 }
 
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  min-width: 900px;
-  background: #000; /* For thick grid lines */
-  gap: 2px;
-  border: 2px solid #000;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.calendar-header-cell {
-  background: #c3b5d9; /* Lilac from screenshot */
-  color: #000;
-  font-weight: 800;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  padding: 12px;
-  text-align: center;
-  border-bottom: 2px solid #000;
-}
-
-.calendar-day {
-  background: #fff;
-  min-height: 160px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  color: #000;
-}
-
-.calendar-day-number {
-  position: absolute;
-  top: 4px;
-  right: 6px;
-  font-size: 0.85rem;
-  font-weight: 800;
-}
-
-.calendar-item-row {
-  border-bottom: 1px solid #000;
-  padding: 4px 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  min-height: 28px;
-}
-
-.calendar-item-row:last-child {
-  border-bottom: none;
-}
-
-.calendar-empty {
-  background: #a0a0a0; /* Grey from screenshot */
+.calendar-wrapper {
+  min-width: 850px;
 }
