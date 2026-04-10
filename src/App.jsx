@@ -554,7 +554,7 @@ const CalendarView = ({ horses, assignments }) => {
                 <div key={day} className="calendar-day">
                   <div style={{ fontSize: '0.75rem', fontWeight: '700', opacity: 0.5, marginBottom: '8px' }}>{day}</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    {dayAssigns.slice(0, 5).map(a => {
+                    {dayAssigns.map(a => {
                       const h = horses.find(h => h.id === a.horseId);
                       return h ? (
                         <div key={a.id} className="calendar-item" style={{ background: h.color || 'var(--primary)' }}>
@@ -562,7 +562,6 @@ const CalendarView = ({ horses, assignments }) => {
                         </div>
                       ) : null;
                     })}
-                    {dayAssigns.length > 5 && <div style={{ fontSize: '0.65rem', opacity: 0.6, textAlign: 'center', padding: '2px' }}>+{dayAssigns.length - 5} autres</div>}
                   </div>
                 </div>
               );
