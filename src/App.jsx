@@ -1003,7 +1003,7 @@ function App() {
 
   // Load from localStorage
   useEffect(() => {
-    const APP_VERSION = 'v1.6';
+    const APP_VERSION = 'v1.7';
     try {
       const savedVersion = localStorage.getItem('hp_version');
       if (savedVersion !== APP_VERSION) {
@@ -1019,16 +1019,14 @@ function App() {
         setMode(APP_MODES.DASHBOARD);
       }
       
-      const savedHorses = localStorage.getItem('horsePlanner_horses_v1.6');
+      const savedHorses = localStorage.getItem('horsePlanner_horses_v1.7');
       if (savedHorses && JSON.parse(savedHorses).length > 0) setHorses(JSON.parse(savedHorses));
       else setHorses(INITIAL_HORSES);
 
       const savedClientId = localStorage.getItem('hp_client_id');
       if (savedClientId) setClientId(savedClientId);
 
-      const savedAssignments = localStorage.getItem('horsePlanner_assignments_v1.6');
-      if (savedAssignments && JSON.parse(savedAssignments).length > 0) setAssignments(JSON.parse(savedAssignments));
-      else setAssignments(INITIAL_PLANNINGS);
+      // NOTE: Assignments are NOT stored in localStorage - Supabase + INITIAL_PLANNINGS are authoritative.
 
       const savedPath = localStorage.getItem('hp_sync_path');
       if (savedPath) setSyncPath(savedPath);
@@ -1042,14 +1040,14 @@ function App() {
     }
   }, []);
 
-  // Persistence
+  // Persistence (assignments are NOT cached — INITIAL_PLANNINGS + Supabase are authoritative)
   useEffect(() => {
-    localStorage.setItem('horsePlanner_horses_v1.6', JSON.stringify(horses));
-    localStorage.setItem('horsePlanner_assignments_v1.6', JSON.stringify(assignments));
+    localStorage.setItem('horsePlanner_horses_v1.7', JSON.stringify(horses));
+    localStorage.setItem('horsePlanner_assignments_v1.7', JSON.stringify(assignments));
     localStorage.setItem('hp_sync_path', syncPath);
     localStorage.setItem('hp_master_password', masterPassword);
     localStorage.setItem('hp_client_id', clientId);
-  }, [horses, assignments, syncPath, masterPassword, clientId]);
+  }, [horses, syncPath, masterPassword, clientId]);
 
   // Real-time Save logic (Supabase)
   const syncAddHorse = async (horse) => {
