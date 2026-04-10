@@ -23,8 +23,8 @@ const HORSE_ICONS = ['🐎', '🐴', '🦄', '🐆', '🦓', '🦒', '🐿️', 
 
 const INITIAL_HORSES = [
   { id: 1, name: 'Florette', emoji: '🌸', owner: 'Club', color: '#ff80ab', status: 'box' },
-  { id: 2, name: 'Cliff', emoji: '🐴', owner: 'Club', color: '#b08d57', status: 'box' },
-  { id: 3, name: 'Cloony', emoji: '🍀', owner: 'Club', color: '#4caf50', status: 'box' },
+  { id: 2, name: 'Cliff', emoji: '🐴', owner: 'Dupont', color: '#b08d57', status: 'box' },
+  { id: 3, name: 'Cloony', emoji: '🍀', owner: 'Dupont', color: '#4caf50', status: 'box' },
   { id: 4, name: 'Conquérant', emoji: '🦓', owner: 'Club', color: '#333333', status: 'box' },
   { id: 5, name: 'Lipton', emoji: '🐰', owner: 'Club', color: '#90caf9', status: 'box' },
   { id: 6, name: 'Kiss', emoji: '💋', owner: 'Club', color: '#f44336', status: 'box' },
@@ -116,20 +116,20 @@ const INITIAL_PLANNINGS = [
   { id: 3047, horseId: 7, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },
   
   { id: 3048, horseId: 10, startDate: '2026-04-11', endDate: '2026-04-11', status: 'pré', period: 'journée' },
-  { id: 3048, horseId: 9, startDate: '2026-04-11', endDate: '2026-04-11', status: 'pré', period: 'journée' },
+  { id: 3049, horseId: 9, startDate: '2026-04-11', endDate: '2026-04-11', status: 'pré', period: 'journée' },
   
-  { id: 3049, horseId: 1, startDate: '2026-04-13', endDate: '2026-04-14', status: 'pré', period: 'journée' },
-  { id: 3050, horseId: 14, startDate: '2026-04-13', endDate: '2026-04-13', status: 'pré', period: 'journée' },
-  { id: 3051, horseId: 4, startDate: '2026-04-13', endDate: '2026-04-13', status: 'pré', period: 'matin' },
-  { id: 3052, horseId: 2, startDate: '2026-04-13', endDate: '2026-04-13', status: 'pré', period: 'après-midi' },
-  { id: 3053, horseId: 12, startDate: '2026-04-13', endDate: '2026-04-13', status: 'pré', period: 'journée' },
-  { id: 3054, horseId: 3, startDate: '2026-04-13', endDate: '2026-04-13', status: 'pré', period: 'journée' },
+  { id: 3050, horseId: 1, startDate: '2026-04-13', endDate: '2026-04-14', status: 'pré', period: 'journée' },
+  { id: 3051, horseId: 14, startDate: '2026-04-13', endDate: '2026-04-13', status: 'pré', period: 'journée' },
+  { id: 3052, horseId: 4, startDate: '2026-04-13', endDate: '2026-04-13', status: 'pré', period: 'matin' },
+  { id: 3053, horseId: 2, startDate: '2026-04-13', endDate: '2026-04-13', status: 'pré', period: 'après-midi' },
+  { id: 3054, horseId: 12, startDate: '2026-04-13', endDate: '2026-04-13', status: 'pré', period: 'journée' },
+  { id: 3055, horseId: 3, startDate: '2026-04-13', endDate: '2026-04-13', status: 'pré', period: 'journée' },
   
-  { id: 3055, horseId: 5, startDate: '2026-04-14', endDate: '2026-04-14', status: 'pré', period: 'journée' },
-  { id: 3056, horseId: 15, startDate: '2026-04-14', endDate: '2026-04-14', status: 'pré', period: 'matin' },
-  { id: 3057, horseId: 3, startDate: '2026-04-14', endDate: '2026-04-15', status: 'pré', period: 'journée' },
+  { id: 3056, horseId: 5, startDate: '2026-04-14', endDate: '2026-04-14', status: 'pré', period: 'journée' },
+  { id: 3057, horseId: 15, startDate: '2026-04-14', endDate: '2026-04-14', status: 'pré', period: 'matin' },
+  { id: 3058, horseId: 3, startDate: '2026-04-14', endDate: '2026-04-15', status: 'pré', period: 'journée' },
   
-  { id: 3058, horseId: 2, startDate: '2026-04-15', endDate: '2026-04-15', status: 'pré', period: 'journée' },
+  { id: 3059, horseId: 2, startDate: '2026-04-15', endDate: '2026-04-15', status: 'pré', period: 'journée' },
   
   { id: 3059, horseId: 1, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
   { id: 3060, horseId: 14, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },
@@ -197,26 +197,35 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, mode, setMode, user, logout 
   <>
     <div className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
     <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
-      <button className={`btn ${mode === APP_MODES.DASHBOARD ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.DASHBOARD)}>🏠 Dashboard</button>
-      {user?.role === ROLES.GERANT && (
-        <button className={`btn ${mode === APP_MODES.HORSES ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.HORSES)}>🐴 Chevaux</button>
-      )}
-      <button className={`btn ${mode === APP_MODES.ASSIGNMENTS ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.ASSIGNMENTS)}>🗓️ Affectations</button>
-      <button className={`btn ${mode === APP_MODES.CALENDAR ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.CALENDAR)}>📅 Calendrier</button>
-      <button className="btn" style={{ justifyContent: 'start', marginTop: '10px', color: 'var(--danger)', border: '1px solid rgba(244, 67, 54, 0.2)' }} onClick={logout}>🚪 Déconnexion</button>
-      {user?.role === ROLES.GERANT && !user?.isDemo && (
-        <button className={`btn ${mode === APP_MODES.SETTINGS ? 'btn-primary' : ''}`} style={{ justifyContent: 'start', marginTop: 'auto' }} onClick={() => setMode(APP_MODES.SETTINGS)}>⚙️ Paramètres</button>
-      )}
+      <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <button className={`btn ${mode === APP_MODES.DASHBOARD ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.DASHBOARD)}>🏠 Dashboard</button>
+        {user?.role === ROLES.GERANT && (
+          <button className={`btn ${mode === APP_MODES.HORSES ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.HORSES)}>🐴 Chevaux</button>
+        )}
+        <button className={`btn ${mode === APP_MODES.ASSIGNMENTS ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.ASSIGNMENTS)}>🗓️ Affectations</button>
+        <button className={`btn ${mode === APP_MODES.CALENDAR ? 'btn-primary' : ''}`} style={{ justifyContent: 'start' }} onClick={() => setMode(APP_MODES.CALENDAR)}>📅 Calendrier</button>
+        {user?.role === ROLES.GERANT && !user?.isDemo && (
+          <button className={`btn ${mode === APP_MODES.SETTINGS ? 'btn-primary' : ''}`} style={{ justifyContent: 'start', marginTop: 'auto' }} onClick={() => setMode(APP_MODES.SETTINGS)}>⚙️ Paramètres</button>
+        )}
+      </div>
     </aside>
   </>
 );
 
-const Navbar = ({ setIsSidebarOpen }) => (
-  <nav className="navbar glass">
+const Navbar = ({ setIsSidebarOpen, logout, user }) => (
+  <nav className="navbar glass" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
       <button className="btn menu-toggle" style={{ background: 'transparent', padding: '5px', fontSize: '1.2rem', color: '#fff' }} onClick={() => setIsSidebarOpen(true)}>☰</button>
       <span style={{ fontSize: '1.5rem' }} className="hide-mobile">🐎</span>
       <h2 className="gradient-text">HorsePlanner</h2>
+    </div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <span style={{ fontSize: '0.8rem', opacity: 0.7 }} className="hide-mobile">
+        {user?.role === ROLES.GERANT ? "Chef d'écurie" : `Propriétaire : ${user?.name}`}
+      </span>
+      <button className="btn btn-accent" style={{ padding: '6px 15px', fontSize: '0.8rem' }} onClick={logout}>
+        🚪 Déconnexion
+      </button>
     </div>
   </nav>
 );
@@ -1079,7 +1088,7 @@ function App() {
         <div style={{ display: 'flex', width: '100%' }}>
           <Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} mode={mode} setMode={setMode} user={user} logout={logout} />
           <main className="main-content container">
-            <Navbar setIsSidebarOpen={setIsSidebarOpen} />
+            <Navbar setIsSidebarOpen={setIsSidebarOpen} logout={logout} user={user} />
             <div>
               {mode === APP_MODES.DASHBOARD && <Dashboard user={user} ROLES={ROLES} horses={horses} assignments={assignments} formatDate={formatDate} />}
               {mode === APP_MODES.HORSES && <HorseManagement horses={horses} HORSE_ICONS={HORSE_ICONS} addHorse={addHorse} updateHorse={updateHorse} syncDeleteHorse={deleteHorse} />}
