@@ -402,12 +402,14 @@ const AssignmentView = ({ user, ROLES, horses, assignments, formatDate, addAssig
 
       <div className="card glass">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <h3>Affectations actives</h3>
-          <div className="btn-group">
-            <button className={`btn ${viewType === 'all' ? 'btn-primary' : ''}`} onClick={() => setViewType('all')}>Toutes</button>
-            <button className={`btn ${viewType === 'club' ? 'btn-primary' : ''}`} onClick={() => setViewType('club')}>Club</button>
-            <button className={`btn ${viewType === 'owner' ? 'btn-primary' : ''}`} onClick={() => setViewType('owner')}>Propriétaires</button>
-          </div>
+          <h3>{isOwner ? "Mes Affectations Propriétaire" : "Affectations actives"}</h3>
+          {!isOwner && (
+            <div className="btn-group">
+              <button className={`btn ${viewType === 'all' ? 'btn-primary' : ''}`} onClick={() => setViewType('all')}>Toutes</button>
+              <button className={`btn ${viewType === 'club' ? 'btn-primary' : ''}`} onClick={() => setViewType('club')}>Club</button>
+              <button className={`btn ${viewType === 'owner' ? 'btn-primary' : ''}`} onClick={() => setViewType('owner')}>Propriétaires</button>
+            </div>
+          )}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: isOwner ? '1rem' : '0' }}>
             {activeAssignments.map(p => {
               const h = horses.find(h => h.id === p.horseId);
@@ -492,18 +494,18 @@ const AssignmentView = ({ user, ROLES, horses, assignments, formatDate, addAssig
 
 
 const CalendarView = ({ horses, assignments }) => {
-  const [currentDate, setCurrentDate] = useState(new Date(2026, 3, 1)); // Avril 2026
+  const [activeMonth, setActiveMonth] = useState(new Date().getMonth());
+  const [activeYear, setActiveYear] = useState(new Date().getFullYear());
   const [selectedHorseId, setSelectedHorseId] = useState('all');
 
-  const prevMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
-  const nextMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
-
-  const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
-  const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
+  const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+  
+  const daysInMonth = new Date(activeYear, activeMonth + 1, 0).getDate();
+  const firstDayOfMonth = new Date(activeYear, activeMonth, 1).getDay();
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
   const getHorseAssignments = (day) => {
-    const dateStr = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+    const dateStr = `${activeYear}-${(activeMonth + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
     return assignments.filter(a => {
       const start = a.startDate;
       const end = a.endDate;
@@ -512,22 +514,29 @@ const CalendarView = ({ horses, assignments }) => {
     });
   };
 
-  const monthLabel = currentDate.toLocaleString('fr-FR', { month: 'long', year: 'numeric' });
+  const monthLabel = `${monthNames[activeMonth]} ${activeYear}`;
 
   return (
     <div className="animate-fade">
-      <header style={{ marginBottom: '2rem' }}>
+      <header style={{ marginBottom: '1rem' }}>
         <h1>Calendrier des Pâturages</h1>
-        <p style={{ color: 'var(--text-muted)' }}>Visualisez l'occupation du pré d'un coup d'œil.</p>
+        <div style={{ display: 'flex', gap: '5px', overflowX: 'auto', padding: '10px 0', scrollbarWidth: 'none' }} className="hide-scrollbar">
+          {monthNames.map((m, idx) => (
+            <button 
+              key={m} 
+              className={`btn ${activeMonth === idx ? 'btn-primary' : ''}`} 
+              style={{ fontSize: '0.7rem', padding: '6px 12px', whiteSpace: 'nowrap' }} 
+              onClick={() => setActiveMonth(idx)}
+            >
+              {m}
+            </button>
+          ))}
+        </div>
       </header>
 
       <div className="card glass">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <button className="btn" style={{ padding: '8px' }} onClick={prevMonth}>◀</button>
-            <h3 style={{ margin: 0, minWidth: '150px', textAlign: 'center', textTransform: 'capitalize' }}>{monthLabel}</h3>
-            <button className="btn" style={{ padding: '8px' }} onClick={nextMonth}>▶</button>
-          </div>
+          <h3 style={{ margin: 0, textTransform: 'capitalize' }}>{monthLabel}</h3>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Filtrer par cheval :</span>
