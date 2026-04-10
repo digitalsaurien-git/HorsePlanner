@@ -521,17 +521,17 @@ const CalendarView = ({ horses, assignments }) => {
         <p style={{ color: 'var(--text-muted)' }}>Visualisez l'occupation du pré d'un coup d'œil.</p>
       </header>
 
-      <div className="card glass">
+      <div className="card" style={{ background: '#fff', padding: '1rem', color: '#000' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <button className="btn" style={{ padding: '8px' }} onClick={prevMonth}>◀</button>
-            <h3 style={{ margin: 0, minWidth: '150px', textAlign: 'center', textTransform: 'capitalize' }}>{monthLabel}</h3>
-            <button className="btn" style={{ padding: '8px' }} onClick={nextMonth}>▶</button>
+            <button className="btn" style={{ padding: '8px', border: '1px solid #ccc', color: '#000' }} onClick={prevMonth}>◀</button>
+            <h3 style={{ margin: 0, minWidth: '150px', textAlign: 'center', textTransform: 'capitalize', color: '#000' }}>{monthLabel}</h3>
+            <button className="btn" style={{ padding: '8px', border: '1px solid #ccc', color: '#000' }} onClick={nextMonth}>▶</button>
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Filtrer par cheval :</span>
-            <select className="input" style={{ width: 'auto', minWidth: '150px' }} value={selectedHorseId} onChange={e => setSelectedHorseId(e.target.value)}>
+            <span style={{ fontSize: '0.8rem', color: '#666' }}>Filtrer :</span>
+            <select className="input" style={{ width: 'auto', minWidth: '150px', color: '#000', border: '1px solid #ccc' }} value={selectedHorseId} onChange={e => setSelectedHorseId(e.target.value)}>
               <option value="all">Tous les chevaux</option>
               {horses.slice().sort((a, b) => a.name.localeCompare(b.name)).map(h => (
                 <option key={h.id} value={h.id}>{h.emoji} {h.name}</option>
@@ -540,28 +540,44 @@ const CalendarView = ({ horses, assignments }) => {
           </div>
         </div>
 
-        <div className="calendar-wrapper">
+        <div className="calendar-wrapper" style={{ overflowX: 'auto' }}>
           <div className="calendar-grid">
-            {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(d => (
-              <div key={d} style={{ textAlign: 'center', fontWeight: 'bold', padding: '15px 10px', color: 'var(--accent)', fontSize: '0.8rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>{d}</div>
+            {['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI', 'DIMANCHE'].map(d => (
+              <div key={d} className="calendar-header-cell">{d}</div>
             ))}
             {Array.from({ length: (firstDayOfMonth + 6) % 7 }).map((_, i) => (
-              <div key={`empty-${i}`} className="calendar-day" style={{ opacity: 0.2 }} />
+              <div key={`empty-${i}`} className="calendar-day calendar-empty" />
             ))}
             {days.map(day => {
               const dayAssigns = getHorseAssignments(day);
+              
+              // Logical pairing like in the screenshot
+              const paired = [];
+              for (let i = 0; i < dayAssigns.length; i += 2) {
+                if (i + 1 < dayAssigns.length) {
+                  paired.push([dayAssigns[i], dayAssigns[i+1]]);
+                } else {
+                  paired.push([dayAssigns[i]]);
+                }
+              }
+
               return (
                 <div key={day} className="calendar-day">
-                  <div style={{ fontSize: '0.75rem', fontWeight: '700', opacity: 0.5, marginBottom: '8px' }}>{day}</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    {dayAssigns.map(a => {
-                      const h = horses.find(h => h.id === a.horseId);
-                      return h ? (
-                        <div key={a.id} className="calendar-item" style={{ background: h.color || 'var(--primary)' }}>
-                          <span className="hide-very-small">{h.emoji}</span> {h.name}
-                        </div>
-                      ) : null;
-                    })}
+                  <div className="calendar-day-number">{day}</div>
+                  <div style={{ marginTop: '24px' }}>
+                    {paired.map((pair, idx) => (
+                      <div key={idx} className="calendar-item-row">
+                        {pair.map((a, aIdx) => {
+                          const h = horses.find(h => h.id === a.horseId);
+                          return h ? (
+                            <React.Fragment key={a.id}>
+                              <span>{h.name} {h.emoji}</span>
+                              {aIdx === 0 && pair.length > 1 && <span style={{ opacity: 0.3 }}>/</span>}
+                            </React.Fragment>
+                          ) : null;
+                        })}
+                      </div>
+                    ))}
                   </div>
                 </div>
               );
