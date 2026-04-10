@@ -94,7 +94,6 @@ const INITIAL_PLANNINGS = [
   { id: 3021, horseId: 7,  startDate: '2026-04-03', endDate: '2026-04-03', status: 'pré', period: 'journée' },  // Jimmy
 
   // Samedi 4 Avril
-  { id: 3022, horseId: 6,  startDate: '2026-04-04', endDate: '2026-04-04', status: 'pré', period: 'journée' },  // Kiss
   { id: 3023, horseId: 2,  startDate: '2026-04-04', endDate: '2026-04-04', status: 'pré', period: 'journée' },  // Cliff
   { id: 3024, horseId: 4,  startDate: '2026-04-04', endDate: '2026-04-04', status: 'pré', period: 'journée' },  // Conquérant
   { id: 3025, horseId: 15, startDate: '2026-04-04', endDate: '2026-04-04', status: 'pré', period: 'journée' },  // Fakir
@@ -103,7 +102,6 @@ const INITIAL_PLANNINGS = [
   { id: 3028, horseId: 13, startDate: '2026-04-04', endDate: '2026-04-04', status: 'pré', period: 'journée' },  // Little
 
   // Dimanche 5 Avril
-  { id: 3029, horseId: 6,  startDate: '2026-04-05', endDate: '2026-04-05', status: 'pré', period: 'journée' },  // Kiss
   { id: 3030, horseId: 13, startDate: '2026-04-05', endDate: '2026-04-05', status: 'pré', period: 'journée' },  // Little
   { id: 3031, horseId: 4,  startDate: '2026-04-05', endDate: '2026-04-05', status: 'pré', period: 'journée' },  // Conquérant
   { id: 3032, horseId: 17, startDate: '2026-04-05', endDate: '2026-04-05', status: 'pré', period: 'journée' },  // Gemini
@@ -148,7 +146,7 @@ const INITIAL_PLANNINGS = [
   { id: 3063, horseId: 1,  startDate: '2026-04-09', endDate: '2026-04-09', status: 'pré', period: 'journée' },  // Florette
   { id: 3064, horseId: 16, startDate: '2026-04-09', endDate: '2026-04-09', status: 'pré', period: 'journée' },  // Towingo
   { id: 3065, horseId: 3,  startDate: '2026-04-09', endDate: '2026-04-09', status: 'pré', period: 'journée' },  // Cloony
-  { id: 3066, horseId: 6,  startDate: '2026-04-09', endDate: '2026-04-09', status: 'pré', period: 'journée' },  // Little
+  { id: 3066, horseId: 13, startDate: '2026-04-09', endDate: '2026-04-09', status: 'pré', period: 'journée' },  // Little
   { id: 3067, horseId: 4,  startDate: '2026-04-09', endDate: '2026-04-09', status: 'pré', period: 'journée' },  // Conquérant
   { id: 3068, horseId: 8,  startDate: '2026-04-09', endDate: '2026-04-09', status: 'pré', period: 'journée' },  // Foudre
   { id: 3069, horseId: 15, startDate: '2026-04-09', endDate: '2026-04-09', status: 'pré', period: 'journée' },  // Fakir
@@ -160,14 +158,12 @@ const INITIAL_PLANNINGS = [
   { id: 3073, horseId: 4,  startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },  // Conquérant
   { id: 3074, horseId: 10, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },  // Gringo
   { id: 3075, horseId: 3,  startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },  // Cloony
-  { id: 3076, horseId: 6,  startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },  // Kiss
   { id: 3077, horseId: 14, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },  // Eiddy
   { id: 3078, horseId: 7,  startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },  // Jimmy
   { id: 3079, horseId: 15, startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },  // Fakir
   { id: 3080, horseId: 2,  startDate: '2026-04-10', endDate: '2026-04-10', status: 'pré', period: 'journée' },  // Cliff
 
   // Samedi 11 Avril
-  { id: 3081, horseId: 6,  startDate: '2026-04-11', endDate: '2026-04-11', status: 'pré', period: 'journée' },  // Kiss
   { id: 3082, horseId: 5,  startDate: '2026-04-11', endDate: '2026-04-11', status: 'pré', period: 'journée' },  // Lipton
   { id: 3083, horseId: 4,  startDate: '2026-04-11', endDate: '2026-04-11', status: 'pré', period: 'journée' },  // Conquérant
   { id: 3084, horseId: 10, startDate: '2026-04-11', endDate: '2026-04-11', status: 'pré', period: 'journée' },  // Gringo
@@ -175,7 +171,6 @@ const INITIAL_PLANNINGS = [
   { id: 3086, horseId: 15, startDate: '2026-04-11', endDate: '2026-04-11', status: 'pré', period: 'journée' },  // Fakir
 
   // Dimanche 12 Avril
-  { id: 3087, horseId: 6,  startDate: '2026-04-12', endDate: '2026-04-12', status: 'pré', period: 'journée' },  // Kiss
   { id: 3088, horseId: 5,  startDate: '2026-04-12', endDate: '2026-04-12', status: 'pré', period: 'journée' },  // Lipton
   { id: 3089, horseId: 4,  startDate: '2026-04-12', endDate: '2026-04-12', status: 'pré', period: 'journée' },  // Conquérant
 
@@ -213,7 +208,6 @@ const INITIAL_PLANNINGS = [
   { id: 3114, horseId: 8,  startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },  // Foudre
   { id: 3115, horseId: 10, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },  // Gringo
   { id: 3116, horseId: 12, startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },  // Goria
-  { id: 3117, horseId: 6,  startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },  // Kiss (2e entrée confirmée dans capture)
   { id: 3118, horseId: 3,  startDate: '2026-04-16', endDate: '2026-04-16', status: 'pré', period: 'journée' },  // Cloony
 
   // Vendredi 17 Avril
@@ -225,12 +219,10 @@ const INITIAL_PLANNINGS = [
   { id: 3124, horseId: 14, startDate: '2026-04-17', endDate: '2026-04-17', status: 'pré', period: 'journée' },  // Eiddy (Fakir dans capture)
 
   // Samedi 18 Avril
-  { id: 3125, horseId: 6,  startDate: '2026-04-18', endDate: '2026-04-18', status: 'pré', period: 'journée' },  // Kiss
   { id: 3126, horseId: 5,  startDate: '2026-04-18', endDate: '2026-04-18', status: 'pré', period: 'journée' },  // Lipton
   { id: 3127, horseId: 12, startDate: '2026-04-18', endDate: '2026-04-18', status: 'pré', period: 'journée' },  // Goria
 
   // Dimanche 19 Avril
-  { id: 3128, horseId: 6,  startDate: '2026-04-19', endDate: '2026-04-19', status: 'pré', period: 'journée' },  // Kiss
   { id: 3129, horseId: 4,  startDate: '2026-04-19', endDate: '2026-04-19', status: 'pré', period: 'journée' },  // Conquérant
   { id: 3130, horseId: 5,  startDate: '2026-04-19', endDate: '2026-04-19', status: 'pré', period: 'journée' },  // Lipton
 
@@ -1096,7 +1088,7 @@ function App() {
 
   // Load from localStorage
   useEffect(() => {
-    const APP_VERSION = 'v1.4';
+    const APP_VERSION = 'v1.5';
     try {
       const savedVersion = localStorage.getItem('hp_version');
       if (savedVersion !== APP_VERSION) {
@@ -1112,14 +1104,14 @@ function App() {
         setMode(APP_MODES.DASHBOARD);
       }
       
-      const savedHorses = localStorage.getItem('horsePlanner_horses_v1.4');
+      const savedHorses = localStorage.getItem('horsePlanner_horses_v1.5');
       if (savedHorses && JSON.parse(savedHorses).length > 0) setHorses(JSON.parse(savedHorses));
       else setHorses(INITIAL_HORSES);
 
       const savedClientId = localStorage.getItem('hp_client_id');
       if (savedClientId) setClientId(savedClientId);
 
-      const savedAssignments = localStorage.getItem('horsePlanner_assignments_v1.4');
+      const savedAssignments = localStorage.getItem('horsePlanner_assignments_v1.5');
       if (savedAssignments && JSON.parse(savedAssignments).length > 0) setAssignments(JSON.parse(savedAssignments));
       else setAssignments(INITIAL_PLANNINGS);
 
@@ -1137,8 +1129,8 @@ function App() {
 
   // Persistence
   useEffect(() => {
-    localStorage.setItem('horsePlanner_horses_v1.4', JSON.stringify(horses));
-    localStorage.setItem('horsePlanner_assignments_v1.4', JSON.stringify(assignments));
+    localStorage.setItem('horsePlanner_horses_v1.5', JSON.stringify(horses));
+    localStorage.setItem('horsePlanner_assignments_v1.5', JSON.stringify(assignments));
     localStorage.setItem('hp_sync_path', syncPath);
     localStorage.setItem('hp_master_password', masterPassword);
     localStorage.setItem('hp_client_id', clientId);
