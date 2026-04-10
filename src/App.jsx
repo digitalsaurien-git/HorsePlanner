@@ -518,14 +518,14 @@ const CalendarView = ({ horses, assignments }) => {
 
   return (
     <div className="animate-fade">
-      <header style={{ marginBottom: '1rem' }}>
-        <h1>Calendrier des Pâturages</h1>
-        <div style={{ display: 'flex', gap: '5px', overflowX: 'auto', padding: '10px 0', scrollbarWidth: 'none' }} className="hide-scrollbar">
+      <header style={{ marginBottom: '1.5rem' }}>
+        <h1 style={{ marginBottom: '1rem' }}>Calendrier des Pâturages</h1>
+        <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '10px' }} className="hide-scrollbar">
           {monthNames.map((m, idx) => (
             <button 
               key={m} 
               className={`btn ${activeMonth === idx ? 'btn-primary' : ''}`} 
-              style={{ fontSize: '0.7rem', padding: '6px 12px', whiteSpace: 'nowrap' }} 
+              style={{ fontSize: '0.75rem', padding: '8px 16px', borderRadius: '30px', whiteSpace: 'nowrap' }} 
               onClick={() => setActiveMonth(idx)}
             >
               {m}
@@ -534,13 +534,13 @@ const CalendarView = ({ horses, assignments }) => {
         </div>
       </header>
 
-      <div className="card glass">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <h3 style={{ margin: 0, textTransform: 'capitalize' }}>{monthLabel}</h3>
+      <div className="card glass" style={{ padding: '1rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+          <h2 style={{ margin: 0, color: 'var(--accent)' }}>{monthLabel}</h2>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Filtrer par cheval :</span>
-            <select className="input" style={{ width: 'auto', minWidth: '150px' }} value={selectedHorseId} onChange={e => setSelectedHorseId(e.target.value)}>
+            <span style={{ fontSize: '0.8rem', opacity: 0.7 }}>Filtrer par cheval :</span>
+            <select className="input" style={{ width: 'auto', minWidth: '180px' }} value={selectedHorseId} onChange={e => setSelectedHorseId(e.target.value)}>
               <option value="all">Tous les chevaux</option>
               {horses.slice().sort((a, b) => a.name.localeCompare(b.name)).map(h => (
                 <option key={h.id} value={h.id}>{h.emoji} {h.name}</option>
@@ -549,49 +549,36 @@ const CalendarView = ({ horses, assignments }) => {
           </div>
         </div>
 
-        <div className="calendar-wrapper" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: '10px' }}>
-          <div className="calendar-grid" style={{ minWidth: '600px' }}>
+        <div className="calendar-wrapper">
+          <div className="calendar-grid">
             {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(d => (
-              <div key={d} style={{ textAlign: 'center', fontWeight: 'bold', padding: '10px', color: 'var(--accent)', fontSize: '0.8rem' }}>{d}</div>
+              <div key={d} className="calendar-header-cell">{d}</div>
             ))}
             {Array.from({ length: (firstDayOfMonth + 6) % 7 }).map((_, i) => (
-              <div key={`empty-${i}`} />
+              <div key={`empty-${i}`} style={{ background: 'rgba(0,0,0,0.1)' }} />
             ))}
             {days.map(day => {
+              const dateStr = `${activeYear}-${(activeMonth + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+              const isToday = dateStr === new Date().toISOString().split('T')[0];
               const dayAssigns = getHorseAssignments(day);
-              // Group into pairs for screenshot-style layout
-              const pairs = [];
-              for (let i = 0; i < dayAssigns.length; i += 2) {
-                if (i + 1 < dayAssigns.length) pairs.push([dayAssigns[i], dayAssigns[i + 1]]);
-                else pairs.push([dayAssigns[i]]);
-              }
 
               return (
-                <div key={day} className="calendar-day" style={{ minHeight: '120px', border: '1px solid rgba(255,255,255,0.05)', padding: '5px', borderRadius: '8px' }}>
-                  <div style={{ fontSize: '0.7rem', opacity: 0.5, marginBottom: '5px' }}>{day}</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                    {pairs.map((pair, idx) => (
-                      <div key={idx} style={{ 
-                        display: 'flex', 
-                        gap: '4px', 
-                        fontSize: '0.65rem', 
-                        background: 'rgba(255,255,255,0.05)', 
-                        padding: '2px 4px', 
-                        borderRadius: '4px',
-                        flexWrap: 'wrap',
-                        alignItems: 'center'
-                      }}>
-                        {pair.map((a, aIdx) => {
-                          const h = horses.find(h => h.id === a.horseId);
-                          return h ? (
-                            <React.Fragment key={a.id}>
-                              <span>{h.name} {h.emoji}</span>
-                              {aIdx === 0 && pair.length > 1 && <span style={{ opacity: 0.3 }}>/</span>}
-                            </React.Fragment>
-                          ) : null;
-                        })}
-                      </div>
-                    ))}
+                <div key={day} className={`calendar-day ${isToday ? 'today' : ''}`}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 'bold', opacity: 0.6, marginBottom: '4px', textAlign: 'right' }}>{day}</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    {dayAssigns.map(a => {
+                      const h = horses.find(h => h.id === a.horseId);
+                      return h ? (
+                        <div key={a.id} className="calendar-item" style={{ 
+                          borderLeft: `3px solid ${h.color || 'var(--accent)'}`,
+                          background: 'rgba(255,255,255,0.03)'
+                        }}>
+                          <span style={{ fontSize: '1rem' }}>{h.emoji}</span>
+                          <strong style={{ opacity: 0.9 }}>{h.name}</strong>
+                          {a.period !== 'journée' && <span style={{ fontSize: '0.6rem', opacity: 0.5 }}>({a.period})</span>}
+                        </div>
+                      ) : null;
+                    })}
                   </div>
                 </div>
               );
