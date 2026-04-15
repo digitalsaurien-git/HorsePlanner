@@ -46,8 +46,11 @@ Créer une application simple pour gérer la mise au pré ou au box des chevaux 
 - [x] Localisation française des dates (JJ/MM/AAAA) dans la gestion des affectations.
 - [x] Synchronisation complète des données d'avril 2026 selon modèle utilisateur pour test de charge et rendu.
 - [x] Simplification du Dashboard : affichage épuré des chevaux (nom + icône + barre de couleur) sans texte descriptif redondant pour les vues Gérant et Propriétaire.
-- [x] Ajout d'un bandeau informatif sur le Dashboard Propriétaire : contact club pour modifications/suppressions.
-
+- [x] Ajout d'une zone "Note" pour chaque affectation (visible sur les cartes d'affectation).
+- [x] Nouveau bandeau "Actuellement au pré" sur le Dashboard Gérant pour une visibilité immédiate des chevaux dehors.
+- [x] Autorisation étendue : les propriétaires peuvent désormais créer des affectations pour leurs propres chevaux.
+- [x] Paramètre d'affichage : option pour activer/désactiver le décompte mensuel des jours au pré dans le calendrier.
+- [x] Masquage intelligent : le champ "Période" (matin/après-midi) est masqué pour les propriétaires lors de la création d'affectation pour simplifier la saisie.
 
 **OUT (exclu / plus tard):**
 - Réservation avancée des prés par propriétaire
@@ -58,11 +61,11 @@ Créer une application simple pour gérer la mise au pré ou au box des chevaux 
 
 ## 4) Utilisateurs & contexte
 - **Gérant/Employé** (Admin, accès complet, gestion planning)
-- **Propriétaire** (Lecture seule, filtré sur ses chevaux)
+- **Propriétaire** (Lecture seule ou ajout d'affectations pour ses chevaux)
 
 ## 5) Données / contenu
 - Chevaux : nom, émoticône, propriétaire, couleur, status actuel
-- Plannings : assignments par date (horseId, date, status)
+- Plannings : assignments par date (horseId, date, status, period, note)
 - Utilisateurs : rôle-based simplified auth (LocalStorage)
 
 ## 6) Checklist de validation (pass/fail)
@@ -71,20 +74,22 @@ Créer une application simple pour gérer la mise au pré ou au box des chevaux 
 - [x] Suppression d’un cheval met bien à jour toutes les vues concernées
 - [x] Navigation mois par mois sur le calendrier (Mois en cours par défaut)
 - [x] Affectation “au pré/au box” modifiable pour chaque cheval
-- [x] Vue propriétaire n’affiche que les chevaux du compte connecté actuellement au pré (personnalisation retirée)
+- [x] Vue propriétaire affiche les chevaux du compte connecté au pré
 - [x] Vue “chevaux du jour” affiche le statut et les notifications de mouvement
-- [x] Interaction au clic pour connaitre la durée de mise au pré d'un cheval
+- [x] Interaction au clic pour connaitre la durée de mise au pré d'un cheval (optionnel selon paramètre)
 - [x] Gérant peut filtrer la liste des affectations en séparant club et propriétaires
 - [x] Navigation mobile et desktop sans perte de lisibilité (Sidebar glass + sticky navbar)
-- [x] Affectations sauvegardées persistent (LocalStorage + Google Drive)
-- [x] Aucun propriétaire ne peut attribuer ou modifier l’affectation d’un cheval
+- [x] Affectations sauvegardées persistent (Supabase + LocalStorage)
+- [x] Les propriétaires peuvent attribuer l’affectation de LEURS chevaux
 - [x] Les émoticônes sont bien visibles dans toutes les listes/plannings
 - [x] Le mot de passe gérant protège l'accès aux fonctions sensibles
-- [x] La personnalisation d'un cheval est strictement isolée (ne se propage plus aux autres)
+- [x] La personnalisation d'un cheval est strictement isolée
 - [x] Le déploiement sur Vercel et GitHub Pages est 100% synchronisé
 - [x] Les listes de chevaux sont triées par ordre alphabétique partout (Dashboard, Menus, Affectations)
 - [x] Le calendrier s'ouvre automatiquement sur le mois et l'année actuels pour tous les utilisateurs
-- [x] Les affectations terminées sont automatiquement déplacées vers une section "Archives" groupée par mois
-- [x] L'interface s'adapte parfaitement aux mobiles (Dashboard empilé, menu latéral élégant, calendrier scrollable)
+- [x] Les affectations terminées sont automatiquement déplacées vers une section "Archives"
+- [x] L'interface s'adapte parfaitement aux mobiles
+- [x] Les notes sont visibles sur les cartes d'affectation
+- [x] Le gérant dispose d'une vue "Actuellement au pré" consolidée sur son Dashboard
 
 
