@@ -744,15 +744,61 @@ const Dashboard = ({ user, ROLES, horses, assignments, formatDate }) => {
   );
 };
 
+const RELEASE_NOTES = [
+  {
+    version: 'v1.7',
+    date: '15/04/2026',
+    title: 'Notes & Permissions 🐎',
+    managerFeatures: [
+      '🌿 Vue "Actuellement au pré" : Visuel immédiat des chevaux dehors sur le Dashboard.',
+      '📝 Notes d\'affectation : Précisez des détails personnels (cloches, soins, etc).',
+      '⚙️ Contrôle affichage : Option pour masquer les jours au pré dans le calendrier.'
+    ],
+    ownerFeatures: [
+      '🗓️ Ajout d\'affectations : Permission étendue aux propriétaires pour planifier.',
+      '📱 Formulaire simplifié : Expérience mobile-first encore plus fluide.'
+    ]
+  }
+];
+
 const SettingsView = ({ syncPath, setSyncPath, clientId, setClientId, initGoogleDrive, setIsDriveConnected, isDriveConnected, handleConnectDrive, isAutoSync, setIsAutoSync, lastSync, INITIAL_HORSES, fetchSupabaseData, INITIAL_PLANNINGS, handleManualSave, handleManualLoad, showDayCount, setShowDayCount }) => (
   <div className="animate-fade">
     <header style={{ marginBottom: '2rem' }}>
       <h1>Paramètres & Préférences ⚙️</h1>
-      <p style={{ color: 'var(--text-muted)' }}>Configurez l'affichage et la synchronisation.</p>
+      <p style={{ color: 'var(--text-muted)' }}>Configurez l\'affichage et la synchronisation.</p>
     </header>
 
     <div className="card glass" style={{ marginBottom: '2rem' }}>
-      <h3>🔧 Préférences d'affichage</h3>
+      <h3>💡 Information & Guide (Release Notes)</h3>
+      <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        {RELEASE_NOTES.map((note, i) => (
+          <div key={i} className="glass" style={{ padding: '15px', borderRadius: '12px', background: 'rgba(255,255,255,0.02)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+              <strong style={{ color: 'var(--accent)' }}>{note.version} - {note.title}</strong>
+              <span style={{ fontSize: '0.75rem', opacity: 0.5 }}>{note.date}</span>
+            </div>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', fontSize: '0.85rem' }}>
+              <div>
+                <span style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px', fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--primary)' }}>Espace Gérant</span>
+                <ul style={{ paddingLeft: '15px', margin: 0, opacity: 0.8, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  {note.managerFeatures.map((f, fi) => <li key={fi}>{f}</li>)}
+                </ul>
+              </div>
+              <div>
+                <span style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px', fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--accent)' }}>Espace Propriétaire</span>
+                <ul style={{ paddingLeft: '15px', margin: 0, opacity: 0.8, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  {note.ownerFeatures.map((f, fi) => <li key={fi}>{f}</li>)}
+                </ul>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div className="card glass" style={{ marginBottom: '2rem' }}>
+      <h3>🔧 Préférences d\'affichage</h3>
       <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.05)', padding: '12px', borderRadius: '8px' }}>
           <div>
