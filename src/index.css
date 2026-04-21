@@ -241,6 +241,55 @@ select.input option {
   display: block;
 }
 
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--rounded-lg);
+  padding: 2rem;
+  width: 100%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  position: relative;
+  /* Scrollbar custom pour la modale */
+}
+.modal-content::-webkit-scrollbar { width: 8px; }
+.modal-content::-webkit-scrollbar-thumb { background: rgba(150,150,150,0.5); border-radius: 4px; }
+
+.theme-light .modal-content {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2);
+}
+
+.modal-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+.modal-close:hover {
+  color: var(--danger);
+  transform: scale(1.1);
+}
+
 @media (min-width: 1024px) {
   .grid {
     display: grid;
@@ -386,7 +435,101 @@ select.input option {
   display: flex;
   align-items: center;
   gap: 6px;
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.pasture-count {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--warning);
+}
+
+.theme-light .pasture-count {
+  color: #1a1a1a;
+}
+
+/* ☀️ THEME CLAIR COMPLET ☀️ */
+.theme-light {
+  --primary: #4d332b; 
+  --primary-light: #6a493e;
+  --primary-dark: #26120c;
+  --accent: #b8860b; /* Plus sombre (DarkGoldenRod) pour la lisibilité sur fond clair */
+  
+  --bg-dark: #f5f3ef; /* Fond doux type papier ou sable clair */
+  --bg-card: #ffffff; /* Carte blanche pour maximiser le contraste interne */
+  --bg-glass: rgba(0, 0, 0, 0.02); /* Transparence inversée (fumée très légère) */
+  
+  --text-main: #2c2c2c; /* Gris très sombre pour la lecture fluide */
+  --text-muted: #6b6b6b; /* Gris moyen pour le contraste optionnel */
+  
+  /* Correction gradients pour le fond */
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(93, 64, 55, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(76, 175, 80, 0.05) 0%, transparent 40%);
+}
+
+.theme-light .glass {
+  border: 1px solid rgba(0, 0, 0, 0.08); /* Bordure discrète noire */
+  background: rgba(255, 255, 255, 0.7); /* Fond clair dépoli */
+}
+
+/* Champs de formulaires et inputs */
+.theme-light .input {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  color: var(--text-main);
+}
+.theme-light .input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(184, 134, 11, 0.15);
+}
+.theme-light .input::placeholder {
+  color: #999999;
+}
+.theme-light select.input option {
+  background-color: #ffffff;
+  color: var(--text-main);
+}
+
+/* Sidebar et Navigation */
+.theme-light .sidebar {
+  background: rgba(245, 243, 239, 0.95);
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 5px 0 20px rgba(0, 0, 0, 0.05); /* Ombre allégée */
+}
+@media (min-width: 1024px) {
+  .theme-light .sidebar {
+    background: rgba(255, 255, 255, 0.6);
+  }
+}
+
+/* Calendrier et éléments structurels */
+.theme-light .calendar-grid {
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+.theme-light .calendar-header-cell {
+  background: rgba(0, 0, 0, 0.04);
+}
+.theme-light .calendar-day {
+  background: rgba(255, 255, 255, 0.7);
+}
+.theme-light .calendar-day:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+.theme-light .calendar-day.today {
+  background: rgba(184, 134, 11, 0.08); /* Accent jaune léger */
+}
+.theme-light .calendar-item {
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Typographie spécifique Theme Clair */
+.theme-light .gradient-text {
+  background: linear-gradient(135deg, var(--accent), var(--primary-dark));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
